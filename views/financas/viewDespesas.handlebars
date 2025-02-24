@@ -1,0 +1,180 @@
+<div class="container mt-4">
+    <a href="/financas/dashboard" class="btn btn-outline-danger mb-3">
+        <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+
+    <h2 class="text-dark fw-bold">Despesas</h2>
+
+    <button class="btn btn-danger mb-3" data-bs-toggle="modal" data-bs-target="#addReceitaModal">
+        <i class="bi bi-plus-circle"></i> Adicionar Despesa
+    </button>
+
+    <div class="d-flex justify-content-center mb-3">
+        <div class="d-flex align-items-center justify-content-center" style="margin-left: -332px;">
+            <a href="/financas/viewDespesas?ano={{anoAtual}}&mes={{mesAtual}}&retroceder=true" class="btn btn-link text-danger p-2" style="font-size: 24px; text-decoration: none;">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            <div class="dropdown ms-2">
+                <button class="btn btn-link text-danger p-2" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 24px; text-decoration: none;">
+                    <span class="fw-bold">{{nomeMesAtual}} {{anoAtual}}</span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="monthDropdown">
+                    {{#each meses}}
+                        <li><a class="dropdown-item" href="/financas/viewDespesas?ano={{anoAtual}}&mes={{this.index}}">{{this.nome}} {{anoAtual}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+            <a href="/financas/viewDespesas?ano={{anoAtual}}&mes={{mesAtual}}&avancar=true" class="btn btn-link text-danger p-2 ms-2" style="font-size: 24px; text-decoration: none;">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <div class="card shadow-lg rounded-4 w-75">
+            <div class="card-header bg-danger text-white rounded-top-4">
+                <h3 class="fw-bold m-0">Suas Despesas</h3>
+            </div>
+            <div class="card-body p-3">
+                <div class="d-flex justify-content-between fw-bold text-dark pb-2 border-bottom">
+                    <span class="w-50">Descrição</span>
+                    <span class="w-25">Data</span>
+                    <span class="w-25">Valor</span>
+                    <span class="text-center">Ações</span>
+                </div>
+                <div class="list-group">
+                    {{#each despesas}}
+                    <div class="list-group-item d-flex justify-content-between align-items-center border rounded-3 mb-2 p-2">
+                        <span class="w-50">{{this.title}}</span>
+                        <span class="w-25">{{formatDate this.date}}</span>
+                        <span class="w-25 fw-bold text-danger">R$ {{this.valor}}</span>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-id="{{this.id}}" data-title="{{this.title}}" data-value="{{this.valor}}" data-date="{{this.date}}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <form action="/financas/remover" method="POST">
+                                <input type="hidden" name="id" value="{{this.id}}">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-flex flex-column gap-3 ms-3 w-25">
+            <div class="card shadow rounded-4 p-3 text-dark" style="background-color: #f8f9fa;">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-white p-2 me-3">
+                        <i class="bi bi-wallet-fill fs-2 text-danger"></i>
+                    </div>
+                    <div>
+                        <h6 class="m-0">Total Pago</h6>
+                        <h4 class="fw-bold">R$ {{totalPago}}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow rounded-4 p-3 text-dark" style="background-color: #f8f9fa;">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-white p-2 me-3">
+                        <i class="bi bi-clock-fill fs-2 text-danger"></i>
+                    </div>
+                    <div>
+                        <h6 class="m-0">Total Pendente</h6>
+                        <h4 class="fw-bold">R$ {{totalPendente}}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow rounded-4 p-3 text-dark" style="background-color: #f8f9fa;">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-white p-2 me-3">
+                        <i class="bi bi-calendar-check-fill fs-2 text-danger"></i>
+                    </div>
+                    <div>
+                        <h6 class="m-0">Total do Mês</h6>
+                        <h4 class="fw-bold">R$ {{totalMes}}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Adicionar Despesa -->
+<div class="modal fade" id="addReceitaModal" tabindex="-1" aria-labelledby="addReceitaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="addReceitaModalLabel">Adicionar Despesa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/financas/despesa" method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Título</label>
+                        <input type="text" class="form-control" name="title" placeholder="Descrição" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valor" class="form-label">Valor</label>
+                        <input type="number" class="form-control" name="valor" step="0.01" min="0" placeholder="Valor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Data</label>
+                        <input type="date" class="form-control" name="date" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Criar Despesa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Despesa -->
+<div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title" id="editTaskModalLabel">Editar Despesa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/financas/editd" method="POST">
+                    <input type="hidden" name="id" id="taskId">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Descrição</label>
+                        <input type="text" class="form-control" name="title" id="taskTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valor" class="form-label">Valor</label>
+                        <input type="number" class="form-control" name="valor" id="taskValue" step="0.01" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Data</label>
+                        <input type="date" class="form-control" name="date" id="taskDate" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const editTaskModal = document.getElementById('editTaskModal');
+    editTaskModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        document.getElementById('taskId').value = button.getAttribute('data-id');
+        document.getElementById('taskTitle').value = button.getAttribute('data-title');
+        document.getElementById('taskValue').value = button.getAttribute('data-value');
+        document.getElementById('taskDate').value = button.getAttribute('data-date');
+    });
+</script>

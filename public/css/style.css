@@ -1,0 +1,136 @@
+
+/* Fundo azul escuro na navbar */
+#navbar {
+    background-color: #004085; /* Azul escuro principal */
+    border-bottom: 2px solid #003366; /* Tom mais escuro para separar */
+}
+
+/* Ajuste do logo */
+#logo {
+    width: 40px;
+}
+
+/* Melhorando a cor e o hover dos links */
+.navbar-nav .nav-link {
+    color: #ffffff !important; /* Deixa os links sempre brancos */
+    font-weight: bold;
+    transition: 0.3s;
+    padding: 10px 20px; /* Aumenta espaçamento ao redor do link */
+    margin: 0 10px; /* Adiciona espaçamento entre os links */
+}
+
+/* Efeito de hover moderno */
+.navbar-nav .nav-link:hover {
+    background-color: blue;
+    
+    border-radius: 5px;
+}
+
+/* Aumentando o espaçamento entre os itens do menu */
+.navbar-nav {
+    gap: 15px; /* Espaçamento horizontal entre os itens */
+}
+
+/* Estilizando o botão "Comece agora" */
+.navbar-nav .btn {
+    background-color: #ffffff; /* Branco */
+    color: #004085 !important; /* Azul escuro para contraste */
+    border-radius: 5px;
+    transition: 0.3s;
+    padding: 10px 20px; /* Aumenta o botão */
+    margin-left: 15px; /* Dá mais espaço antes do botão */
+}
+
+.navbar-nav .btn:hover {
+    background-color: #003366; /* Azul mais escuro */
+    color: #ffffff !important;
+}
+
+
+
+
+
+.container-main{
+    min-height: 70vh;
+    padding: 2em;
+}
+
+/*messages*/
+
+.message{
+    padding: 1em;
+    color: #004085;
+    background-color: #cce5ff;
+    border: 1px solid #b8daff;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 auto 2em;
+    max-width: 60%;
+}
+
+/* Estilizando o Footer */
+footer {
+    width: 100%;
+    background-color: #004085 !important; /* Mantendo o azul escuro da navbar */
+    opacity: 1;
+    border-top: 2px solid #003366; /* Azul escuro para separação */
+    height: 250px;
+    padding: 30px;
+    color: #ffffff; /* Texto branco para melhor contraste */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ícones sociais */
+footer i {
+    font-size: 24px;
+    margin: 0 15px;
+    transition: color 0.3s;
+    color: #ffffff; /* Ícones brancos para contraste */
+}
+
+/* Container dos ícones sociais */
+#social-icons-container {
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Centralizando os ícones dentro do container */
+#social-icons-container div {
+    text-align: center;
+}
+
+
+/* Texto do footer */
+footer p {
+    text-align: center;
+    margin: 20px;
+    font-weight: bold;
+}
+
+/* Efeito hover nos ícones sociais */
+a:hover i {
+    color: #ffc107; /* Amarelo ouro para dar destaque */
+}
+
+/* Melhorando a responsividade */
+@media (max-width: 768px) {
+    footer {
+        height: auto;
+        padding: 20px;
+    }
+
+    #social-icons-container {
+        flex-wrap: wrap;
+    }
+
+    footer i {
+        font-size: 20px;
+        margin: 5px;
+    }
+}
+

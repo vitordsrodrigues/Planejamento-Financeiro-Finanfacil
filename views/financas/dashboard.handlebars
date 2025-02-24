@@ -1,0 +1,76 @@
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <!-- Título -->
+        <div class="col-12 mb-4">
+            <h2 class="text-dark fw-bold">Dashboard</h2>
+        </div>
+
+        <!-- Card Saldo -->
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card shadow rounded-4 p-4 text-dark bg-light">
+                <div class="d-flex align-items-center">
+                    <div class="p-3 rounded-circle bg-light me-3">
+                        <i class="bi bi-wallet2 fs-2 text-primary"></i>
+                    </div>
+                    <div>
+                        <h5 class="m-0">Saldo</h5>
+                        <h4 class="fw-bold text-success">R$ {{saldo}}</h4>
+                        <a href="/financas/saldo" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Receitas -->
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card shadow rounded-4 p-4 text-dark bg-light">
+                <div class="d-flex align-items-center">
+                    <div class="p-3 rounded-circle bg-light me-3">
+                        <i class="bi bi-graph-up-arrow fs-2 text-success"></i>
+                    </div>
+                    <div>
+                        <h5 class="m-0">Receitas</h5>
+                        <h4 class="fw-bold text-success">R$ {{totalReceitas}}</h4>
+                        <a href="/financas/viewReceitas" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Despesas -->
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card shadow rounded-4 p-4 text-dark bg-light">
+                <div class="d-flex align-items-center">
+                    <div class="p-3 rounded-circle bg-light me-3">
+                        <i class="bi bi-cash-stack fs-2 text-danger"></i>
+                    </div>
+                    <div>
+                        <h5 class="m-0">Despesas</h5>
+                        <h4 class="fw-bold text-success">R$ {{totalDespesas}}</h4>
+                        <a href="/financas/viewDespesas" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Cartão de Crédito -->
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card shadow rounded-4 p-4 text-dark bg-light">
+                <div class="d-flex align-items-center">
+                    <div class="p-3 rounded-circle bg-light me-3">
+                        <i class="bi bi-credit-card fs-2 text-warning"></i>
+                    </div>
+                    <div>
+                        <h5 class="m-0">Cartão de Crédito</h5>
+                        <a href="/financas/viewCartaos" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção "Suas Finanças" -->
+        <div class="col-12 text-center mt-4">
+            <h3 class="text-dark fw-bold">Suas Finanças</h3>
+        </div>
+    </div>
+</div>

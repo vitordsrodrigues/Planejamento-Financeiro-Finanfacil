@@ -1,0 +1,36 @@
+<div class="container col-11 col-md-9" id="form-container">
+  <div class="row gx-5">
+    <div class="col-md-6">
+      <h2>Realize o seu cadastro</h2>
+      <form action="/register" method="POST">
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="name" name="name" placeholder="Digite o seu nome" required>
+          <label for="name" class="form-label">Digite o seu nome:</label>
+        </div>
+         <div class="form-floating mb-3">
+          <input type="email" class="form-control" id="email" name="email" placeholder="Digite o seu email" required>
+          <label for="email" class="form-label">Digite o seu email:</label>
+        </div>
+         <div class="form-floating mb-3">
+          <input type="password" class="form-control" id="password" name="password" placeholder="Digite a sua senha" required>
+          <label for="password" class="form-label">Digite a sua senha:</label>
+        </div>
+         <div class="form-floating mb-3">
+          <input type="password" class="form-control" id="password" name="confirmpassword" placeholder="Confrime a sua senha" required>
+          <label for="confirmpassword" class="form-label">Confirme a sua senha:</label>
+        </div>
+         <input type="submit" class="btn btn-primary" value="Cadastrar">
+      </form>
+    </div>
+     <div class="col-md-6">
+      <div class="row align-items-center">
+        <div class="col-12">
+          <img src="/img/sign.jpg" alt="tela de regsitro" class="img-fluid">
+        </div>
+        <div class="col-12" id="link-container">
+          <p>já sou cadastrado. <a href="/login">Quero fazer login!</a></p>
+        </div>
+      </div>
+     </div>
+  </div>
+</div>
