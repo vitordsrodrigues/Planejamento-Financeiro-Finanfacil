@@ -12,13 +12,13 @@
 
     <!-- Lista de Cartões -->
     <div class="row">
-        <!-- Card para Adicionar Novo Cartão (Sempre na Esquerda) -->
+        <!-- Card para Adicionar Novo Cartão -->
         <div class="col-md-4 mb-4 d-flex">
             <div class="card shadow-lg rounded-4 text-decoration-none w-100 d-flex align-items-center justify-content-center"
                  style="border: 2px solid #ddd; border-radius: 10px; background-color: #f7f7f7; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); min-height: 260px; cursor: pointer;"
                  data-bs-toggle="modal" data-bs-target="#cartaoModal">
                 <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                    <i class="bi bi-plus-circle" style="font-size: 50px; color: #17a2b8;"></i> <!-- Ícone Verde Ciano -->
+                    <i class="bi bi-plus-circle" style="font-size: 50px; color: #17a2b8;"></i>
                     <h5 class="mt-3 text-dark text-center">Adicionar Cartão</h5>
                 </div>
             </div>
@@ -39,25 +39,31 @@
                         <li class="mb-3"><strong>Data de Fechamento:</strong> {{formatDate this.dataFechamento}}</li>
                         <li class="mb-3"><strong>Limite:</strong> R$ {{this.limite}}</li>
                     </ul>
-                    <div class="d-flex justify-content-end gap-2 mt-3">
-                        <a href="/financas/cartao/{{this.id}}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <form action="/financas/removec" method="POST" class="ms-2">
-                            <input type="hidden" name="id" value="{{this.id}}">
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <i class="bi bi-trash"></i> Excluir
+                    <div class="d-flex justify-content-between mt-3">
+                        <button class="btn btn-despesa btn-sm" data-bs-toggle="modal" data-bs-target="#addDespesaModal" onclick="preencherDespesaModal('{{this.id}}')">
+                            ADICIONAR DESPESA
+                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCartaoModal" onclick="preencherModal('{{this.id}}', '{{this.name}}', '{{this.limite}}', '{{this.dataFechamento}}', '{{this.datavence}}', '{{this.fatura}}')">
+                                <i class="bi bi-pencil"></i>
                             </button>
-                        </form>
+                            <form action="/financas/removec" method="POST">
+                                <input type="hidden" name="id" value="{{this.id}}">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         {{/each}}
+
     </div>
 </div>
 
-<!-- Modal (Pop-up) -->
+
 <div class="modal fade" id="cartaoModal" tabindex="-1" aria-labelledby="cartaoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -91,12 +97,6 @@
                         <input type="date" class="form-control" name="datavence" required>
                     </div>
 
-                    <!-- Fatura -->
-                    <div class="mb-4">
-                        <label for="fatura" class="form-label fw-bold">Fatura:</label>
-                        <input type="number" class="form-control" name="fatura" step="0.01" min="0" placeholder="Digite a fatura do cartão" required>
-                    </div>
-
                     <!-- Botão de Envio -->
                     <div class="d-grid">
                         <button type="submit" class="btn btn-success fw-bold">
@@ -109,5 +109,87 @@
     </div>
 </div>
 
-<!-- Bootstrap JS (Necessário para o modal funcionar) -->
+<!-- Modal para Adicionar Despesa -->
+<div class="modal fade" id="addDespesaModal" tabindex="-1" aria-labelledby="addDespesaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="addDespesaModalLabel">Adicionar Despesa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/financas/adicionar-despesa" method="POST">
+                    <input type="hidden" id="despesa-cartao-id" name="cartaoId">
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label fw-bold">Descrição:</label>
+                        <input type="text" class="form-control" name="descricao" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valor" class="form-label fw-bold">Valor:</label>
+                        <input type="number" class="form-control" name="valor" step="0.01" min="0" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success fw-bold">
+                            <i class="bi bi-plus-circle"></i> Adicionar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Edição -->
+<div class="modal fade" id="editCartaoModal" tabindex="-1" aria-labelledby="editCartaoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="editCartaoModalLabel">Editar Cartão de Crédito</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/financas/editc" method="POST">
+                    <input type="hidden" id="edit-id" name="id">
+                    <div class="mb-3">
+                        <label for="edit-name" class="form-label fw-bold">Nome do Cartão:</label>
+                        <input type="text" class="form-control" id="edit-name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-limite" class="form-label fw-bold">Limite:</label>
+                        <input type="number" class="form-control" id="edit-limite" name="limite" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-dataFechamento" class="form-label fw-bold">Data de Fechamento:</label>
+                        <input type="date" class="form-control" id="edit-dataFechamento" name="dataFechamento" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-datavence" class="form-label fw-bold">Data de Vencimento:</label>
+                        <input type="date" class="form-control" id="edit-datavence" name="datavence" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success fw-bold">
+                            <i class="bi bi-save"></i> Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function preencherModal(id, name, limite, dataFechamento, datavence, fatura) {
+        document.getElementById('edit-id').value = id;
+        document.getElementById('edit-name').value = name;
+        document.getElementById('edit-limite').value = limite;
+        document.getElementById('edit-dataFechamento').value = dataFechamento;
+        document.getElementById('edit-datavence').value = datavence;
+        document.getElementById('edit-fatura').value = fatura;
+    }
+    function preencherDespesaModal(cartaoId) {
+        document.getElementById('despesa-cartao-id').value = cartaoId;
+    }
+</script>
+
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

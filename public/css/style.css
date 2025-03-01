@@ -104,6 +104,17 @@ footer i {
     text-align: center;
 }
 
+.btn-despesa {
+    border: none;
+    color: black;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.btn-despesa:hover {
+    color: red;
+    border: 2px solid red;
+    background-color: white;
+}
 
 /* Texto do footer */
 footer p {

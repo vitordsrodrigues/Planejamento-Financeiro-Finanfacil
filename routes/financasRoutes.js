@@ -29,5 +29,6 @@ router.post('/removec',checkAuth,FinancasControllers.removeCartao)
 
 router.post('/edit/',checkAuth,FinancasControllers.updateReceitaSave)
 router.post('/editd/',checkAuth,FinancasControllers.updateDespesaSave)
+router.post('/editc/',checkAuth,FinancasControllers.updateCartaoSave)
 
 module.exports = router

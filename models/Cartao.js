@@ -34,7 +34,6 @@ const Cartao = db.define('Cartao', {
     },
     fatura:{
         type:DataTypes.DECIMAL(18,2),
-        allowNull:false,
         validate:{
             isDecimal:true,
         }

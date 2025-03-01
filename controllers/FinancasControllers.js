@@ -333,29 +333,41 @@ module.exports = class FinancasControllers{
         res.render('financas/viewCartaos',{cartaos})
     }
 
-    static async createCartaoSave(req,res){
-
-        const cartao ={
-            name:req.body.name,
-            limite:req.body.limite,
-            dataFechamento:req.body.dataFechamento,
-            datavence:req.body.datavence,
-            fatura:req.body.fatura,
-            UserId: req.session.userid
-        }
-
-        try{
-            await Cartao.create(cartao)
-
-             req.flash('message', 'Cartão criado com sucesso')
+    static async createCartaoSave(req, res) {
+        const { name, limite, dataFechamento, datavence } = req.body;
     
-             req.session.save(()=>{
-                 res.redirect('/financas/viewCartaos')
-            })
-        }catch(error){
-            console.log('aconteceu um erro' + error)
+        // Converter para objetos Date para comparação
+        const fechamento = new Date(dataFechamento);
+        const vencimento = new Date(datavence);
+    
+        // Validação das datas
+        if (vencimento <= fechamento) {
+            req.flash('message', 'A data de vencimento deve ser maior que a data de fechamento.');
+            return req.session.save(() => {
+                res.redirect('/financas/viewCartaos'); // Garante que a mensagem seja exibida
+            });
+        }
+    
+        const cartao = {
+            name,
+            limite,
+            dataFechamento,
+            datavence,
+            UserId: req.session.userid
+        };
+    
+        try {
+            await Cartao.create(cartao);
+    
+            req.flash('message', 'Cartão criado com sucesso');
+            req.session.save(() => {
+                res.redirect('/financas/viewCartaos');
+            });
+        } catch (error) {
+            console.log('Aconteceu um erro: ' + error);
         }
     }
+    
     
     static async removeReceita(req, res) {
         const id = req.body.id;
@@ -490,5 +502,40 @@ module.exports = class FinancasControllers{
                 console.log(err)
             }
     }
+    static async updateCartaoSave(req, res) {
+        const { id, name, limite, dataFechamento, datavence } = req.body;
+    
+        // Converter para objetos Date para comparação
+        const fechamento = new Date(dataFechamento);
+        const vencimento = new Date(datavence);
+    
+        // Validação das datas
+        if (vencimento <= fechamento) {
+            req.flash('message', 'A data de vencimento deve ser maior que a data de fechamento.');
+            return req.session.save(() => {
+                res.redirect('/financas/viewCartaos'); // Garante que a mensagem de erro seja exibida
+            });
+        }
+    
+        const cartao = {
+            name,
+            limite,
+            dataFechamento,
+            datavence,
+            UserId: req.session.userid
+        };
+    
+        try {
+            await Cartao.update(cartao, { where: { id: id } });
+    
+            req.flash('message', 'Cartão atualizado com sucesso');
+            req.session.save(() => {
+                res.redirect('/financas/viewCartaos');
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    
     
 }
