@@ -2,6 +2,7 @@ const { DataTypes } = require('sequelize')
 
 const db = require('../db/conn')
 const User = require('./User')
+const Categorias = require('./Categorias')
 
 
 
@@ -29,5 +30,8 @@ const Despesas = db.define('Despesas', {
 
 Despesas.belongsTo(User)
 User.hasMany(Despesas)
+
+Despesas.belongsTo(Categorias);
+Categorias.hasMany(Despesas);
 
 module.exports = Despesas

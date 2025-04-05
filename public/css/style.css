@@ -67,6 +67,44 @@
     margin: 0 auto 2em;
     max-width: 60%;
 }
+.grafico-total {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+/* Ajustes individuais para manter os valores diferentes de left */
+#despesasTotal {
+    left: 44%;
+}
+
+#receitasTotal {
+    left: 44%;
+}
+#cartoesTotal{
+    left: 44%;
+}
+#geralTotal{
+    left: 48%;
+}
+.grafico-label {
+    font-size: 15px;
+    color: #666;
+}
+
+.grafico-valor {
+    font-size: 17px;
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap; /* Impede que o texto quebre a linha */
+}
 
 /* Estilizando o Footer */
 footer {
@@ -144,4 +182,181 @@ a:hover i {
         margin: 5px;
     }
 }
+@media (max-width: 992px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card.w-75 {
+        width: 100% !important; /* Faz o card ocupar toda a largura */
+    }
+
+    .w-25 {
+        width: 100% !important; /* Faz os cards menores ocuparem toda a largura */
+        margin-top: 20px;
+    }
+
+    .col-2, .col-3, .col-1 {
+        width: 100%;
+        text-align: center;
+    }
+
+    .row.align-items-center {
+        flex-wrap: wrap;
+    }
+
+    .rounded-circle {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    .categoria-texto {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .d-flex.justify-content-center {
+        flex-direction: column;
+        align-items: center;
+        margin-left: 0 !important;
+    }
+
+    .dropdown {
+        margin-top: 10px;
+    }
+
+    .card {
+        margin-bottom: 15px;
+    }
+
+    .icon-responsivo {
+        font-size: 1rem;
+    }
+
+    .modal-dialog {
+        max-width: 90%;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+@media (max-width: 992px) {
+    .list-group {
+        overflow-x: auto;
+        display: block;
+        white-space: nowrap;
+    }
+}
+@media (max-width: 992px) {
+    .d-flex.flex-column.gap-3.ms-3.w-25 {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+}
+@media (max-width: 768px) {
+    .d-flex.align-items-center.justify-content-center {
+        margin-left: 0 !important;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn.btn-link.text-success.p-2 {
+        font-size: 18px !important;
+    }
+}
+@media (max-width: 576px) {
+    .modal-dialog {
+        max-width: 90% !important;
+    }
+}
+@media (max-width: 768px) {
+    .btn i {
+        font-size: 16px !important;
+    }
+
+    .rounded-circle {
+        width: 25px !important;
+        height: 25px !important;
+    }
+}
+
+
+@media (max-width: 768px) {
+    
+    /* Remover Cabeçalho no Mobile */
+    .row.fw-bold { 
+        display: none; 
+    }
+
+    /* Remover Data e Descrição no Corpo da Tabela */
+    .col-3:nth-child(3), /* Esconde a coluna de data */
+    .col-2:nth-child(1) { /* Esconde a coluna de descrição */
+        display: none;
+    }
+
+    /* Ajustar os Botões de Editar e Excluir */
+    .btn-acao {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+    }
+
+    /* Deixar os botões lado a lado */
+    .acoes {
+        display: flex;
+        gap: 5px;
+    }
+
+    /* Ajuste do Botão dos Meses com Setas */
+    .d-flex.align-items-center.justify-content-center {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    /* Ajustar tamanho dos botões no mobile */
+    .btn-link, .dropdown button {
+        padding: 5px 10px;
+        font-size: 16px;
+    }
+}
+@media (max-width: 768px) {
+    /* Ajustar container dos botões */
+    .col-1.d-flex {
+        flex-wrap: nowrap; /* Garante que fiquem lado a lado */
+        justify-content: center; /* Centraliza os botões */
+        align-items: center;
+        gap: 3px; /* Menor espaçamento entre os botões */
+    }
+
+    /* Ajustar os botões */
+    .btn-warning,
+    .btn-danger {
+        width: 35px; /* Reduz a largura */
+        height: 35px; /* Reduz a altura */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0; /* Remove padding extra */
+        font-size: 14px; /* Ajusta tamanho do ícone */
+    }
+
+    /* Ajustar ícones dentro dos botões */
+    .btn-warning i,
+    .btn-danger i {
+        font-size: 14px; /* Mantém os ícones proporcionais */
+    }
+}
+
 

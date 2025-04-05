@@ -46,10 +46,82 @@
                     {{#each despesas}}
                     <div class="list-group-item d-flex justify-content-between align-items-center border rounded-3 mb-2 p-2">
                         <span class="w-50">{{this.title}}</span>
+                        <div class="col-3 text-center d-flex align-items-center">
+                            <div class="d-flex flex-column">
+                                {{#if (eq this.Categoria.name "Alimentação")}}
+                                    <span class="bg-danger text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-egg-fried text-white"></i> <!-- Ícone branco de comida -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Assinatura")}}
+                                    <span class="bg-secondary text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-file-earmark-text"></i> <!-- Ícone de documento -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Casa")}}
+                                    <span class="bg-primary text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-house-door-fill"></i> <!-- Ícone de casa -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Compras")}}
+                                    <span class="bg-info text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-bag-fill"></i> <!-- Ícone de sacola de compras -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Educação")}}
+                                    <span class="bg-success text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-book-fill"></i> <!-- Ícone de livro -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Lazer")}}
+                                    <span class="bg-danger text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-controller"></i> <!-- Ícone de controle de videogame -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Saúde")}}
+                                    <span class="bg-success text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-heart-pulse"></i> <!-- Ícone de saúde -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Serviços")}}
+                                    <span class="bg-dark text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-tools"></i> <!-- Ícone de ferramentas -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Supermercado")}}
+                                    <span class="bg-warning text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-cart-check"></i> <!-- Ícone de carrinho de compras -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Transporte")}}
+                                    <span class="bg-primary text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-bus-front-fill"></i> <!-- Ícone de ônibus -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Viagem")}}
+                                    <span class="bg-info text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-airplane-fill"></i> <!-- Ícone de avião -->
+                                    </span>
+                                {{else if (eq this.Categoria.name "Operação Bancária")}}
+                                    <span class="bg-secondary text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-bank"></i> <!-- Ícone de banco -->
+                                    </span>
+                                {{else}}
+                                    <span class="bg-dark text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                        style="width: 35px; height: 35px;">
+                                        <i class="bi bi-three-dots"></i> <!-- Ícone genérico -->
+                                    </span>
+                                {{/if}}
+                            </div>
+                            <span class="ms-2">{{this.Categoria.name}}</span> <!-- Nome da categoria continua ao lado -->
+                        </div>
+
                         <span class="w-25">{{formatDate this.date}}</span>
                         <span class="w-25 fw-bold text-danger">R$ {{this.valor}}</span>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-id="{{this.id}}" data-title="{{this.title}}" data-value="{{this.valor}}" data-date="{{this.date}}">
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-id="{{this.id}}" data-title="{{this.title}}" data-value="{{this.valor}}" data-date="{{this.date}}" data-categoria ="{{this.CategoriaId}}">
                                 <i class="bi bi-pencil"></i>
                             </button>
                             <form action="/financas/remover" method="POST">
@@ -125,6 +197,16 @@
                         <label for="date" class="form-label">Data</label>
                         <input type="date" class="form-control" name="date" required>
                     </div>
+                    
+                    <div class="mb-3">
+                        <label for="CategoriaId" class="form-label">Categoria</label>
+                        <select class="form-select" name="CategoriaId" id="CategoriaId" required aria-label="Selecione uma categoria">
+                            <option value="" disabled selected>Selecione uma categoria</option>
+                            {{#each categorias}}
+                                <option value="{{this.id}}">{{this.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-danger">Criar Despesa</button>
@@ -158,6 +240,15 @@
                         <label for="date" class="form-label">Data</label>
                         <input type="date" class="form-control" name="date" id="taskDate" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="CategoriaId" class="form-label">Categoria</label>
+                        <select class="form-select" name="CategoriaId" id="taskCategory" required>
+                            <option value="" disabled>Selecione uma categoria</option>
+                            {{#each categorias}}
+                                <option value="{{this.id}}" {{#if (eq this.id ../categoriaSelecionada)}}selected{{/if}}>{{this.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-warning">Salvar Alterações</button>
@@ -169,12 +260,25 @@
 </div>
 
 <script>
-    const editTaskModal = document.getElementById('editTaskModal');
-    editTaskModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        document.getElementById('taskId').value = button.getAttribute('data-id');
-        document.getElementById('taskTitle').value = button.getAttribute('data-title');
-        document.getElementById('taskValue').value = button.getAttribute('data-value');
-        document.getElementById('taskDate').value = button.getAttribute('data-date');
+    document.addEventListener("DOMContentLoaded", function () {
+        const editTaskModal = document.getElementById("editTaskModal");
+
+        editTaskModal.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget;
+            document.getElementById("taskId").value = button.getAttribute("data-id");
+            document.getElementById("taskTitle").value = button.getAttribute("data-title");
+            document.getElementById("taskValue").value = button.getAttribute("data-value");
+            document.getElementById("taskDate").value = button.getAttribute("data-date");
+
+            // Obtém a categoria da despesa e define a opção correta no select
+            const categoriaId = button.getAttribute("data-categoria"); 
+            const categoriaSelect = document.getElementById("taskCategory");
+            
+            if (categoriaSelect) {
+                Array.from(categoriaSelect.options).forEach(option => {
+                    option.selected = option.value === categoriaId;
+                });
+            }
+        });
     });
 </script>

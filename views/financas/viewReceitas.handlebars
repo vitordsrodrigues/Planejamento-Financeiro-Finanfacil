@@ -13,31 +13,31 @@
     </button>
 
    <div class="d-flex justify-content-center mb-3">
-    <!-- Navegação de Mês -->
-    <div class="d-flex align-items-center justify-content-center" style="margin-left: -332px;">
-        <!-- Setas para navegar -->
-        <a href="/financas/viewReceitas?ano={{anoAtual}}&mes={{mesAtual}}&retroceder=true" class="btn btn-link text-success p-2" style="font-size: 24px; text-decoration: none;">
-            <i class="bi bi-chevron-left"></i> <!-- Setinha para voltar -->
-        </a>
+        <!-- Navegação de Mês -->
+        <div class="d-flex align-items-center justify-content-center" style="margin-left: -332px;">
+            <!-- Setas para navegar -->
+            <a href="/financas/viewReceitas?ano={{anoAtual}}&mes={{mesAtual}}&retroceder=true" class="btn btn-link text-success p-2" style="font-size: 24px; text-decoration: none;">
+                <i class="bi bi-chevron-left"></i> <!-- Setinha para voltar -->
+            </a>
 
-        <!-- Mês e Ano com Dropdown -->
-        <div class="dropdown ms-2">
-            <button class="btn btn-link text-success p-2" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 24px; text-decoration: none;">
-                <span class="fw-bold">{{nomeMesAtual}} {{anoAtual}}</span> <!-- Utiliza a variável 'nomeMesAtual' -->
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="monthDropdown">
-                {{#each meses}}
-                    <li><a class="dropdown-item" href="/financas/viewReceitas?ano={{anoAtual}}&mes={{this.index}}">{{this.nome}} {{anoAtual}}</a></li>
-                {{/each}}
-            </ul>
+            <!-- Mês e Ano com Dropdown -->
+            <div class="dropdown ms-2">
+                <button class="btn btn-link text-success p-2" type="button" id="monthDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 24px; text-decoration: none;">
+                    <span class="fw-bold">{{nomeMesAtual}} {{anoAtual}}</span> <!-- Utiliza a variável 'nomeMesAtual' -->
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="monthDropdown">
+                    {{#each meses}}
+                        <li><a class="dropdown-item" href="/financas/viewReceitas?ano={{anoAtual}}&mes={{this.index}}">{{this.nome}} {{anoAtual}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+
+            <!-- Setas para avançar -->
+            <a href="/financas/viewReceitas?ano={{anoAtual}}&mes={{mesAtual}}&avancar=true" class="btn btn-link text-success p-2 ms-2" style="font-size: 24px; text-decoration: none;">
+                <i class="bi bi-chevron-right"></i> <!-- Setinha para avançar -->
+            </a>
         </div>
-
-        <!-- Setas para avançar -->
-        <a href="/financas/viewReceitas?ano={{anoAtual}}&mes={{mesAtual}}&avancar=true" class="btn btn-link text-success p-2 ms-2" style="font-size: 24px; text-decoration: none;">
-            <i class="bi bi-chevron-right"></i> <!-- Setinha para avançar -->
-        </a>
     </div>
-</div>
 
     <div class="d-flex justify-content-between">
         <!-- Card Principal -->
@@ -46,35 +46,88 @@
                 <h3 class="fw-bold m-0">Suas Receitas</h3>
             </div>
             <div class="card-body p-3">
-                <!-- Cabeçalho da lista -->
-                <div class="d-flex justify-content-between fw-bold text-dark pb-2 border-bottom">
-                    <span class="w-50">Descrição</span>
-                    <span class="w-25">Data</span>
-                    <span class="w-25">Valor</span>
-                    <span class="text-center">Ações</span>
+                <!-- Cabeçalho da Tabela -->
+                <div class="row fw-bold text-dark pb-3 border-bottom">
+                    <div class="col-2 text-start">Descrição</div>
+                    <div class="col-3 text-center">Categoria</div>
+                    <div class="col-3 text-center">Data</div>
+                    <div class="col-3 text-center">Valor</div>
+                    <div class="col-1 text-center">Ações</div>
                 </div>
+
+                <!-- Corpo da Tabela -->
                 <div class="list-group">
                     {{#each receitas}}
-                    <div class="list-group-item d-flex justify-content-between align-items-center border rounded-3 mb-2 p-2">
-                        <span class="w-50">{{this.title}}</span>
-                        <span class="w-25">{{formatDate this.date}}</span>
-                        <span class="w-25 fw-bold text-success">R$ {{this.value}}</span>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTaskModal" data-id="{{this.id}}" data-title="{{this.title}}" data-value="{{this.value}}" data-date="{{this.date}}">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <form action="/financas/remove" method="POST">
-                                <input type="hidden" name="id" value="{{this.id}}">
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i>
+                        <div class="row align-items-center border-bottom py-2">
+                            <div class="col-2 text-start">{{this.title}}</div>
+                            <div class="col-3 text-center d-flex align-items-center">
+                                <div class="d-flex flex-column">
+                                    {{#if (eq this.Categoria.name "Bonificação")}}
+                                        <span class="bg-warning text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                            style="width: 35px; height: 35px;">
+                                            <i class="bi bi-star-fill"></i>
+                                        </span>
+                                    {{else if (eq this.Categoria.name "Empréstimo")}}
+                                        <span class="bg-secondary text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                            style="width: 35px; height: 35px;">
+                                            <i class="bi bi-cash-coin"></i>
+                                        </span>
+                                    {{else if (eq this.Categoria.name "Investimento")}}
+                                        <span class="bg-primary text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                            style="width: 35px; height: 35px;">
+                                            <i class="bi bi-piggy-bank-fill"></i>
+                                        </span>
+                                    {{else if (eq this.Categoria.name "Presente")}}
+                                        <span class="bg-info text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                            style="width: 35px; height: 35px;">
+                                            <i class="bi bi-gift-fill"></i>
+                                        </span>
+                                    {{else if (eq this.Categoria.name "Salário")}}
+                                        <span class="bg-success text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                            style="width: 35px; height: 35px;">
+                                            <i class="bi bi-wallet2"></i>
+                                        </span>
+                                    {{else if (eq this.Categoria.name "Vendas")}}
+                                        <span class="bg-danger text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                            style="width: 35px; height: 35px;">
+                                            <i class="bi bi-cart-fill"></i>
+                                        </span>
+                                    {{else if (eq this.Categoria.name "Renda Extra")}}
+                                        <span class="bg-success text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                            style="width: 35px; height: 35px;">
+                                            <i class="bi bi-currency-dollar"></i>
+                                        </span>
+                                    {{else}}
+                                        <span class="bg-dark text-white p-2 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                            style="width: 35px; height: 35px;">
+                                            <i class="bi bi-three-dots"></i>
+                                        </span>
+                                    {{/if}}
+                                </div>
+                                <span class="ms-2">{{this.Categoria.name}}</span> <!-- Nome da categoria continua ao lado -->
+                            </div>
+
+                            <div class="col-3 text-center">{{formatDate this.date}}</div>
+                            <div class="col-3 text-center fw-bold text-success">R$ {{this.value}}</div>
+                            <div class="col-1 d-flex flex-nowrap justify-content-center align-items-center gap-1">
+                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTaskModal"
+                                    data-id="{{this.id}}" data-title="{{this.title}}" data-value="{{this.value}}" data-date="{{this.date}}" data-categoria="{{this.CategoriaId}}">
+                                    <i class="bi bi-pencil"></i>
                                 </button>
-                            </form>
+                                <form action="/financas/remove" method="POST">
+                                    <input type="hidden" name="id" value="{{this.id}}">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
                     {{/each}}
                 </div>
             </div>
         </div>
+
+
         
         <!-- Totais em Balões -->
         <div class="d-flex flex-column gap-3 ms-3 w-25">
@@ -129,14 +182,27 @@
                         <label for="title" class="form-label">Título</label>
                         <input type="text" class="form-control" name="title" placeholder="Descrição" required>
                     </div>
+                    
                     <div class="mb-3">
                         <label for="value" class="form-label">Valor</label>
                         <input type="number" class="form-control" name="value" step="0.01" min="0" placeholder="Valor" required>
                     </div>
+                    
                     <div class="mb-3">
                         <label for="date" class="form-label">Data</label>
                         <input type="date" class="form-control" name="date" required>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="CategoriaId" class="form-label">Categoria</label>
+                        <select class="form-select" name="CategoriaId" id="CategoriaId" required aria-label="Selecione uma categoria">
+                            <option value="" disabled selected>Selecione uma categoria</option>
+                            {{#each categorias}}
+                                <option value="{{this.id}}">{{this.name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success">Criar Receita</button>
@@ -146,6 +212,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Modal Editar Receita -->
 <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
@@ -170,6 +237,16 @@
                         <label for="date" class="form-label">Data</label>
                         <input type="date" class="form-control" name="date" id="taskDate" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="CategoriaId" class="form-label">Categoria</label>
+                        <select class="form-select" name="CategoriaId" id="taskCategory" required>
+                            <option value="" disabled>Selecione uma categoria</option>
+                            {{#each categorias}}
+                                <option value="{{this.id}}" {{#if (eq this.id ../categoriaSelecionada)}}selected{{/if}}>{{this.name}}</option>
+                            {{/each}}
+                        </select>
+
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-warning">Salvar Alterações</button>
@@ -180,13 +257,31 @@
     </div>
 </div>
 
+
+
+
 <script>
-    const editTaskModal = document.getElementById('editTaskModal');
-    editTaskModal.addEventListener('show.bs.modal', function (event) {
+    document.addEventListener("DOMContentLoaded", function () {
+    const editTaskModal = document.getElementById("editTaskModal");
+
+    editTaskModal.addEventListener("show.bs.modal", function (event) {
         const button = event.relatedTarget;
-        document.getElementById('taskId').value = button.getAttribute('data-id');
-        document.getElementById('taskTitle').value = button.getAttribute('data-title');
-        document.getElementById('taskValue').value = button.getAttribute('data-value');
-        document.getElementById('taskDate').value = button.getAttribute('data-date');
+
+        document.getElementById("taskId").value = button.getAttribute("data-id");
+        document.getElementById("taskTitle").value = button.getAttribute("data-title");
+        document.getElementById("taskValue").value = button.getAttribute("data-value");
+        document.getElementById("taskDate").value = button.getAttribute("data-date");
+
+        // Obtém a categoria da receita e define a opção correta no select
+        const categoriaId = button.getAttribute("data-categoria"); 
+        const categoriaSelect = document.getElementById("taskCategory");
+        
+        if (categoriaSelect) {
+            Array.from(categoriaSelect.options).forEach(option => {
+                option.selected = option.value === categoriaId;
+            });
+        }
     });
+});
+
 </script>

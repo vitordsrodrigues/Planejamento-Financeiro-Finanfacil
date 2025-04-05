@@ -15,6 +15,7 @@ router.post('/despesa',checkAuth,FinancasControllers.createDespesaSave)
 router.post('/receita',checkAuth,FinancasControllers.createReceitaSave)
 router.post('/cartao',checkAuth,FinancasControllers.createCartaoSave)
 
+
 //renderizar home e dashboard
 router.get('/dashboard',checkAuth,FinancasControllers.dashboard)
 router.get('/',FinancasControllers.showMain)

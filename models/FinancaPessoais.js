@@ -34,4 +34,5 @@ const FinancaPessoais = db.define('FinancaPessoais',{
 
 FinancaPessoais.belongsTo(User)
 User.hasMany(FinancaPessoais)
+
 module.exports = FinancaPessoais
