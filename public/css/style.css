@@ -1,8 +1,14 @@
 
+body{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
 /* Fundo azul escuro na navbar */
 #navbar {
     background-color: #004085; /* Azul escuro principal */
     border-bottom: 2px solid #003366; /* Tom mais escuro para separar */
+    
 }
 
 /* Ajuste do logo */
@@ -31,25 +37,212 @@
     gap: 15px; /* Espaçamento horizontal entre os itens */
 }
 
-/* Estilizando o botão "Comece agora" */
+
+
+/* Estilo para navbar branca (quando logado) */
+.navbar-light.bg-white {
+    background-color: #ffffff !important;
+    border-bottom: 2px solid #cccccc; /* Borda mais visível */
+    
+}
+
+/* Links dentro da navbar branca */
+.navbar-light .navbar-nav .nav-link {
+    color: #004085 !important; /* azul escuro elegante */
+    font-weight: bold;
+    transition: 0.3s;
+    padding: 10px 20px;
+    margin: 0 10px;
+}
+
+/* Hover na navbar branca (para links normais) */
+.navbar-light .navbar-nav .nav-link:hover {
+    background-color: blue; /* igual ao hover da versão escura */
+    color: #fff !important;
+    border-radius: 5px;
+}
+
+/* Hover nos itens do dropdown (versão branca) */
+.navbar-light .dropdown-item:hover {
+    background-color: blue;
+    color: #fff !important;
+}
+
+/* Estilo do dropdown (versão branca) */
+
+.navbar-light .dropdown-item {
+    color: #004085;
+    transition: 0.3s;
+}
+
+.navbar-light .dropdown-item:hover {
+    background-color: #e9f2ff;
+    color: #002752;
+}
+
+/* Botão "Comece agora" (já estilizado) */
 .navbar-nav .btn {
-    background-color: #ffffff; /* Branco */
-    color: #004085 !important; /* Azul escuro para contraste */
+    background-color: #ffffff;
+    color: #004085 !important;
     border-radius: 5px;
     transition: 0.3s;
-    padding: 10px 20px; /* Aumenta o botão */
-    margin-left: 15px; /* Dá mais espaço antes do botão */
+    padding: 10px 20px;
+    margin-left: 15px;
 }
 
 .navbar-nav .btn:hover {
-    background-color: #003366; /* Azul mais escuro */
+    background-color: #003366;
     color: #ffffff !important;
 }
 
 
+/* Estilizando o dropdown para combinar com o tema */
+.dropdown-menu {
+    background-color: #004085; /* Mesmo azul da navbar */
+    border: none;
+    border-radius: 8px;
+    padding: 10px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilo dos itens do dropdown */
+.dropdown-menu .dropdown-item {
+    color: #ffffff; /* Texto branco */
+    padding: 10px 20px;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Hover dos itens */
+.dropdown-menu .dropdown-item:hover {
+    background-color: #003366; /* Azul mais escuro */
+    color: #ffc107  !important; /* Destaque em amarelo (opcional) */
+    border-radius: 5px;
+}
 
 
+.body-logado {
+    background-color: #f8f9fa; /* Cinza claro elegante */
+    color: #212529; /* Texto padrão */
+}
 
+.body-deslogado {
+    background-color: #ffffff;
+}
+
+
+/* Estilo da home */
+.hero-section {
+    background-color: #f8f9fa;
+     /* sobe o fundo pra cobrir atrás da navbar */
+    padding-top: 60px; /* espaço suficiente para não esconder o conteúdo */
+    padding-bottom: 60px;
+    position: relative;
+    z-index: 0;
+  }
+  
+  .section-destaque {
+    padding-top: 60px;
+    padding-bottom: 80px;
+  }
+  
+  .section-destaque h2 {
+    font-size: 2.5rem; /* Aumenta o tamanho do título */
+    line-height: 1.2;
+  }
+  
+  .section-com-padding {
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+    background-color: #f8f9fa;
+  }
+
+  .section-fullscreen {
+    min-height: 100vh;
+    display: flex; /* Usa flexbox para garantir o layout correto */
+    flex-direction: column; /* Organiza os elementos de cima para baixo */
+    justify-content: flex-start; /* Faz o conteúdo começar do topo */
+    overflow: hidden; /* Impede o conteúdo de escapar da seção */
+    padding-top: 60px; /* Ajuste se tiver um header fixo */
+    padding-bottom: 60px; /* Ajuste se tiver um footer fixo */
+   
+    
+  }
+  .carousel-wrapper {
+    height: auto;
+  }
+
+  .carousel-track {
+    display: flex;
+    animation: scroll 30s linear infinite;
+  }
+
+  .carousel-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  #faq {
+    background-color: #ffffff;
+    padding: 2rem 0;
+  }
+  
+  #faq h2 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 2rem;
+  }
+  
+  .accordion-item {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    background-color: #ffffff;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .accordion-item:hover {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  }
+  
+  .accordion-button {
+    font-weight: 600;
+    background-color: #ffffff;
+    color: #0f172a;
+    transition: background-color 0.3s ease;
+  }
+  
+  .accordion-button:not(.collapsed) {
+    background-color: #f0f9ff;
+    color: #0284c7;
+  }
+  
+  .accordion-body {
+    background-color: #ffffff;
+    color: #334155;
+    padding: 1rem 1.25rem;
+    line-height: 1.6;
+    font-size: 1rem;
+  }
+  
+
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .carousel-card {
+      width: 250px;
+    }
+  }
 .container-main{
     min-height: 70vh;
     padding: 2em;
@@ -67,6 +260,9 @@
     margin: 0 auto 2em;
     max-width: 60%;
 }
+
+/* Estilo dos graficos */
+
 .grafico-total {
     position: absolute;
     top: 50%;
@@ -81,19 +277,11 @@
 }
 
 /* Ajustes individuais para manter os valores diferentes de left */
-#despesasTotal {
-    left: 44%;
+#despesasTotal, #receitasTotal, #cartoesTotal, #geralTotal {
+    left: 50%;
 }
 
-#receitasTotal {
-    left: 44%;
-}
-#cartoesTotal{
-    left: 44%;
-}
-#geralTotal{
-    left: 48%;
-}
+
 .grafico-label {
     font-size: 15px;
     color: #666;
@@ -106,6 +294,90 @@
     white-space: nowrap; /* Impede que o texto quebre a linha */
 }
 
+
+.date-pill {
+    background-color: white;
+    color: #333;
+    border: 1px solid #e0e0e0;
+    border-radius: 25px;  /* Aumentado */
+    padding: 10px 20px;   /* Aumentado */
+    font-size: 1.1rem;    /* Aumentado */
+    font-weight: 500;     /* Adicionado para destaque */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    min-width: 180px;     /* Garantir tamanho mínimo */
+    text-align: center;   /* Centralizar texto */
+}
+
+.date-pill:hover, .date-pill:focus {
+    background-color: #f9f9f9;
+    border-color: #d0d0d0;
+    color: #333;
+}
+
+/* Estilo para o popup do calendário */
+.date-picker-popup {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    border: none;
+    width: 280px;
+}
+
+.date-picker-header {
+    background-color: #f0f8ff;
+    color: #4285f4;
+}
+
+/* Grid de meses compacto */
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+.month-item {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.month-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 8px 0;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    background-color: #f0f0f0;  /* Cor única para todos os meses */
+    color: #333;                /* Cor única para todos os meses */
+    transition: all 0.2s ease;
+}
+
+.month-item:hover .month-label {
+    background-color: #e0e0e0;  /* Cor de hover unificada */
+    transform: scale(1.05);
+}
+
+.month-item.selected .month-label {
+    background-color: #4285f4;  /* Cor de seleção (azul) */
+    color: white;
+    font-weight: bold;
+}
+
+/* Botões para ano */
+.year-btn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+ 
 /* Estilizando o Footer */
 footer {
     width: 100%;
@@ -358,5 +630,12 @@ a:hover i {
         font-size: 14px; /* Mantém os ícones proporcionais */
     }
 }
+
+@media (min-width: 768px) {
+    .hero-section {
+      padding-top: 100px;
+      padding-bottom: 149px;
+    }
+  }
 
 

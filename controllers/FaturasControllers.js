@@ -9,6 +9,16 @@ const FinancaPessoais = require('../models/FinancaPessoais')
 class FaturaController {
   
     static async pagarFatura(req, res) {
+        const sequelize = require('../config/sequelize'); // ajuste o path se necessário
+        const userId = req.session.userid;
+    
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Sessão expirada ou usuário não autenticado."
+            });
+        }
+    
         try {
             const faturaId = req.params.id;
     
@@ -16,40 +26,39 @@ class FaturaController {
             const fatura = await Fatura.findByPk(faturaId);
     
             if (!fatura) {
-                return res.json({ 
-                    success: false, 
-                    message: "Fatura não encontrada!" 
-                });
+                return res.json({ success: false, message: "Fatura não encontrada!" });
+            }
+    
+            // Buscar o cartão e validar dono
+            const cartao = await Cartao.findByPk(fatura.CartaoId);
+            if (!cartao || cartao.UserId !== userId) {
+                return res.status(403).json({ success: false, message: "Acesso negado à fatura." });
+            }
+    
+            if (fatura.status === "Paga") {
+                return res.json({ success: false, message: "Esta fatura já foi paga." });
             }
     
             if (fatura.status !== "Fechada") {
-                return res.json({ 
-                    success: false, 
-                    message: "Esta fatura não pode ser paga pois não está fechada." 
+                return res.json({
+                    success: false,
+                    message: "Esta fatura não pode ser paga pois não está fechada."
                 });
             }
     
-            // Atualizar o status para "Paga"
-            fatura.status = "Paga";
-            await fatura.save();
+            const valorFatura = parseFloat(fatura.valor_total);
     
-            // Atualizar o limite do cartão
-            const cartao = await Cartao.findByPk(fatura.CartaoId);
-    
-            if (cartao) {
-                cartao.limite_disponivel = parseFloat(cartao.limite_disponivel) + parseFloat(fatura.valor_total);
-                // Garantir que não ultrapasse o limite total
-                if (cartao.limite_disponivel > cartao.limite_total) {
-                    cartao.limite_disponivel = cartao.limite_total;
-                }
-                await cartao.save();
+            if (isNaN(valorFatura) || valorFatura < 0) {
+                console.error(`Valor inválido da fatura: ${valorFatura}`);
+                return res.json({
+                    success: false,
+                    message: "Erro ao processar o valor da fatura."
+                });
             }
     
-            // Descontar o valor da fatura do saldo do usuário
-            const userId = req.session.userid;
+            // Buscar ou criar o registro de Finanças Pessoais
             let financaPessoal = await FinancaPessoais.findOne({ where: { UserId: userId } });
     
-            // Criar o registro na tabela FinancaPessoais, se não existir
             if (!financaPessoal) {
                 console.log(`Criando registro de Finanças Pessoais para o usuário ID ${userId}`);
                 financaPessoal = await FinancaPessoais.create({
@@ -61,33 +70,41 @@ class FaturaController {
                 });
             }
     
-            const valorFatura = parseFloat(fatura.valor_total);
+            // Transação segura para atualizar tudo
+            await sequelize.transaction(async (t) => {
+                // Marcar fatura como paga
+                fatura.status = "Paga";
+                await fatura.save({ transaction: t });
     
-            // Verificar se o valor da fatura é válido
-            if (isNaN(valorFatura) || valorFatura <= 0) {
-                console.error(`Valor inválido da fatura: ${valorFatura}`);
-                return res.json({ 
-                    success: false, 
-                    message: "Erro ao processar o valor da fatura." 
-                });
-            }
+                // Atualizar limite do cartão
+                cartao.limite_disponivel = Math.min(
+                    parseFloat(cartao.limite_disponivel || 0) + valorFatura,
+                    parseFloat(cartao.limite_total)
+                );
+                await cartao.save({ transaction: t });
     
-            financaPessoal.saldo = parseFloat(financaPessoal.saldo || 0) - valorFatura;
+                // Atualizar saldo do usuário (apenas se valor > 0)
+                if (valorFatura > 0) {
+                    financaPessoal.saldo = parseFloat(financaPessoal.saldo || 0) - valorFatura;
+                    await financaPessoal.save({ transaction: t });
+                }
+            });
     
-            await financaPessoal.save();
-    
-            return res.json({ 
-                success: true, 
+            return res.json({
+                success: true,
                 message: "Fatura paga com sucesso!"
             });
+    
         } catch (error) {
             console.error("Erro ao pagar fatura:", error);
-            return res.json({ 
-                success: false, 
-                message: "Erro ao processar pagamento." 
+            return res.json({
+                success: false,
+                message: "Erro ao processar pagamento."
             });
         }
     }
+    
+
     static async addDespesaCartao(req, res) {
         const userId = req.session.userid;
     

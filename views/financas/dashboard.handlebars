@@ -74,22 +74,8 @@
                 <h4 class="text-primary fw-bold">Suas Finanças</h4>
             </div>
             <div class="row">
-                <!-- Gráfico de Despesas -->
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow rounded-4 overflow-hidden">
-                        <div class="card-header bg-danger text-white py-3">
-                            <h5 class="card-title mb-0 text-center">Despesas</h5>
-                        </div>
-                        <div class="card-body p-4 position-relative">
-                            <canvas id="graficoDespesas"></canvas>
-                            <div id="despesasTotal" class="grafico-total">
-                                <span class="grafico-label">Total</span>
-                                <span class="grafico-valor">R$ 0,00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
+                
                 <!-- Gráfico de Receitas -->
                 <div class="col-md-4 mb-4">
                     <div class="card shadow rounded-4 overflow-hidden">
@@ -99,6 +85,22 @@
                         <div class="card-body p-4 position-relative">
                             <canvas id="graficoReceitas"></canvas>
                             <div id="receitasTotal" class="grafico-total">
+                                <span class="grafico-label">Total</span>
+                                <span class="grafico-valor">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gráfico de Despesas -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow rounded-4 overflow-hidden">
+                        <div class="card-header bg-danger text-white py-3">
+                            <h5 class="card-title mb-0 text-center">Despesas</h5>
+                        </div>
+                        <div class="card-body p-4 position-relative">
+                            <canvas id="graficoDespesas"></canvas>
+                            <div id="despesasTotal" class="grafico-total">
                                 <span class="grafico-label">Total</span>
                                 <span class="grafico-valor">R$ 0,00</span>
                             </div>
@@ -121,19 +123,46 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Gráfico Geral -->
-        <div class="col-md-12 mb-4">
-            <div class="card shadow rounded-4 overflow-hidden">
-                <div class="card-header bg-info text-white py-3">
-                    <h5 class="card-title mb-0 text-center">Resumo Geral</h5>
+
+      
+                <!-- Gráfico Geral -->
+                <div class="col-md-8">
+                    <div class="card shadow rounded-4 overflow-hidden h-100">
+                        <div class="card-header bg-info text-white py-3">
+                            <h5 class="card-title mb-0 text-center">Resumo Geral</h5>
+                        </div>
+                        <div class="card-body p-4 position-relative">
+                            <canvas id="graficoGeral"></canvas>
+                            <div id="geralTotal" class="grafico-total">
+                                <span class="grafico-label">Total</span>
+                                <span class="grafico-valor">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body p-4 position-relative">
-                    <canvas id="graficoGeral"></canvas>
-                    <div id="geralTotal" class="grafico-total">
-                        <span class="grafico-label">Total</span>
-                        <span class="grafico-valor">R$ 0,00</span>
+
+                <!-- Informações Extras -->
+                <div class="col-md-4">
+                    <div class="card shadow rounded-4 p-4 text-dark bg-light h-100">
+                        <h5 class="card-title text-center mb-3">Informações do Mês</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Saldo Inicial:</span>
+                                <span class="fw-bold text-primary">R$ {{saldoInicial}}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Total de Receitas:</span>
+                                <span class="fw-bold text-success">R$ {{totalReceitas}}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Total de Despesas:</span>
+                                <span class="fw-bold text-danger">R$ {{totalDespesas}}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Balanço Final:</span>
+                                <span class="fw-bold text-info">R$ {{saldo}}</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -174,27 +203,32 @@
             legend: { display: false }, // Oculta a legenda
             tooltip: { enabled: false } // Desativa o tooltip padrão
         },
-        layout: { padding: { left: 0, right: 50, top: 20, bottom: 20 } }
+        layout: { padding: { left: 0, right: 0, top: 20, bottom: 20 } }
     };
-
-    const criarGrafico = (ctx, dados) => new Chart(ctx, {
+    const criarGrafico = (ctx, dados, cores) => new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: dados.map(d => d.nome),
             datasets: [{
                 data: dados.map(d => parseFloat(d.valor || 0)),
-                backgroundColor: ['#4CAF50', '#FF5733', '#FFC300'],
+                backgroundColor: cores, // Define as cores do gráfico
                 porcentagens: dados.map(d => parseFloat(d.porcentagem || 0))
             }]
         },
         options: opcoesPie
     });
 
-    const graficoDespesas = criarGrafico(document.getElementById('graficoDespesas').getContext('2d'), despesas);
-    const graficoReceitas = criarGrafico(document.getElementById('graficoReceitas').getContext('2d'), receitas);
-    const graficoCartoes = criarGrafico(document.getElementById('graficoCartoes').getContext('2d'), cartoes);
-    const graficoGeral = criarGrafico(document.getElementById('graficoGeral').getContext('2d'), graficoGeralData);
+    // Definir cores específicas para cada gráfico
+    const coresDespesas = ['#FF5733', '#C70039', '#900C3F', '#FFC300']; // Vermelhos e amarelos
+    const coresReceitas = ['#4CAF50', '#8BC34A', '#03A9F4', '#2196F3']; // Verdes e azuis
+    const coresCartoes = ['#FFC107', '#FFD54F', '#FFEB3B', '#FFF176']; // Tons de amarelo
+    const coresGeral = ['#4CAF50', '#FF5733', '#FFC300']; // Já está definido
 
+    // Criar os gráficos com as cores específicas
+    const graficoDespesas = criarGrafico(document.getElementById('graficoDespesas').getContext('2d'), despesas, coresDespesas);
+    const graficoReceitas = criarGrafico(document.getElementById('graficoReceitas').getContext('2d'), receitas, coresReceitas);
+    const graficoCartoes = criarGrafico(document.getElementById('graficoCartoes').getContext('2d'), cartoes, coresCartoes);
+    const graficoGeral = criarGrafico(document.getElementById('graficoGeral').getContext('2d'), graficoGeralData, coresGeral);
     const configurarEventosHover = (canvasId, chart, totalEl, totalValor) => {
         document.getElementById(canvasId).addEventListener('mousemove', function(e) {
             const elements = chart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, false);
@@ -226,7 +260,7 @@
                 // Restaura o texto "Total" e o valor total
                 totalEl[0].textContent = 'Total';
                 totalEl[1].textContent = formatarReais(totalValor);
-
+                
                 // Remove a porcentagem, se existir
                 const porcentagemEl = totalEl[1].parentNode.querySelector('.grafico-porcentagem');
                 if (porcentagemEl) {

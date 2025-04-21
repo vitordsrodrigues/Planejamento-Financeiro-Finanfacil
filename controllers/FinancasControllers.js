@@ -17,7 +17,8 @@ module.exports = class FinancasControllers{
         if (req.session.userid) {
             return res.redirect('/financas/dashboard'); // Redireciona direto para o dashboard
         }
-         return res.render('financas/home');
+        res.render('financas/home', { isHome: true })
+
     }
  
     static async dashboard(req, res) {
@@ -188,18 +189,24 @@ module.exports = class FinancasControllers{
                     porcentagem: totalGeral > 0 ? ((totalCartao / totalGeral) * 100).toFixed(2) : 0
                 }
             ];
-    
+            
+            // Maior categoria de despesa
+
             // Buscar o saldo diretamente da tabela FinancaPessoais
             const financas = await FinancaPessoais.findOne({ where: { UserId: userId } });
     
             // Garantir que o saldo seja um número válido
             const saldo = financas ? parseFloat(financas.saldo) || 0 : 0;
     
+            // Calcular o saldo inicial
+            const saldoInicial = saldo - totalReceitas + totalDespesas;
+        
             // Renderizar a página com os dados para os gráficos
             return res.render('financas/dashboard', { 
                 totalReceitas, 
                 totalDespesas,
                 totalCartao,
+                saldoInicial,
                 saldo,
                 despesas: JSON.stringify(despesas),
                 receitas: JSON.stringify(receitas),
@@ -675,7 +682,8 @@ module.exports = class FinancasControllers{
             // Pega mês e ano da URL ou usa os atuais
             const mesSelecionado = parseInt(req.query.mes) || mesAtual;
             const anoSelecionado = parseInt(req.query.ano) || anoAtual;
-    
+            const filtroManual = req.query.mes && req.query.ano;
+
             const cartaosProcessados = [];
     
             for (const cartao of cartaos) {
@@ -688,25 +696,31 @@ module.exports = class FinancasControllers{
                 });
     
                 let tentativa = 0;
-                while (faturaAtual && faturaAtual.status === "Paga" && tentativa < 12) {
-                    if (mesFatura === 12) {
-                        mesFatura = 1;
-                        anoFatura++;
-                    } else {
-                        mesFatura++;
+                if (!filtroManual) {
+                    while (faturaAtual && faturaAtual.status === "Paga" && tentativa < 12) {
+                        if (mesFatura === 12) {
+                            mesFatura = 1;
+                            anoFatura++;
+                        } else {
+                            mesFatura++;
+                        }
+        
+                        faturaAtual = await Fatura.findOne({
+                            where: { CartaoId: cartao.id, mes: mesFatura, ano: anoFatura },
+                            raw: true
+                        });
+        
+                        tentativa++;
                     }
-    
-                    faturaAtual = await Fatura.findOne({
-                        where: { CartaoId: cartao.id, mes: mesFatura, ano: anoFatura },
-                        raw: true
-                    });
-    
-                    tentativa++;
+        
                 }
-    
+              
                 let statusFatura = faturaAtual ? faturaAtual.status : "Sem Fatura";
-                if (statusFatura === "Paga") statusFatura = "Sem Fatura";
-    
+                
+                if (!filtroManual && statusFatura === "Paga") {
+                    statusFatura = "Sem Fatura";
+                }
+                
                 let percentUso = cartao.limite_total > 0
                     ? Math.round((1 - (cartao.limite_disponivel || cartao.limite_total) / cartao.limite_total) * 100)
                     : 0;
@@ -773,7 +787,6 @@ module.exports = class FinancasControllers{
             return res.redirect('/financas/dashboard');
         }
     }
-    
     
 
    static async createCartaoSave(req, res) {

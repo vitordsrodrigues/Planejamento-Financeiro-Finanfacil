@@ -27,10 +27,12 @@ const DespesaCartao = require('./models/DespesaCartao')
 const financasRoutes = require('./routes/financasRoutes')
 const authRoutes = require('./routes/authRoutes')
 const faturasRoutes = require('./routes/faturasRoutes')
+const objetivosRoutes = require('./routes/objetivosRoutes')
 
 // Import controllers
 const FinancasControllers = require('./controllers/FinancasControllers')
 const FaturaController = require('./controllers/FaturasControllers')
+const ObjetivosController = require('./controllers/ObjetivosController')
 
 const hbs = exphbs.create({
     helpers: {
@@ -181,7 +183,11 @@ const hbs = exphbs.create({
         // Helper para multiplicação (corrigido - agora dentro do objeto helpers)
         multiply: function(a, b) {
             return parseFloat(a) * parseFloat(b);
-        }
+        },
+        substring: function(texto, inicio, fim) {
+            if (!texto) return '';
+            return texto.substring(inicio, fim);
+        },
     }
 });
 
@@ -205,7 +211,6 @@ app.use(
     })
 )
 app.use(express.json())
-
 app.use(
     session({
         name: 'session',
@@ -240,6 +245,7 @@ app.use((req, res, next) => {
 app.use('/financas', financasRoutes)
 app.use('/', authRoutes)
 app.use('/faturas', faturasRoutes); // Adicione esta linha para registrar as rotas de faturas
+app.use('/objetivos', objetivosRoutes)
 app.get('/', FinancasControllers.showMain)
 
 conn

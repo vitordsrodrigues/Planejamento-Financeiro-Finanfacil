@@ -1,40 +1,75 @@
 <div class="container mt-4">
-    <!-- Botão Voltar -->
-    <a href="/financas/dashboard" class="btn btn-outline-primary mb-3">
-        <i class="bi bi-arrow-left"></i> Voltar
-    </a>
+    <!-- Área superior com botão Voltar e seletor de data -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Botão Voltar à esquerda -->
+        <a href="/financas/dashboard" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+        
+        <!-- Seletor de data à direita com aparência de balão branco -->
+        <div class="dropdown">
+            <button class="btn date-pill shadow-sm dropdown-toggle" type="button" id="periodDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <!-- Exibe o mês/ano selecionado -->
+                {{#each meses}}
+                    {{#if (eq ../mesSelecionado this.valor)}}
+                        {{this.nome}}
+                    {{/if}}
+                {{/each}}
+                {{anoSelecionado}}
+            </button>
+            
+            <div class="dropdown-menu dropdown-menu-end date-picker-popup p-0" aria-labelledby="periodDropdown">
+                <div class="date-picker-header text-center py-2">
+                    <h6 class="mb-0">Selecione o Período</h6>
+                </div>
+                
+                <form method="GET" action="/financas/viewCartaos" class="p-3">
+                    <!-- Grid de meses compacto com abreviações -->
+                    <div class="month-grid mb-3">
+                        {{#each meses}}
+                            <label class="month-item {{#if (eq ../mesSelecionado this.valor)}}selected{{/if}}">
+                                <input type="radio" name="mes" value="{{this.valor}}" {{#if (eq ../mesSelecionado this.valor)}}checked{{/if}} class="visually-hidden">
+                                <span class="month-label">
+                                    {{substring this.nome 0 3}}
+                                </span>
+                            </label>
+                        {{/each}}
+                    </div>
+                    
+                    <!-- Seletor de ano compacto -->
+                    <div class="year-selector d-flex align-items-center justify-content-center mb-3">
+                        <button type="button" class="btn btn-sm btn-light year-btn" onclick="decrementYear()">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <input type="number" name="ano" id="ano" value="{{anoSelecionado}}" 
+                               class="form-control form-control-sm text-center mx-2" 
+                               min="2000" max="2100" style="width: 80px;" />
+                        <button type="button" class="btn btn-sm btn-light year-btn" onclick="incrementYear()">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Botões de ação -->
+                    <div class="d-flex justify-content-between mt-3 pt-2 border-top">
+                        <a href="/financas/viewCartaos" class="btn btn-sm btn-light">
+                            Resetar
+                        </a>
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            Aplicar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Título Principal -->
     <h1 class="text-dark fw-bold mb-4">Cartões de Crédito</h1>
-    <form method="GET" action="/financas/viewCartaos" class="d-flex flex-wrap gap-2 align-items-end mb-4">
-
-  <div>
-    <label for="mes" class="form-label">Mês</label>
-    <select name="mes" id="mes" class="form-select">
-      {{#each meses}}
-        <option value="{{this.valor}}" {{#if (eq ../mesSelecionado this.valor)}}selected{{/if}}>
-          {{this.nome}}
-        </option>
-      {{/each}}
-    </select>
-  </div>
-
-  <div>
-    <label for="ano" class="form-label">Ano</label>
-    <input type="number" name="ano" id="ano" value="{{anoSelecionado}}" class="form-control" min="2000" max="2100" />
-  </div>
-
-  <div>
-    <button type="submit" class="btn btn-primary">Filtrar</button>
-  </div>
-
-</form>
 
     <!-- Título Lista de Cartões -->
     <h2 class="fw-bold text-dark mb-4">Seus Cartões</h2>
-
-    <!-- Lista de Cartões -->
-    <div class="row">
+    <!-- Lista de Cartões (mantida igual ao seu código original) -->
+      <div class="row">
         <!-- Card para Adicionar Novo Cartão -->
         <div class="col-md-4 mb-4 d-flex">
             <div class="card shadow-lg rounded-4 text-decoration-none w-100 d-flex align-items-center justify-content-center"
@@ -46,157 +81,158 @@
                 </div>
             </div>
         </div>
- {{#each cartaos}}
-    <div class="col-md-4 mb-4 d-flex">
-        <div class="card shadow-lg rounded-4 d-flex flex-column w-100"
-            style="border: none; border-radius: 15px; background-color: #f8f9fa; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); transition: transform 0.3s;">
-            <!-- Cabeçalho do cartão com cor personalizada baseado no nome do banco -->
-            <div class="card-header text-dark p-2"
-                style="border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom: none; 
-                    {{#if (eq this.name 'Nubank')}}
-                        background-color: #8a05be; color: white !important;
-                    {{else if (eq this.name 'Itaú')}}
-                        background-color: #ec7000; color: white !important;
-                    {{else if (eq this.name 'Bradesco')}}
-                        background-color: #cc092f; color: white !important;
-                    {{else if (eq this.name 'Santander')}}
-                        background-color: #ec0000; color: white !important;
-                    {{else}}
-                        background-color: #e9ecef;
-                    {{/if}}">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="card-title m-0 fw-bold">{{this.name}}</h5>
-                    <span class="badge bg-light text-dark" style="font-size: 0.85rem; padding: 3px 8px; border-radius: 20px;">
-                        <i class="bi bi-credit-card me-1"></i> Crédito
-                    </span>
-                </div>
-            </div>
-            <div class="card-body p-3 d-flex flex-column justify-content-between">
-                <ul class="list-unstyled flex-grow-1 mb-2">
-                    <!-- Limite, Disponível e Uso em layout compacto -->
-                    <li class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <div style="min-width: 48%;">
-                                <span class="text-muted" style="font-size: 0.9rem;">Limite Total</span>
-                                <div class="fw-bold" style="font-size: 1rem;">{{formatMoney this.limite_total}}</div>
-                            </div>
-                            <div class="text-end" style="min-width: 48%;">
-                                <span class="text-muted" style="font-size: 0.9rem;">Disponível</span>
-                                <div class="fw-bold {{#if (lt this.limite_disponivel (multiply this.limite_total 0.2))}}text-danger{{else}}text-success{{/if}}" style="font-size: 1rem;">
-                                    {{formatMoney this.limite_disponivel}}
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    
-                    <!-- Barra de Progresso com Porcentagem em layout compacto -->
-                    <li class="mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-muted" style="font-size: 0.9rem;">Uso do Limite: </span>
-                            <span class="badge {{#if (gt this.percentUso 80)}}bg-danger{{else if (gt this.percentUso 60)}}bg-warning{{else}}bg-success{{/if}} text-white" style="font-size: 0.8rem;">
-                                {{this.percentUsoFormatado}}
+        {{#each cartaos}}
+            <div class="col-md-4 mb-4 d-flex">
+                <div class="card shadow-lg rounded-4 d-flex flex-column w-100"
+                    style="border: none; border-radius: 15px; background-color: #f8f9fa; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); transition: transform 0.3s;">
+                    <!-- Cabeçalho do cartão com cor personalizada baseado no nome do banco -->
+                    <div class="card-header text-dark p-2"
+                        style="border-top-left-radius: 15px; border-top-right-radius: 15px; border-bottom: none; 
+                            {{#if (eq this.name 'Nubank')}}
+                                background-color: #8a05be; color: white !important;
+                            {{else if (eq this.name 'Itaú')}}
+                                background-color: #ec7000; color: white !important;
+                            {{else if (eq this.name 'Bradesco')}}
+                                background-color: #cc092f; color: white !important;
+                            {{else if (eq this.name 'Santander')}}
+                                background-color: #ec0000; color: white !important;
+                            {{else}}
+                                background-color: #e9ecef;
+                            {{/if}}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title m-0 fw-bold">{{this.name}}</h5>
+                            <span class="badge bg-light text-dark" style="font-size: 0.85rem; padding: 3px 8px; border-radius: 20px;">
+                                <i class="bi bi-credit-card me-1"></i> Crédito
                             </span>
                         </div>
-                        
-                        <div class="progress" style="height: 7px; border-radius: 4px; background-color: #e9ecef;">
-                            <div class="progress-bar {{barraClass this.percentUso}}" 
-                                role="progressbar" 
-                                style="width: {{this.percentUso}}%; border-radius: 4px;" 
-                                aria-valuenow="{{this.percentUso}}" 
-                                aria-valuemin="0" 
-                                aria-valuemax="100">
-                            </div>
-                        </div>
-                    </li>
-                    <!-- Fatura atual em layout destacado -->
-
-                    <!-- Fatura atual em layout destacado -->
-                    <li class="mb-3">
-                        <div class="bg-info bg-opacity-10 p-2 rounded-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div style="width: 100%;">
-                                    <span class="text-muted" style="font-size: 0.9rem;">Fatura Atual</span>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div class="fw-bold" style="font-size: 1.05rem;">{{formatMoney this.faturaAtual.valor_total}}</div>
-                                        <!-- Status alinhado à direita na mesma linha, com ajuste mais sutil -->
-                                        <span class="badge {{#if (eq this.statusFatura 'Aberta')}}bg-primary{{else if (eq this.statusFatura 'Fechada')}}bg-warning{{else if (eq this.statusFatura 'Paga')}}bg-success{{else}}bg-secondary{{/if}}" style="font-size: 0.75rem; position: relative; top: -5px;">
-                                            {{this.statusFatura}}
-                                        </span>
+                    </div>
+                    <div class="card-body p-3 d-flex flex-column justify-content-between">
+                        <ul class="list-unstyled flex-grow-1 mb-2">
+                            <!-- Limite, Disponível e Uso em layout compacto -->
+                            <li class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <div style="min-width: 48%;">
+                                        <span class="text-muted" style="font-size: 0.9rem;">Limite Total</span>
+                                        <div class="fw-bold" style="font-size: 1rem;">{{formatMoney this.limite_total}}</div>
+                                    </div>
+                                    <div class="text-end" style="min-width: 48%;">
+                                        <span class="text-muted" style="font-size: 0.9rem;">Disponível</span>
+                                        <div class="fw-bold {{#if (lt this.limite_disponivel (multiply this.limite_total 0.2))}}text-danger{{else}}text-success{{/if}}" style="font-size: 1rem;">
+                                            {{formatMoney this.limite_disponivel}}
+                                        </div>
                                     </div>
                                 </div>
-                                {{#if (eq this.statusFatura 'Fechada')}}
-                                    <button id="pagar-btn-{{this.faturaAtual.id}}" 
-                                            class="btn btn-outline-success btn-sm mt-2 ms-2"
-                                            style="white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; padding: 0.25rem 0.5rem; width: auto; min-width: 80px;"
-                                            onclick="marcarComoPago('{{this.faturaAtual.id}}')">
-                                        <i class="bi bi-credit-card-fill me-1"></i><span>Pagar</span>
-                                    </button>
-                                {{else if (eq this.statusFatura 'Paga')}}
-                                    <button class="btn btn-success btn-sm mt-2 ms-2"
-                                            style="white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; padding: 0.25rem 0.5rem; width: auto; min-width: 80px;"
-                                            disabled>
-                                        <i class="bi bi-check-circle me-1"></i><span>Pago</span>
-                                    </button>
-                                {{/if}}
-                            </div>
-                        </div>
-                    </li>
-                    <!-- Datas importantes -->
-                    <li>
-                        <div class="row">
-                            <div class="col-6">
-                                <span class="text-muted d-block" style="font-size: 0.85rem;">Fechamento</span>
-                                <span class="fw-semibold" style="font-size: 0.9rem;">Dia {{this.dataFechamento}}</span>
-                            </div>
-                            <div class="col-6 text-end">
-                                <span class="text-muted d-block" style="font-size: 0.85rem;">Vencimento</span>
-                                <span class="fw-semibold" style="font-size: 0.9rem;">Dia {{this.datavence}}</span>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-                
-                <!-- Botões de ação -->
-                <div class="d-flex justify-content-between mt-3">
-                    <!-- Botão Nova Despesa com borda vermelha e hover vermelho -->
-                    <button class="btn btn-outline-danger btn-sm" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#addDespesaModal" 
-                            onclick="preencherDespesaModal('{{this.id}}')" 
-                            style="border-radius: 20px; padding: 4px 12px; font-size: 0.85rem; color: #dc3545; border-color: #dc3545;"
-                            onmouseover="this.style.backgroundColor='#dc3545'; this.style.color='white';" 
-                            onmouseout="this.style.backgroundColor=''; this.style.color='#dc3545';">
-                        <i class="bi bi-plus-circle me-1"></i> Nova Despesa
-                    </button>
-                    <!-- Grupo de botões editar e excluir (tamanho corrigido) -->
-                    <div class="d-flex gap-2">
-                        <!-- Botão de editar -->
-                        <button class="btn btn-outline-secondary btn-sm" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editCartaoModal" 
-                                onclick="preencherModal('{{this.id}}', '{{this.name}}', '{{this.limite_total}}', '{{this.dataFechamentoFormatada}}', '{{this.dataVencimentoFormatada}}')" 
-                                style="border-radius: 20px; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
-                        </button>
-                        <!-- Botão de excluir -->
-                        <form action="/financas/removec" method="POST">
-                            <input type="hidden" name="id" value="{{this.id}}">
-                            <button type="submit" 
-                                    class="btn btn-outline-danger btn-sm" 
-                                    style="border-radius: 20px; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" 
-                                    onclick="return confirm('Tem certeza que deseja excluir este cartão?')">
-                                <i class="bi bi-trash" style="font-size: 0.85rem;"></i>
+                            </li>
+                            
+                            <!-- Barra de Progresso com Porcentagem em layout compacto -->
+                            <li class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-muted" style="font-size: 0.9rem;">Uso do Limite: </span>
+                                    <span class="badge {{#if (gt this.percentUso 80)}}bg-danger{{else if (gt this.percentUso 60)}}bg-warning{{else}}bg-success{{/if}} text-white" style="font-size: 0.8rem;">
+                                        {{this.percentUsoFormatado}}
+                                    </span>
+                                </div>
+                                
+                                <div class="progress" style="height: 7px; border-radius: 4px; background-color: #e9ecef;">
+                                    <div class="progress-bar {{barraClass this.percentUso}}" 
+                                        role="progressbar" 
+                                        style="width: {{this.percentUso}}%; border-radius: 4px;" 
+                                        aria-valuenow="{{this.percentUso}}" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- Fatura atual em layout destacado -->
+
+                            <!-- Fatura atual em layout destacado -->
+                            <li class="mb-3">
+                                <div class="bg-info bg-opacity-10 p-2 rounded-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div style="width: 100%;">
+                                            <span class="text-muted" style="font-size: 0.9rem;">Fatura Atual</span>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="fw-bold" style="font-size: 1.05rem;">{{formatMoney this.faturaAtual.valor_total}}</div>
+                                                <!-- Status alinhado à direita na mesma linha, com ajuste mais sutil -->
+                                                <span class="badge {{#if (eq this.statusFatura 'Aberta')}}bg-primary{{else if (eq this.statusFatura 'Fechada')}}bg-warning{{else if (eq this.statusFatura 'Paga')}}bg-success{{else}}bg-secondary{{/if}}" style="font-size: 0.75rem; position: relative; top: -5px;">
+                                                    {{this.statusFatura}}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        {{#if (eq this.statusFatura 'Fechada')}}
+                                            <button id="pagar-btn-{{this.faturaAtual.id}}" 
+                                                    class="btn btn-outline-success btn-sm mt-2 ms-2"
+                                                    style="white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; padding: 0.25rem 0.5rem; width: auto; min-width: 80px;"
+                                                    onclick="marcarComoPago('{{this.faturaAtual.id}}')">
+                                                <i class="bi bi-credit-card-fill me-1"></i><span>Pagar</span>
+                                            </button>
+                                        {{else if (eq this.statusFatura 'Paga')}}
+                                            <button class="btn btn-success btn-sm mt-2 ms-2"
+                                                    style="white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; padding: 0.25rem 0.5rem; width: auto; min-width: 80px;"
+                                                    disabled>
+                                                <i class="bi bi-check-circle me-1"></i><span>Pago</span>
+                                            </button>
+                                        {{/if}}
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- Datas importantes -->
+                            <li>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <span class="text-muted d-block" style="font-size: 0.85rem;">Fechamento</span>
+                                        <span class="fw-semibold" style="font-size: 0.9rem;">Dia {{this.dataFechamento}}</span>
+                                    </div>
+                                    <div class="col-6 text-end">
+                                        <span class="text-muted d-block" style="font-size: 0.85rem;">Vencimento</span>
+                                        <span class="fw-semibold" style="font-size: 0.9rem;">Dia {{this.datavence}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        
+                        <!-- Botões de ação -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <!-- Botão Nova Despesa com borda vermelha e hover vermelho -->
+                            <button class="btn btn-outline-danger btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#addDespesaModal" 
+                                    onclick="preencherDespesaModal('{{this.id}}')" 
+                                    style="border-radius: 20px; padding: 4px 12px; font-size: 0.85rem; color: #dc3545; border-color: #dc3545;"
+                                    onmouseover="this.style.backgroundColor='#dc3545'; this.style.color='white';" 
+                                    onmouseout="this.style.backgroundColor=''; this.style.color='#dc3545';">
+                                <i class="bi bi-plus-circle me-1"></i> Nova Despesa
                             </button>
-                        </form>
+                            <!-- Grupo de botões editar e excluir (tamanho corrigido) -->
+                            <div class="d-flex gap-2">
+                                <!-- Botão de editar -->
+                                <button class="btn btn-outline-secondary btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editCartaoModal" 
+                                        onclick="preencherModal('{{this.id}}', '{{this.name}}', '{{this.limite_total}}', '{{this.dataFechamentoFormatada}}', '{{this.dataVencimentoFormatada}}')" 
+                                        style="border-radius: 20px; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
+                                </button>
+                                <!-- Botão de excluir -->
+                                <form action="/financas/removec" method="POST">
+                                    <input type="hidden" name="id" value="{{this.id}}">
+                                    <button type="submit" 
+                                            class="btn btn-outline-danger btn-sm" 
+                                            style="border-radius: 20px; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" 
+                                            onclick="return confirm('Tem certeza que deseja excluir este cartão?')">
+                                        <i class="bi bi-trash" style="font-size: 0.85rem;"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        {{/each}}
     </div>
-{{/each}}
 </div>
 
-
+<!-- Modais (permanecem iguais ao seu código original) -->
 <div class="modal fade" id="cartaoModal" tabindex="-1" aria-labelledby="cartaoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -341,23 +377,126 @@
 
 <script>
    function preencherModal(id, name, limite, dataFechamento, datavence) {
-    document.getElementById('edit-id').value = id;
-    document.getElementById('edit-name').value = name;
-    document.getElementById('edit-limite').value = limite;
-    document.getElementById('edit-dataFechamento').value = dataFechamento;
-    document.getElementById('edit-datavence').value = datavence;
-    // Remover esta linha pois não existe mais o campo edit-fatura
-    // document.getElementById('edit-fatura').value = fatura;
-}
-    function preencherDespesaModal(id) {
-    document.getElementById('cartaoIdInput').value = id;
+       document.getElementById('edit-id').value = id;
+       document.getElementById('edit-name').value = name;
+       document.getElementById('edit-limite').value = limite;
+       document.getElementById('edit-dataFechamento').value = dataFechamento;
+       document.getElementById('edit-datavence').value = datavence;
+   }
+   
+   function preencherDespesaModal(id) {
+       document.getElementById('cartaoIdInput').value = id;
+   }
+document.addEventListener('DOMContentLoaded', function () {
+    // Inicializar todos os dropdowns do Bootstrap
+    const dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+    dropdownElementList.map(function (dropdownToggleEl) {
+        return new bootstrap.Dropdown(dropdownToggleEl);
+    });
+
+    // Configurar seleção de mês
+    setupMonthSelection();
+
+    // Configurar botões de ano
+    setupYearButtons();
+
+    // Configurar botão de pagamento
+    setupPaymentButtons();
+});
+
+// Função para configurar a seleção de meses
+function setupMonthSelection() {
+    const monthItems = document.querySelectorAll('.month-item');
+
+    monthItems.forEach(item => {
+        // Remover event listeners antigos para evitar duplicações
+        const newItem = item.cloneNode(true);
+        item.parentNode.replaceChild(newItem, item);
+
+        // Adicionar novo event listener
+        newItem.addEventListener('click', function (e) {
+            // Impedir que o dropdown feche
+            e.stopPropagation();
+
+            // Remove a classe selected de todos
+            document.querySelectorAll('.month-item').forEach(m => m.classList.remove('selected'));
+
+            // Adiciona a classe selected ao clicado
+            this.classList.add('selected');
+
+            // Marca o radio button
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+        });
+    });
 }
 
+// Função para configurar os botões de ano
+function setupYearButtons() {
+    const decrementBtn = document.querySelector('.year-btn:first-child');
+    const incrementBtn = document.querySelector('.year-btn:last-child');
+
+    if (decrementBtn) {
+        // Remover event listeners antigos para evitar duplicações
+        const newDecrementBtn = decrementBtn.cloneNode(true);
+        decrementBtn.parentNode.replaceChild(newDecrementBtn, decrementBtn);
+        newDecrementBtn.addEventListener('click', function (e) {
+            e.stopPropagation(); // Impedir que o dropdown feche
+            decrementYear();
+        });
+    }
+
+    if (incrementBtn) {
+        // Remover event listeners antigos para evitar duplicações
+        const newIncrementBtn = incrementBtn.cloneNode(true);
+        incrementBtn.parentNode.replaceChild(newIncrementBtn, incrementBtn);
+        newIncrementBtn.addEventListener('click', function (e) {
+            e.stopPropagation(); // Impedir que o dropdown feche
+            incrementYear();
+        });
+    }
+}
+
+// Função para incrementar o ano
+function incrementYear() {
+    const yearInput = document.getElementById('ano');
+    if (yearInput) {
+        let currentYear = parseInt(yearInput.value);
+        if (!isNaN(currentYear) && currentYear < 2100) {
+            yearInput.value = currentYear + 1;
+        }
+    }
+}
+
+// Função para decrementar o ano
+function decrementYear() {
+    const yearInput = document.getElementById('ano');
+    if (yearInput) {
+        let currentYear = parseInt(yearInput.value);
+        if (!isNaN(currentYear) && currentYear > 2000) {
+            yearInput.value = currentYear - 1;
+        }
+    }
+}
+
+// Função para configurar os botões de pagamento
+function setupPaymentButtons() {
+    const paymentButtons = document.querySelectorAll('[id^="pagar-btn-"]');
+
+    paymentButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const faturaId = this.id.replace('pagar-btn-', '');
+            marcarComoPago(faturaId);
+        });
+    });
+}
+
+// Função para marcar uma fatura como paga
 function marcarComoPago(faturaId) {
-    let botao = document.getElementById(`pagar-btn-${faturaId}`);
-    
+    const botao = document.getElementById(`pagar-btn-${faturaId}`);
+
     console.log(`Tentando pagar a fatura ${faturaId}`);
-    
+
     // Desabilita o botão antes de enviar a requisição
     botao.disabled = true;
     botao.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Processando...';
@@ -368,46 +507,45 @@ function marcarComoPago(faturaId) {
             'Content-Type': 'application/json'
         }
     })
-    .then(response => {
-        console.log("Resposta do servidor:", response);
-        return response.json();
-    })
-    .then(data => {
-        console.log("Dados recebidos:", data);
-        
-        if (data.success) {
-            console.log("Pagamento bem-sucedido!");
-            botao.innerHTML = '<i class="bi bi-check-circle me-1"></i> Pago';
-            botao.classList.remove('btn-outline-success');
-            botao.classList.add('btn-success');
-            botao.disabled = true;
-            
-            // Recarregar a página para refletir as mudanças
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-        } else {
-            console.error("Erro reportado pelo servidor:", data.message);
+        .then(response => {
+            console.log("Resposta do servidor:", response);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Dados recebidos:", data);
+
+            if (data.success) {
+                console.log("Pagamento bem-sucedido!");
+                botao.innerHTML = '<i class="bi bi-check-circle me-1"></i> Pago';
+                botao.classList.remove('btn-outline-success');
+                botao.classList.add('btn-success');
+                botao.disabled = true;
+
+                // Recarregar a página para refletir as mudanças
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                console.error("Erro reportado pelo servidor:", data.message);
+                botao.innerHTML = '<i class="bi bi-x-circle me-1"></i> Erro';
+                botao.classList.remove('btn-outline-success');
+                botao.classList.add('btn-danger');
+                botao.disabled = false;
+
+                if (data.message) {
+                    alert(data.message);
+                }
+            }
+        })
+        .catch(error => {
+            console.error("Erro ao pagar fatura:", error);
             botao.innerHTML = '<i class="bi bi-x-circle me-1"></i> Erro';
-            botao.classList.remove('btn-outline-success');
             botao.classList.add('btn-danger');
             botao.disabled = false;
-            
-            if (data.message) {
-                alert(data.message);
-            }
-        }
-    })
-    .catch(error => {
-        console.error("Erro ao pagar fatura:", error);
-        botao.innerHTML = '<i class="bi bi-x-circle me-1"></i> Erro';
-        botao.classList.add('btn-danger');
-        botao.disabled = false;
-        alert("Erro ao processar o pagamento. Tente novamente.");
-    });
+            alert("Erro ao processar o pagamento. Tente novamente.");
+        });
 }
-
 </script>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+ 
