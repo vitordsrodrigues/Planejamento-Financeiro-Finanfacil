@@ -1,1 +1,234 @@
-<h1>ola</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Botão Voltar -->
+        <a href="/financas/dashboard" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+
+        <!-- Botão para alternar entre objetivos concluídos e não concluídos -->
+        {{#if showConcluidos}}
+            <a href="/objetivos/viewObjetivos" class="btn btn-outline-secondary">
+                <i class="bi bi-eye"></i> Ver Não Concluídos
+            </a>
+        {{else}}
+            <a href="/objetivos/viewObjetivos?concluidos=true" class="btn btn-outline-secondary">
+                <i class="bi bi-check-circle"></i> Ver Concluídos
+            </a>
+        {{/if}}
+    </div>
+
+    <h1 class="mb-5">{{#if showConcluidos}}Objetivos Concluídos{{else}}Objetivos Ativos{{/if}}</h1>
+
+    <div class="row">
+        <!-- Card para Adicionar Novo Objetivo -->
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow rounded-4 text-decoration-none d-flex align-items-center justify-content-center"
+                style="border: 2px solid #ddd; background-color: #f7f7f7; cursor: pointer;"
+                data-bs-toggle="modal" data-bs-target="#cartaoModal">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                    <i class="bi bi-plus-circle" style="font-size: 50px; color: #17a2b8;"></i>
+                    <h5 class="mt-3 text-dark text-center">Adicionar Objetivo</h5>
+                </div>
+            </div>
+        </div>
+
+        <!-- Listagem de Objetivos -->
+        {{#if objetivos.length}}
+            {{#each objetivos}}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow rounded-4">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-center text-primary fw-bold">{{this.title}}</h5>
+                            <hr>
+                            <ul class="list-unstyled mb-4">
+                                <li><strong>Valor Total:</strong> R$ {{this.valor_objeto}}</li>
+                                <li><strong>Valor Guardado:</strong> R$ {{this.valor_guardado}}</li>
+                                {{#unless this.concluido}}
+                                    <li><strong>Faltando:</strong> R$ {{this.faltando}}</li>
+                                    <li><strong>Tempo Estimado:</strong> {{this.tempoAtual}}</li>
+                                {{/unless}}
+                            </ul>
+
+                            <!-- Barra de Progresso -->
+                            <div class="progress mb-3" style="height: 20px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{this.progresso}}%;" aria-valuenow="{{this.progresso}}" aria-valuemin="0" aria-valuemax="100">
+                                    {{this.progresso}}%
+                                </div>
+                            </div>
+
+                            <!-- Botões -->
+                            <div class="mt-auto d-flex justify-content-between align-items-center">
+                                <!-- Botão Adicionar à esquerda -->
+                                {{#unless this.concluido}}
+                                    <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#addValorModal-{{this.id}}">
+                                        <i class="bi bi-piggy-bank-fill me-1"></i> Adicionar
+                                    </button>
+                                {{/unless}}
+
+                                <!-- Grupo de botões à direita -->
+                                <div class="d-flex gap-2">
+
+                                   <!-- Botão Concluir -->
+                                    <form action="/objetivos/toggleConcluir/{{this.id}}" method="POST">
+                                        <button type="submit" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center tooltip-custom"
+                                            style="width: 36px; height: 36px; 
+                                                background-color: {{#if this.concluido}}#28a745{{else}}#fff{{/if}}; 
+                                                color: {{#if this.concluido}}#fff{{else}}#28a745{{/if}}; 
+                                                border: 2px solid #28a745; 
+                                                transition: all 0.3s;"
+                                            data-tooltip="{{#if this.concluido}}Desconcluir{{else}}Concluir{{/if}}">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                        </button>
+                                    </form>
+
+                                   
+                                    {{#unless this.concluido}}
+
+                                        <!-- Botão Editar -->
+                                        <button class="btn btn-outline-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editObjetivoModal-{{this.id}}">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </button>
+                                    {{/unless}}
+
+                                    <!-- Botão Excluir -->
+                                    <form action="/objetivos/removeObjetivo/{{this.id}}" method="POST">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm d-flex align-items-center justify-content-center"
+                                            style="width: 36px; height: 36px;">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                
+                <!-- Modal para Adicionar Valor -->
+                <div class="modal fade" id="addValorModal-{{this.id}}" tabindex="-1" aria-labelledby="addValorModalLabel-{{this.id}}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content rounded-4 shadow">
+                            <div class="modal-header bg-success text-white rounded-top-4">
+                                <h5 class="modal-title" id="addValorModalLabel-{{this.id}}">Adicionar Valor ao Objetivo</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <form action="/objetivos/addValor/{{this.id}}" method="POST">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="valor_adicionado" class="form-label">Valor a Adicionar</label>
+                                        <input type="number" class="form-control" id="valor_adicionado" name="valor_adicionado" step="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-success">Adicionar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal para Editar Objetivo -->
+                <div class="modal fade" id="editObjetivoModal-{{this.id}}" tabindex="-1" aria-labelledby="editObjetivoModalLabel-{{this.id}}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content rounded-4 shadow">
+                            <div class="modal-header bg-warning text-white rounded-top-4">
+                                <h5 class="modal-title" id="editObjetivoModalLabel-{{this.id}}">Editar Objetivo</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                            </div>
+                            <form action="/objetivos/updateObjetivo/{{this.id}}" method="POST">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="title-{{this.id}}" class="form-label">Nome do Objetivo</label>
+                                        <input type="text" class="form-control" id="title-{{this.id}}" name="title" value="{{this.title}}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="valor_objeto-{{this.id}}" class="form-label">Valor Total do Objetivo</label>
+                                        <input type="number" class="form-control" id="valor_objeto-{{this.id}}" name="valor_objeto" value="{{this.valor_objeto}}" step="0.01" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="valor_guardado-{{this.id}}" class="form-label">Valor Já Guardado</label>
+                                        <input type="number" class="form-control" id="valor_guardado-{{this.id}}" name="valor_guardado" value="{{this.valor_guardado}}" step="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-warning">Salvar Alterações</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+        {{else}}
+            <p class="text-center">Nenhum objetivo encontrado.</p>
+        {{/if}}
+        
+        <!-- Dicas de Educação Financeira -->
+        <div class="mt-5 p-4 rounded-4 shadow-sm" style="background-color: #eaf4ff;">
+            <h4 class="text-dark fw-bold mb-4">
+                <i class="bi bi-lightbulb-fill text-warning me-2"></i>
+                Quer alcançar seus objetivos financeiros mais rápido?
+            </h4>
+            
+            <p class="text-dark mb-4">
+                Sabemos que alcançar seus objetivos financeiros pode ser desafiador, mas com o conhecimento certo, você pode acelerar esse processo! Confira os conteúdos abaixo que vão te ajudar a economizar dinheiro de forma eficiente e aplicar a educação financeira na prática. Com esses conhecimentos, você estará mais perto de conquistar suas metas financeiras!
+            </p>
+            
+            <div class="d-grid gap-3">
+                <a href="https://vitordsrodrigues.github.io/Blog_FinanFacil/5_dicas.html" target="_blank" class="btn btn-lg btn-outline-primary d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-piggy-bank-fill me-2"></i> 5 Dicas para Economizar Dinheiro sem Sofrer</span>
+                    <i class="bi bi-arrow-up-right-circle-fill"></i>
+                </a>
+
+                <a href="https://vitordsrodrigues.github.io/Blog_FinanFacil/educacional.html" target="_blank" class="btn btn-lg btn-outline-success d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-book-fill me-2"></i> Educação Financeira na Prática: O que Você Nunca Aprendeu na Escola</span>
+                    <i class="bi bi-arrow-up-right-circle-fill"></i>
+                </a>
+
+                <a href="https://vitordsrodrigues.github.io/Blog_FinanFacil/como_guardar.html" target="_blank" class="btn btn-lg btn-outline-info d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-wallet-fill me-2"></i> Como Criar o Hábito de Guardar Dinheiro Todos os Meses</span>
+                    <i class="bi bi-arrow-up-right-circle-fill"></i>
+                </a>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</div>
+
+<!-- Modal para Adicionar Novo Objetivo -->
+<div class="modal fade" id="cartaoModal" tabindex="-1" aria-labelledby="cartaoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-header bg-primary text-white rounded-top-4">
+                <h5 class="modal-title" id="cartaoModalLabel">Novo Objetivo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form action="/objetivos/createObjetivo" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Nome do Objetivo</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valor_objeto" class="form-label">Valor Total do Objetivo</label>
+                        <input type="number" class="form-control" id="valor_objeto" name="valor_objeto" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="valor_guardado" class="form-label">Valor Já Guardado</label>
+                        <input type="number" class="form-control" id="valor_guardado" name="valor_guardado" step="0.01" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Objetivo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

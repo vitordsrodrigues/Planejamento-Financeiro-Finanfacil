@@ -21,6 +21,7 @@ const Categorias = require('./models/Categorias')
 const CategoriaUsuario = require('./models/CategoriaUsuario')
 const Fatura = require('./models/Fatura')
 const DespesaCartao = require('./models/DespesaCartao')
+const Objetivos = require('./models/Objetivos')
 
 
 // Routes import
