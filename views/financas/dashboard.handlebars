@@ -1,5 +1,59 @@
 <div class="container my-4">
     <div class="row justify-content-center">
+        <div class="dropdown mb-4">
+            <button class="btn date-pill shadow-sm dropdown-toggle" type="button" id="periodDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <!-- Exibe o mês/ano selecionado -->
+                {{#each meses}}
+                    {{#if (eq ../mesAtual this.valor)}}
+                        {{this.nome}}
+                    {{/if}}
+                {{/each}}
+                {{anoAtual}}
+            </button>
+
+            <div class="dropdown-menu dropdown-menu-end date-picker-popup p-0" aria-labelledby="periodDropdown">
+                <div class="date-picker-header text-center py-2">
+                    <h6 class="mb-0">Selecione o Período</h6>
+                </div>
+
+                <form method="GET" action="/financas/dashboard" class="p-3">
+                    <!-- Grid de meses compacto com abreviações -->
+                    <div class="month-grid mb-3">
+                        {{#each meses}}
+                            <label class="month-item {{#if (eq ../mesAtual this.valor)}}selected{{/if}}">
+                                <input type="radio" name="mes" value="{{this.valor}}" {{#if (eq ../mesAtual this.valor)}}checked{{/if}} class="visually-hidden">
+                                <span class="month-label">
+                                    {{substring this.nome 0 3}}
+                                </span>
+                            </label>
+                        {{/each}}
+                    </div>
+
+                    <!-- Seletor de ano compacto -->
+                    <div class="year-selector d-flex align-items-center justify-content-center mb-3">
+                        <button type="button" class="btn btn-sm btn-light year-btn" onclick="decrementYear()">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <input type="number" name="ano" id="ano" value="{{anoAtual}}" 
+                            class="form-control form-control-sm text-center mx-2" 
+                            min="2000" max="2100" style="width: 80px;" />
+                        <button type="button" class="btn btn-sm btn-light year-btn" onclick="incrementYear()">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Botões de ação -->
+                    <div class="d-flex justify-content-between mt-3 pt-2 border-top">
+                        <a href="/financas/dashboard" class="btn btn-sm btn-light">
+                            Resetar
+                        </a>
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            Aplicar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <!-- Título -->
         <div class="col-12 mb-4">
             <h2 class="text-dark fw-bold">Dashboard</h2>
@@ -68,7 +122,22 @@
                 </div>
             </div>
         </div>
+        <div class="row mt-4">
+    <div class="col-12">
+        <h4 class="text-dark fw-bold text-center mb-4">Recomendações para você</h4>
+    </div>
 
+    <div class="col-12 mb-4">
+        <div class="card shadow-lg rounded-4 p-4">
+            <div class="card-body text-center">
+                
+                <h3 class="card-title fw-bold mb-3">{{linkExibido.titulo}}</h3>
+                <p class="card-text fs-5 text-muted mb-4">{{linkExibido.descricao}}</p>
+                <a href="{{linkExibido.url}}" target="_blank" class="btn btn-lg btn-primary px-5">Saiba mais</a>
+            </div>
+        </div>
+    </div>
+</div>
         <div class="container-fluid py-4">
             <div class="col-12 text-center mt-3 mb-4">
                 <h4 class="text-primary fw-bold">Suas Finanças</h4>
@@ -286,5 +355,49 @@
     configurarEventosHover('graficoReceitas', graficoReceitas, receitasTotalEl, totalReceitas);
     configurarEventosHover('graficoCartoes', graficoCartoes, cartoesTotalEl, totalCartoes);
     configurarEventosHover('graficoGeral', graficoGeral, geralTotalEl, totalDespesas + totalReceitas + totalCartoes);
+
+    function incrementYear() {
+        const yearInput = document.getElementById('ano');
+        if (yearInput) {
+            let currentYear = parseInt(yearInput.value);
+            if (!isNaN(currentYear) && currentYear < 2100) {
+                yearInput.value = currentYear + 1;
+            }
+        }
+    }
+
+    function decrementYear() {
+        const yearInput = document.getElementById('ano');
+        if (yearInput) {
+            let currentYear = parseInt(yearInput.value);
+            if (!isNaN(currentYear) && currentYear > 2000) {
+                yearInput.value = currentYear - 1;
+            }
+        }
+    }
 });
+document.addEventListener('DOMContentLoaded', function () {
+        const monthItems = document.querySelectorAll('.month-item');
+
+        monthItems.forEach(function (item) {
+            item.addEventListener('click', function () {
+                // Remove a classe 'selected' de todos os meses
+                monthItems.forEach(function (el) {
+                    el.classList.remove('selected');
+                });
+
+                // Adiciona a classe 'selected' ao mês clicado
+                this.classList.add('selected');
+            });
+        });
+    });
+
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.dropdown-menu').forEach(function (dropdown) {
+    dropdown.addEventListener('click', function (e) {
+      e.stopPropagation(); // Impede o fechamento do dropdown
+    });
+  });
+});
+
 </script>

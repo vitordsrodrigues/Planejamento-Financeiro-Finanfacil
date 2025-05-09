@@ -1,7 +1,6 @@
 const FinancaPessoais = require('../models/FinancaPessoais')
 const User = require('../models/User')
 const Despesas = require('../models/Despesas')
-const TotalDespesas = require('../models/TotalDespesas')
 const Cartao = require('../models/Cartao')
 const DespesaCartao = require('../models/DespesaCartao')
 const Fatura = require('../models/Fatura')
@@ -29,12 +28,33 @@ module.exports = class FinancasControllers{
         }
     
         try {
-            // Data atual
-            const now = new Date();
-            const mesAtual = now.getMonth() + 1; // Meses começam em 0
-            const anoAtual = now.getFullYear();
+            // Obtém o mês e ano dos parâmetros ou usa o mês/ano atual
+            const mesAtual = parseInt(req.query.mes) || new Date().getMonth() + 1; // Meses começam em 0
+            const anoAtual = parseInt(req.query.ano) || new Date().getFullYear();
     
-            // Buscar receitas do mês atual
+            // Gera uma lista de meses e anos disponíveis
+            const meses = [
+                { valor: 1, nome: 'Janeiro' },
+                { valor: 2, nome: 'Fevereiro' },
+                { valor: 3, nome: 'Março' },
+                { valor: 4, nome: 'Abril' },
+                { valor: 5, nome: 'Maio' },
+                { valor: 6, nome: 'Junho' },
+                { valor: 7, nome: 'Julho' },
+                { valor: 8, nome: 'Agosto' },
+                { valor: 9, nome: 'Setembro' },
+                { valor: 10, nome: 'Outubro' },
+                { valor: 11, nome: 'Novembro' },
+                { valor: 12, nome: 'Dezembro' }
+            ];
+    
+            const anoAtualInt = new Date().getFullYear();
+            const anosDisponiveis = [];
+            for (let i = anoAtualInt - 5; i <= anoAtualInt + 5; i++) {
+                anosDisponiveis.push(i);
+            }
+    
+            // Buscar receitas do mês selecionado
             const receitasMesAtual = await Receita.findAll({
                 where: {
                     UserId: userId,
@@ -55,7 +75,7 @@ module.exports = class FinancasControllers{
     
             const totalReceitas = receitasMesAtual.reduce((acc, receita) => acc + parseFloat(receita.value || 0), 0);
     
-            // Buscar despesas do mês atual
+            // Buscar despesas do mês selecionado
             const despesasMesAtual = await Despesas.findAll({
                 where: {
                     UserId: userId,
@@ -76,16 +96,16 @@ module.exports = class FinancasControllers{
     
             const totalDespesas = despesasMesAtual.reduce((acc, despesa) => acc + parseFloat(despesa.valor || 0), 0);
     
-            // MODIFICADO: Buscar cartões do usuário
+            // Buscar cartões do usuário
             const cartoes = await Cartao.findAll({
                 where: { UserId: userId },
                 attributes: ['id'],
                 raw: true
             });
-            
+    
             const cartaoIds = cartoes.map(c => c.id);
-            
-            // MODIFICADO: Buscar faturas do mês atual que pertencem aos cartões do usuário
+    
+            // Buscar faturas do mês atual que pertencem aos cartões do usuário
             const faturasMesAtual = await Fatura.findAll({
                 where: {
                     CartaoId: { [Op.in]: cartaoIds },
@@ -95,10 +115,10 @@ module.exports = class FinancasControllers{
                 attributes: ['id'],
                 raw: true
             });
-            
+    
             const faturaIds = faturasMesAtual.map(f => f.id);
-            
-            // MODIFICADO: Buscar despesas associadas às faturas do mês atual
+    
+            // Buscar despesas associadas às faturas do mês atual
             const despesasCartao = await DespesaCartao.findAll({
                 where: {
                     FaturaId: { [Op.in]: faturaIds }
@@ -169,7 +189,7 @@ module.exports = class FinancasControllers{
                 porcentagem: totalCartao > 0 ? ((c.valor / totalCartao) * 100).toFixed(2) : 0
             }));
     
-            // **Novo cálculo para o gráfico de porcentagem geral**
+            // Cálculo para o gráfico de porcentagem geral
             const totalGeral = totalReceitas + totalDespesas + totalCartao;
     
             const graficoGeral = [
@@ -189,9 +209,7 @@ module.exports = class FinancasControllers{
                     porcentagem: totalGeral > 0 ? ((totalCartao / totalGeral) * 100).toFixed(2) : 0
                 }
             ];
-            
-            // Maior categoria de despesa
-
+    
             // Buscar o saldo diretamente da tabela FinancaPessoais
             const financas = await FinancaPessoais.findOne({ where: { UserId: userId } });
     
@@ -199,31 +217,94 @@ module.exports = class FinancasControllers{
             const saldo = financas ? parseFloat(financas.saldo) || 0 : 0;
     
             // Calcular o saldo inicial
-            const saldoInicial = saldo - totalReceitas + totalDespesas;
-        
-            // Renderizar a página com os dados para os gráficos
-            return res.render('financas/dashboard', { 
-                totalReceitas, 
-                totalDespesas,
-                totalCartao,
-                saldoInicial,
-                saldo,
-                despesas: JSON.stringify(despesas),
-                receitas: JSON.stringify(receitas),
-                cartoes: JSON.stringify(cartoesCategorias),
-                graficoGeral: JSON.stringify(graficoGeral) // Passa os dados do novo gráfico
+            const saldoInicial = saldo - totalReceitas - totalCartao + totalDespesas;
+    
+
+        // Adicionar lógica para links personalizados
+        let linksPersonalizados = [];
+
+        // Condição: Fatura muito alta
+        if (totalCartao > totalReceitas) {
+            linksPersonalizados.push({
+                titulo: 'Cartão de Crédito: Vilão ou Aliado?',
+                descricao: 'Sua fatura está alta. Veja dicas para reduzir seus gastos no cartão.',
+                url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/cartao.html'
             });
+        }
+
+        // Condição: Despesas muito altas
+        if (totalDespesas > totalReceitas) {
+            linksPersonalizados.push({
+                titulo: 'Controle suas despesas!',
+                descricao: 'Você está gastando muito. Veja como economizar.',
+                url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/orcamento.html'
+            });
+        }
+
+        // Links padrão (alternados)
+        const linksPadrao = [
+            {
+                titulo: 'Educação Financeira na Prática: O que Você Nunca Aprendeu na Escola',
+                descricao: 'Aprenda como economizar e melhorar sua saúde financeira.',
+                url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/educacional.html'
+            },
+            {
+                titulo: 'Por Onde Começar: Guia Rápido para Organizar suas Finanças Pessoais',
+                descricao: 'Comece sua jornada financeira com passos simples e práticos. Neste post, mostramos como mapear seus gastos, definir metas e evitar erros comuns.',
+                url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/guia_rapida.html'
+            }
+        ];
+
+        // Alternar entre links personalizados
+        let linkExibido;
+        if (linksPersonalizados.length > 1) {
+            // Alternar entre os links personalizados
+            const ultimoLinkExibido = req.session.ultimoLinkExibido || 0;
+            linkExibido = linksPersonalizados[ultimoLinkExibido % linksPersonalizados.length];
+            req.session.ultimoLinkExibido = (ultimoLinkExibido + 1) % linksPersonalizados.length;
+        } else if (linksPersonalizados.length === 1) {
+            // Exibir o único link personalizado disponível
+            linkExibido = linksPersonalizados[0];
+        } else {
+            // Exibir um link padrão aleatório
+            linkExibido = linksPadrao[Math.floor(Math.random() * linksPadrao.length)];
+        }
+
+        // Passar o link selecionado para a view
+        return res.render('financas/dashboard', {
+            totalReceitas,
+            totalDespesas,
+            totalCartao,
+            saldoInicial,
+            saldo,
+            despesas: JSON.stringify(despesas),
+            receitas: JSON.stringify(receitas),
+            cartoes: JSON.stringify(cartoesCategorias),
+            graficoGeral: JSON.stringify(graficoGeral),
+            mesAtual,
+            anoAtual,
+            meses,
+            anosDisponiveis,
+            mesAtualNome: meses.find(m => m.valor === mesAtual).nome,
+            linkExibido // Passar apenas o link selecionado para a view
+        });
     
         } catch (error) {
             console.error('Erro ao carregar o dashboard:', error);
-            return res.render('financas/dashboard', { 
-                totalReceitas: 0, 
-                totalDespesas: 0, 
+            return res.render('financas/dashboard', {
+                totalReceitas: 0,
+                totalDespesas: 0,
                 totalCartao: 0,
                 despesas: '[]',
                 receitas: '[]',
                 cartoes: '[]',
                 graficoGeral: '[]',
+                mesAtual: new Date().getMonth() + 1,
+                anoAtual: new Date().getFullYear(),
+                meses: [],
+                anosDisponiveis: [],
+                mesAtualNome: '',
+            
                 error: 'Ocorreu um erro ao carregar os dados financeiros.'
             });
         }
@@ -773,8 +854,10 @@ module.exports = class FinancasControllers{
                 dias,
                 categorias,
                 dataHoje: new Date().toISOString().split('T')[0],
-                message: req.flash('message')[0],
-                error: req.flash('error')[0],
+                messages: {
+                    message: req.flash('message')[0],  // Passa a mensagem aqui
+                    error: req.flash('error')[0]       // Passa o erro também, se necessário
+                },
                 meses,
                 mesSelecionado,
                 anoSelecionado

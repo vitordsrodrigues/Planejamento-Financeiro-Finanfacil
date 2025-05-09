@@ -16,7 +16,6 @@ const FinancaPessoais = require('./models/FinancaPessoais')
 const Despesas = require('./models/Despesas')
 const Receitas = require('./models/Receita')
 const Cartao = require('./models/Cartao')
-const TotalDespesas = require('./models/TotalDespesas')
 const Categorias = require('./models/Categorias')
 const CategoriaUsuario = require('./models/CategoriaUsuario')
 const Fatura = require('./models/Fatura')
@@ -232,6 +231,15 @@ app.use(
 )
 
 app.use(flash())
+
+// Middleware para passar mensagens de flash para todas as views
+app.use((req, res, next) => {
+    res.locals.messages = {
+        message: req.flash('message'),
+        error: req.flash('error')
+    };
+    next();
+});
 
 app.use(express.static('public'))
 

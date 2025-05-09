@@ -2,7 +2,6 @@ const {DataTypes} = require('sequelize')
 
 const db = require('../db/conn')
 const User = require('./User')
-const TotalDespesas = require('./TotalDespesas')
 const Cartao = require('./Cartao')
 const FinancaPessoais = db.define('FinancaPessoais',{
     
