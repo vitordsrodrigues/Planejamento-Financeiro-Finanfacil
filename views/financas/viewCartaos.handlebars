@@ -207,17 +207,17 @@
                             </button>
                             <!-- Grupo de botões editar e excluir (tamanho corrigido) -->
                             <div class="d-flex gap-2">
-                                <!-- Botão de editar -->
                                 <button class="btn btn-outline-secondary btn-sm" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#editCartaoModal" 
-                                        onclick="preencherModal('{{this.id}}', '{{this.name}}', '{{this.limite_total}}', '{{this.dataFechamentoFormatada}}', '{{this.dataVencimentoFormatada}}')" 
+                                        onclick="preencherModal('{{this.id}}', '{{this.name}}', '{{this.limite_total}}', '{{this.dataFechamento}}', '{{this.datavence}}')" 
                                         style="border-radius: 20px; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
                                     <i class="bi bi-pencil" style="font-size: 0.85rem;"></i>
                                 </button>
                                 <!-- Botão de excluir -->
-                                <form action="/financas/removec" method="POST">
+                                <form action="/financas/removeItem" method="POST">
                                     <input type="hidden" name="id" value="{{this.id}}">
+                                    <input type="hidden" name="tipo" value="cartao">
                                     <button type="submit" 
                                             class="btn btn-outline-danger btn-sm" 
                                             style="border-radius: 20px; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;" 
@@ -233,7 +233,7 @@
         {{/each}}
     </div>
 </div>
-
+                              
 <!-- Modais (permanecem iguais ao seu código original) -->
 <div class="modal fade" id="cartaoModal" tabindex="-1" aria-labelledby="cartaoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -339,215 +339,62 @@
     </div>
 </div>
 
-<!-- Modal de Edição -->
+<!-- Modal Editar Cartão -->
 <div class="modal fade" id="editCartaoModal" tabindex="-1" aria-labelledby="editCartaoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-light">
+            <!-- Cabeçalho do Modal -->
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title fw-bold" id="editCartaoModalLabel">Editar Cartão de Crédito</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            <!-- Corpo do Modal -->
             <div class="modal-body">
-                <form action="/financas/editc" method="POST">
-                    <input type="hidden" id="edit-id" name="id">
+                <form action="/financas/editc/" method="POST">
+                    <!-- Campo Oculto para o ID do Cartão -->
+                    <input type="hidden" name="id" id="cartaoId">
+                    <input type="hidden" name="tipo" value="cartao"> <!-- Define o tipo como cartão -->
+
+                    <!-- Campo para o Nome do Cartão -->
                     <div class="mb-3">
-                        <label for="edit-name" class="form-label fw-bold">Nome do Cartão:</label>
-                        <input type="text" class="form-control" id="edit-name" name="name" required>
+                        <label for="cartaoName" class="form-label fw-bold">Nome do Cartão</label>
+                        <input type="text" class="form-control" name="name" id="cartaoName" placeholder="Nome do cartão" required>
                     </div>
+
+                    <!-- Campo para o Limite do Cartão -->
                     <div class="mb-3">
-                        <label for="edit-limite" class="form-label fw-bold">Limite:</label>
-                        <input type="number" class="form-control" id="edit-limite" name="limite" required>
+                        <label for="cartaoLimite" class="form-label fw-bold">Limite</label>
+                        <input type="number" class="form-control" name="limite_total" id="cartaoLimite" step="0.01" min="0" placeholder="Limite do cartão" required>
                     </div>
+
+                    <!-- Campo para a Data de Fechamento -->
                     <div class="mb-3">
-                        <label for="edit-dataFechamento" class="form-label fw-bold">Data de Fechamento:</label>
-                        <input type="date" class="form-control" id="edit-dataFechamento" name="dataFechamento" required>
+                        <label for="cartaoDataFechamento" class="form-label fw-bold">Data de Fechamento</label>
+                        <select class="form-select" name="dataFechamento" id="cartaoDataFechamento" required>
+                            {{#each dias}}
+                                <option value="{{this}}">{{this}}</option>
+                            {{/each}}
+                        </select>
                     </div>
+
+                    <!-- Campo para a Data de Vencimento -->
                     <div class="mb-3">
-                        <label for="edit-datavence" class="form-label fw-bold">Data de Vencimento:</label>
-                        <input type="date" class="form-control" id="edit-datavence" name="datavence" required>
+                        <label for="cartaoDataVencimento" class="form-label fw-bold">Data de Vencimento</label>
+                        <select class="form-select" name="datavence" id="cartaoDataVencimento" required>
+                            {{#each dias}}
+                                <option value="{{this}}">{{this}}</option>
+                            {{/each}}
+                        </select>
                     </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-success fw-bold">
-                            <i class="bi bi-save"></i> Salvar Alterações
-                        </button>
+
+                    <!-- Rodapé do Modal -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-   function preencherModal(id, name, limite, dataFechamento, datavence) {
-       document.getElementById('edit-id').value = id;
-       document.getElementById('edit-name').value = name;
-       document.getElementById('edit-limite').value = limite;
-       document.getElementById('edit-dataFechamento').value = dataFechamento;
-       document.getElementById('edit-datavence').value = datavence;
-   }
-   
-   function preencherDespesaModal(id) {
-       document.getElementById('cartaoIdInput').value = id;
-   }
-document.addEventListener('DOMContentLoaded', function () {
-    // Inicializar todos os dropdowns do Bootstrap
-    const dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-    dropdownElementList.map(function (dropdownToggleEl) {
-        return new bootstrap.Dropdown(dropdownToggleEl);
-    });
-
-    // Configurar seleção de mês
-    setupMonthSelection();
-
-    // Configurar botões de ano
-    setupYearButtons();
-
-    // Configurar botão de pagamento
-    setupPaymentButtons();
-});
-
-// Função para configurar a seleção de meses
-function setupMonthSelection() {
-    const monthItems = document.querySelectorAll('.month-item');
-
-    monthItems.forEach(item => {
-        // Remover event listeners antigos para evitar duplicações
-        const newItem = item.cloneNode(true);
-        item.parentNode.replaceChild(newItem, item);
-
-        // Adicionar novo event listener
-        newItem.addEventListener('click', function (e) {
-            // Impedir que o dropdown feche
-            e.stopPropagation();
-
-            // Remove a classe selected de todos
-            document.querySelectorAll('.month-item').forEach(m => m.classList.remove('selected'));
-
-            // Adiciona a classe selected ao clicado
-            this.classList.add('selected');
-
-            // Marca o radio button
-            const radio = this.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
-        });
-    });
-}
-
-// Função para configurar os botões de ano
-function setupYearButtons() {
-    const decrementBtn = document.querySelector('.year-btn:first-child');
-    const incrementBtn = document.querySelector('.year-btn:last-child');
-
-    if (decrementBtn) {
-        // Remover event listeners antigos para evitar duplicações
-        const newDecrementBtn = decrementBtn.cloneNode(true);
-        decrementBtn.parentNode.replaceChild(newDecrementBtn, decrementBtn);
-        newDecrementBtn.addEventListener('click', function (e) {
-            e.stopPropagation(); // Impedir que o dropdown feche
-            decrementYear();
-        });
-    }
-
-    if (incrementBtn) {
-        // Remover event listeners antigos para evitar duplicações
-        const newIncrementBtn = incrementBtn.cloneNode(true);
-        incrementBtn.parentNode.replaceChild(newIncrementBtn, incrementBtn);
-        newIncrementBtn.addEventListener('click', function (e) {
-            e.stopPropagation(); // Impedir que o dropdown feche
-            incrementYear();
-        });
-    }
-}
-
-// Função para incrementar o ano
-function incrementYear() {
-    const yearInput = document.getElementById('ano');
-    if (yearInput) {
-        let currentYear = parseInt(yearInput.value);
-        if (!isNaN(currentYear) && currentYear < 2100) {
-            yearInput.value = currentYear + 1;
-        }
-    }
-}
-
-// Função para decrementar o ano
-function decrementYear() {
-    const yearInput = document.getElementById('ano');
-    if (yearInput) {
-        let currentYear = parseInt(yearInput.value);
-        if (!isNaN(currentYear) && currentYear > 2000) {
-            yearInput.value = currentYear - 1;
-        }
-    }
-}
-
-// Função para configurar os botões de pagamento
-function setupPaymentButtons() {
-    const paymentButtons = document.querySelectorAll('[id^="pagar-btn-"]');
-
-    paymentButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const faturaId = this.id.replace('pagar-btn-', '');
-            marcarComoPago(faturaId);
-        });
-    });
-}
-
-// Função para marcar uma fatura como paga
-function marcarComoPago(faturaId) {
-    const botao = document.getElementById(`pagar-btn-${faturaId}`);
-
-    console.log(`Tentando pagar a fatura ${faturaId}`);
-
-    // Desabilita o botão antes de enviar a requisição
-    botao.disabled = true;
-    botao.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Processando...';
-
-    fetch(`/faturas/pagar/${faturaId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(response => {
-            console.log("Resposta do servidor:", response);
-            return response.json();
-        })
-        .then(data => {
-            console.log("Dados recebidos:", data);
-
-            if (data.success) {
-                console.log("Pagamento bem-sucedido!");
-                botao.innerHTML = '<i class="bi bi-check-circle me-1"></i> Pago';
-                botao.classList.remove('btn-outline-success');
-                botao.classList.add('btn-success');
-                botao.disabled = true;
-
-                // Recarregar a página para refletir as mudanças
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                console.error("Erro reportado pelo servidor:", data.message);
-                botao.innerHTML = '<i class="bi bi-x-circle me-1"></i> Erro';
-                botao.classList.remove('btn-outline-success');
-                botao.classList.add('btn-danger');
-                botao.disabled = false;
-
-                if (data.message) {
-                    alert(data.message);
-                }
-            }
-        })
-        .catch(error => {
-            console.error("Erro ao pagar fatura:", error);
-            botao.innerHTML = '<i class="bi bi-x-circle me-1"></i> Erro';
-            botao.classList.add('btn-danger');
-            botao.disabled = false;
-            alert("Erro ao processar o pagamento. Tente novamente.");
-        });
-}
-</script>
-
-
- 

@@ -20,12 +20,16 @@ const Despesas = db.define('Despesas', {
         }
     },
     date: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY, // Armazena apenas a data (sem horas)
         allowNull: false,
         validate: {
             isDate: true,
         },
     },
+    foiProcessada: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    }
 })
 
 Despesas.belongsTo(User)

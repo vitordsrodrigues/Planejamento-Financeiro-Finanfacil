@@ -114,8 +114,9 @@
                                     data-id="{{this.id}}" data-title="{{this.title}}" data-value="{{this.value}}" data-date="{{this.date}}" data-categoria="{{this.CategoriaId}}">
                                     <i class="bi bi-pencil"></i>
                                 </button>
-                                <form action="/financas/remove" method="POST">
+                                <form action="/financas/removeItem" method="POST">
                                     <input type="hidden" name="id" value="{{this.id}}">
+                                    <input type="hidden" name="tipo" value="receita">
                                     <button type="submit" class="btn btn-danger btn-sm">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -126,7 +127,6 @@
                 </div>
             </div>
         </div>
-
 
         
         <!-- Totais em Balões -->
@@ -218,35 +218,49 @@
 <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
+            <!-- Cabeçalho do Modal -->
             <div class="modal-header bg-warning text-white">
                 <h5 class="modal-title" id="editTaskModalLabel">Editar Receita</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
+            <!-- Corpo do Modal -->
             <div class="modal-body">
-                <form action="/financas/edit" method="POST">
+                <form action="/financas/updateItem" method="POST">
+                    <!-- Campo Oculto para o ID da Receita -->
                     <input type="hidden" name="id" id="taskId">
+                    <input type="hidden" name="tipo" value="receita"> <!-- Define o tipo como receita -->
+
+                    <!-- Campo para o Título -->
                     <div class="mb-3">
-                        <label for="title" class="form-label">Descrição</label>
-                        <input type="text" class="form-control" name="title" id="taskTitle" required>
+                        <label for="taskTitle" class="form-label">Descrição</label>
+                        <input type="text" class="form-control" name="title" id="taskTitle" placeholder="Descrição da receita" required>
                     </div>
+
+                    <!-- Campo para o Valor -->
                     <div class="mb-3">
-                        <label for="value" class="form-label">Valor</label>
-                        <input type="number" class="form-control" name="value" id="taskValue" step="0.01" min="0" required>
+                        <label for="taskValue" class="form-label">Valor</label>
+                        <input type="number" class="form-control" name="value" id="taskValue" step="0.01" min="0" placeholder="Valor da receita" required>
                     </div>
+
+                    <!-- Campo para a Data -->
                     <div class="mb-3">
-                        <label for="date" class="form-label">Data</label>
+                        <label for="taskDate" class="form-label">Data</label>
                         <input type="date" class="form-control" name="date" id="taskDate" required>
                     </div>
+
+                    <!-- Campo para a Categoria -->
                     <div class="mb-3">
-                        <label for="CategoriaId" class="form-label">Categoria</label>
+                        <label for="taskCategory" class="form-label">Categoria</label>
                         <select class="form-select" name="CategoriaId" id="taskCategory" required>
                             <option value="" disabled>Selecione uma categoria</option>
                             {{#each categorias}}
-                                <option value="{{this.id}}" {{#if (eq this.id ../categoriaSelecionada)}}selected{{/if}}>{{this.name}}</option>
+                                <option value="{{this.id}}">{{this.name}}</option>
                             {{/each}}
                         </select>
-
                     </div>
+
+                    <!-- Rodapé do Modal -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-warning">Salvar Alterações</button>
@@ -256,32 +270,3 @@
         </div>
     </div>
 </div>
-
-
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const editTaskModal = document.getElementById("editTaskModal");
-
-    editTaskModal.addEventListener("show.bs.modal", function (event) {
-        const button = event.relatedTarget;
-
-        document.getElementById("taskId").value = button.getAttribute("data-id");
-        document.getElementById("taskTitle").value = button.getAttribute("data-title");
-        document.getElementById("taskValue").value = button.getAttribute("data-value");
-        document.getElementById("taskDate").value = button.getAttribute("data-date");
-
-        // Obtém a categoria da receita e define a opção correta no select
-        const categoriaId = button.getAttribute("data-categoria"); 
-        const categoriaSelect = document.getElementById("taskCategory");
-        
-        if (categoriaSelect) {
-            Array.from(categoriaSelect.options).forEach(option => {
-                option.selected = option.value === categoriaId;
-            });
-        }
-    });
-});
-
-</script>

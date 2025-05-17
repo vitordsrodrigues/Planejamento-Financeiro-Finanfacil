@@ -21,15 +21,10 @@ router.get('/dashboard',checkAuth,FinancasControllers.dashboard)
 router.get('/',FinancasControllers.showMain)
 
 //excluindo
-
-router.post('/remove',checkAuth,FinancasControllers.removeReceita)
-router.post('/remover',checkAuth,FinancasControllers.removeDespesa)
-router.post('/removec',checkAuth,FinancasControllers.removeCartao)
+router.post('/removeItem', FinancasControllers.removeItem);
 
 //editar
-
-router.post('/edit/',checkAuth,FinancasControllers.updateReceitaSave)
-router.post('/editd/',checkAuth,FinancasControllers.updateDespesaSave)
+router.post('/updateItem', FinancasControllers.updateItem);
 router.post('/editc/',checkAuth,FinancasControllers.updateCartaoSave)
 
 module.exports = router

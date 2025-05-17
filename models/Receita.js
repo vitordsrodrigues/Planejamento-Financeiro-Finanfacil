@@ -19,11 +19,15 @@ const Receita = db.define('Receita', {
         }
     },
     date: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY, // Armazena apenas a data (sem horas)
         allowNull: false,
         validate: {
             isDate: true
         }
+    },
+    foiProcessada: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
     CategoriaId: {  // Definindo explicitamente a coluna da chave estrangeira
         type: DataTypes.INTEGER,

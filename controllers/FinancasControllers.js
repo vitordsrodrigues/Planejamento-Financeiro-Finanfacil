@@ -9,6 +9,10 @@ const Categorias = require('../models/Categorias')
 const CategoriaUsuario = require('../models/CategoriaUsuario')
 const { Op } = require('sequelize'); // Certifique-se de importar o operador Op no topo do arquivo
 const sequelize = require('../db/conn') // Importa a instância do sequelize já configurada
+const atualizarSaldo = require('../helpers/atualizarSaldo') // Importa a função de atualização de saldo
+const converterDataParaISO = require('../helpers/converter'); // Ajuste o caminho conforme necessário
+const processarPendentes = require('../helpers/processarPendentes');
+
 
 module.exports = class FinancasControllers{
 
@@ -22,11 +26,13 @@ module.exports = class FinancasControllers{
  
     static async dashboard(req, res) {
         const userId = req.session.userid;
-    
+        
         if (!userId) {
             return res.redirect('/login');
         }
-    
+        // Processar receitas e despesas pendentes
+        await processarPendentes(userId);
+        
         try {
             // Obtém o mês e ano dos parâmetros ou usa o mês/ano atual
             const mesAtual = parseInt(req.query.mes) || new Date().getMonth() + 1; // Meses começam em 0
@@ -286,7 +292,8 @@ module.exports = class FinancasControllers{
             meses,
             anosDisponiveis,
             mesAtualNome: meses.find(m => m.valor === mesAtual).nome,
-            linkExibido // Passar apenas o link selecionado para a view
+            linkExibido, // Passar apenas o link selecionado para a view
+            messages: res.locals.messages
         });
     
         } catch (error) {
@@ -310,8 +317,6 @@ module.exports = class FinancasControllers{
         }
     }
     
-    
-    
     static async viewSaldo(req,res){
         const userId = req.session.userid;
     
@@ -330,7 +335,6 @@ module.exports = class FinancasControllers{
     
        
     }
-    // Controller: viewReceitas
 
     static async viewReceitas(req, res) {
         const userId = req.session.userid;
@@ -431,7 +435,8 @@ module.exports = class FinancasControllers{
                 mesAtual,
                 meses,
                 nomeMesAtual,
-                categorias // Passa a lista de categorias para a view
+                categorias, // Passa a lista de categorias para a view
+                messages: res.locals.messages 
             });
     
         } catch (error) {
@@ -461,12 +466,16 @@ module.exports = class FinancasControllers{
             return res.redirect('/login');
         }
     
+        // Converte a data do formato brasileiro para ISO
+        const dataISO = converterDataParaISO(req.body.date);
+    
         const receita = {
             title: req.body.title,
             value: parseFloat(req.body.value),
-            date: req.body.date,
+            date: new Date(dataISO), // Converte para um objeto Date
             UserId: userId,
-            CategoriaId: req.body.CategoriaId
+            CategoriaId: req.body.CategoriaId,
+            foiProcessada: false // Inicialmente, a receita não foi processada
         };
     
         if (isNaN(receita.value) || receita.value <= 0) {
@@ -478,7 +487,7 @@ module.exports = class FinancasControllers{
             // Cria a nova receita no banco de dados
             const novaReceita = await Receita.create(receita);
     
-            // Verifica se a categoria do usuário já existe na tabela CategoriaUsuario
+            // Atualiza ou cria a categoria do usuário
             let categoriaUsuario = await CategoriaUsuario.findOne({
                 where: { UserId: userId, CategoriaId: req.body.CategoriaId }
             });
@@ -495,35 +504,27 @@ module.exports = class FinancasControllers{
                 });
             }
     
-            // Busca todas as receitas do usuário e calcula o total de receitas
-            const todasReceitas = await Receita.findAll({
-                where: { UserId: userId },
-                attributes: ['value'],
-                raw: true
-            });
+            // Verifica se o mês da receita já chegou
+            const hoje = new Date();
+            const mesAtual = hoje.getMonth() + 1; // Meses começam em 0
+            const anoAtual = hoje.getFullYear();
     
-            let totalReceitas = todasReceitas.reduce((acc, receita) => acc + (parseFloat(receita.value) || 0), 0);
+            const dataReceita = new Date(dataISO);
+            const mesReceita = dataReceita.getMonth() + 1;
+            const anoReceita = dataReceita.getFullYear();
     
-            // Busca ou cria as finanças pessoais do usuário
-            let financas = await FinancaPessoais.findOne({ where: { UserId: userId } });
+            if (anoReceita < anoAtual || (anoReceita === anoAtual && mesReceita <= mesAtual)) {
+                // Atualiza o saldo imediatamente se o mês já chegou
+                await atualizarSaldo(userId, receita.value, 'receita');
     
-            if (financas) {
-                let saldoAtual = parseFloat(financas.saldo) || 0;
-                let receitaValor = parseFloat(receita.value) || 0;
-    
-                financas.saldo = saldoAtual + receitaValor;
-                financas.totalReceitas = totalReceitas; // Atualiza o total de receitas
-                await financas.save();
+                // Marca a receita como processada
+                novaReceita.foiProcessada = true;
+                await novaReceita.save();
             } else {
-                await FinancaPessoais.create({
-                    UserId: userId,
-                    saldo: parseFloat(receita.value) || 0,
-                    totalReceitas: totalReceitas
-                });
+                console.log('A receita foi salva, mas o saldo será atualizado apenas no mês da receita.');
             }
     
             req.flash('message', 'Receita criada com sucesso');
-    
             req.session.save(err => {
                 if (err) {
                     console.error('Erro ao salvar a sessão:', err);
@@ -636,7 +637,8 @@ module.exports = class FinancasControllers{
                 mesAtual,
                 meses,
                 nomeMesAtual,
-                categorias
+                categorias,
+                messages: res.locals.messages 
             });
     
         } catch (error) {
@@ -662,12 +664,16 @@ module.exports = class FinancasControllers{
             return res.redirect('/login');
         }
     
+        // Converte a data do formato brasileiro para ISO
+        const dataISO = converterDataParaISO(req.body.date);
+    
         const despesa = {
             title: req.body.title,
             valor: parseFloat(req.body.valor),
-            date: req.body.date,
+            date: new Date(dataISO), // Converte para um objeto Date
             UserId: userId,
-            CategoriaId: req.body.CategoriaId
+            CategoriaId: req.body.CategoriaId,
+            foiProcessada: false // Inicialmente, a despesa não foi processada
         };
     
         if (isNaN(despesa.valor) || despesa.valor <= 0) {
@@ -679,13 +685,13 @@ module.exports = class FinancasControllers{
             // Criar a nova despesa no banco de dados
             const novaDespesa = await Despesas.create(despesa);
     
-            // Verifica se a categoria do usuário já existe na tabela CategoriaUsuario
+            // Atualiza ou cria a categoria do usuário
             let categoriaUsuario = await CategoriaUsuario.findOne({
                 where: { UserId: userId, CategoriaId: despesa.CategoriaId }
             });
     
             if (categoriaUsuario) {
-                // Se já existe, soma o valor ao totalGasto diretamente no banco
+                // Se já existe, soma o valor ao totalDespesas diretamente no banco
                 await categoriaUsuario.increment('totalDespesas', { by: despesa.valor });
             } else {
                 // Se não existe, cria um novo registro na CategoriaUsuario
@@ -696,35 +702,27 @@ module.exports = class FinancasControllers{
                 });
             }
     
-            // Buscar todas as despesas do usuário e calcular o total de despesas
-            const todasDespesas = await Despesas.findAll({
-                where: { UserId: userId },
-                attributes: ['valor'],
-                raw: true
-            });
+            // Verifica se o mês da despesa já chegou
+            const hoje = new Date();
+            const mesAtual = hoje.getMonth() + 1; // Meses começam em 0
+            const anoAtual = hoje.getFullYear();
     
-            let totalDespesas = todasDespesas.reduce((acc, despesa) => acc + (parseFloat(despesa.valor) || 0), 0);
+            const dataDespesa = new Date(dataISO);
+            const mesDespesa = dataDespesa.getMonth() + 1;
+            const anoDespesa = dataDespesa.getFullYear();
     
-            // Buscar ou criar as finanças pessoais do usuário
-            let financas = await FinancaPessoais.findOne({ where: { UserId: userId } });
+            if (anoDespesa < anoAtual || (anoDespesa === anoAtual && mesDespesa <= mesAtual)) {
+                // Atualiza o saldo imediatamente se o mês já chegou
+                await atualizarSaldo(userId, despesa.valor, 'despesa');
     
-            if (financas) {
-                let saldoAtual = parseFloat(financas.saldo) || 0;
-                let despesaValor = parseFloat(despesa.valor) || 0;
-    
-                financas.saldo = saldoAtual - despesaValor; // Subtrai a despesa do saldo
-                financas.totalDespesas = totalDespesas; // Atualiza o total de despesas
-                await financas.save();
+                // Marca a despesa como processada
+                novaDespesa.foiProcessada = true;
+                await novaDespesa.save();
             } else {
-                await FinancaPessoais.create({
-                    UserId: userId,
-                    saldo: -parseFloat(despesa.valor) || 0, // Inicializa com valor negativo
-                    totalDespesas: totalDespesas
-                });
+                console.log('A despesa foi salva, mas o saldo será atualizado apenas no mês da despesa.');
             }
     
             req.flash('message', 'Despesa criada com sucesso');
-    
             req.session.save(err => {
                 if (err) {
                     console.error('Erro ao salvar a sessão:', err);
@@ -739,8 +737,6 @@ module.exports = class FinancasControllers{
             return res.redirect('/financas/viewDespesas');
         }
     }
-    
-    
     
     static async viewCartaos(req, res) {
         const userId = req.session.userid;
@@ -853,11 +849,8 @@ module.exports = class FinancasControllers{
                 cartaos: cartaosProcessados,
                 dias,
                 categorias,
-                dataHoje: new Date().toISOString().split('T')[0],
-                messages: {
-                    message: req.flash('message')[0],  // Passa a mensagem aqui
-                    error: req.flash('error')[0]       // Passa o erro também, se necessário
-                },
+                dataHoje: new Date().toISOString().split('T'),
+                messages: res.locals.messages ,
                 meses,
                 mesSelecionado,
                 anoSelecionado
@@ -871,7 +864,6 @@ module.exports = class FinancasControllers{
         }
     }
     
-
    static async createCartaoSave(req, res) {
 
         const { name, limite_total, dataFechamento, datavence } = req.body;
@@ -957,426 +949,485 @@ module.exports = class FinancasControllers{
         }
     }
 
-    static async removeReceita(req, res) {
-        const id = req.body.id;
+    static async updateCartaoSave(req, res) {
+        const { id, ...dados } = req.body;
         const UserId = req.session.userid;
     
-        try {
-            // Buscar a receita antes de remover
-            const receita = await Receita.findOne({ where: { id: id, UserId: UserId } });
-    
-            if (!receita) {
-                req.flash('error', 'Receita não encontrada!');
-                return res.redirect('/financas/viewReceitas');
-            }
-    
-            let receitaValor = parseFloat(receita.value) || 0;
-    
-            // Buscar as finanças do usuário
-            let financas = await FinancaPessoais.findOne({ where: { UserId: UserId } });
-    
-            if (financas) {
-                let saldoAtual = parseFloat(financas.saldo) || 0;
-                let totalReceitas = parseFloat(financas.totalReceitas) || 0;
-    
-                // Atualiza saldo e total de receitas
-                financas.saldo = saldoAtual - receitaValor;
-                financas.totalReceitas = totalReceitas - receitaValor;
-                await financas.save();
-            }
-    
-            // Atualizar ou remover a categoria do usuário
-            let categoriaUsuario = await CategoriaUsuario.findOne({
-                where: { UserId: UserId, CategoriaId: receita.CategoriaId }
-            });
-    
-            if (categoriaUsuario) {
-                let novoTotal = parseFloat(categoriaUsuario.totalRecebido) - receitaValor;
-    
-                if (novoTotal > 0) {
-                    // Apenas atualiza se ainda houver valor na categoria
-                    categoriaUsuario.totalRecebido = novoTotal;
-                    await categoriaUsuario.save();
-                } else {
-                    // Se o totalRecebido for zero ou menor, remove a categoria do usuário
-                    await CategoriaUsuario.destroy({
-                        where: { UserId: UserId, CategoriaId: receita.CategoriaId }
-                    });
-                }
-            }
-    
-            // Agora, remover a receita
-            const deleted = await Receita.destroy({ where: { id: id, UserId: UserId } });
-    
-            if (!deleted) {
-                req.flash('error', 'Erro ao remover a receita.');
-                return res.redirect('/financas/viewReceitas');
-            }
-    
-            req.flash('message', 'Receita removida com sucesso!');
-            req.session.save(() => {
-                return res.redirect('/financas/viewReceitas');
-            });
-    
-        } catch (error) {
-            console.log(`Aconteceu um erro: `, error);
-            req.flash('error', 'Erro ao tentar remover a receita!');
-            return res.redirect('/financas/viewReceitas');
+        if (!UserId) {
+            return res.redirect('/login');
         }
-    }
-    
-    static async removeDespesa(req, res) {
-        const id = req.body.id;
-        const UserId = req.session.userid;
     
         try {
-            // Buscar a despesa antes de remover
-            const despesa = await Despesas.findOne({ where: { id: id, UserId: UserId } });
-    
-            if (!despesa) {
-                req.flash('error', 'Despesa não encontrada!');
-                return res.redirect('/financas/viewDespesas');
-            }
-    
-            let despesaValor = parseFloat(despesa.valor) || 0;
-    
-            // Buscar as finanças do usuário
-            let financas = await FinancaPessoais.findOne({ where: { UserId: UserId } });
-    
-            if (financas) {
-                let saldoAtual = parseFloat(financas.saldo) || 0;
-                let totalDespesas = parseFloat(financas.totalDespesas) || 0;
-    
-                // Atualiza saldo e total de despesas
-                financas.saldo = saldoAtual + despesaValor;
-                financas.totalDespesas = totalDespesas - despesaValor;
-                await financas.save();
-            }
-    
-            // Atualizar ou remover a categoria do usuário
-            let categoriaUsuario = await CategoriaUsuario.findOne({
-                where: { UserId: UserId, CategoriaId: despesa.CategoriaId }
-            });
-    
-            if (categoriaUsuario) {
-                let novoTotal = parseFloat(categoriaUsuario.totalDespesas) - despesaValor;
-    
-                if (novoTotal > 0) {
-                    // Apenas atualiza se ainda houver valor na categoria
-                    categoriaUsuario.totalDespesas = novoTotal;
-                    await categoriaUsuario.save();
-                } else {
-                    // Se o totalGasto for zero ou menor, remove a categoria do usuário
-                    await CategoriaUsuario.destroy({
-                        where: { UserId: UserId, CategoriaId: despesa.CategoriaId }
-                    });
-                }
-            }
-    
-            // Agora, remover a despesa
-            const deleted = await Despesas.destroy({ where: { id: id, UserId: UserId } });
-    
-            if (!deleted) {
-                req.flash('error', 'Erro ao remover a despesa.');
-                return res.redirect('/financas/viewDespesas');
-            }
-    
-            req.flash('message', 'Despesa removida com sucesso!');
-            req.session.save(() => {
-                return res.redirect('/financas/viewDespesas');
-            });
-    
-        } catch (error) {
-            console.log(`Aconteceu um erro: `, error);
-            req.flash('error', 'Erro ao tentar remover a despesa!');
-            return res.redirect('/financas/viewDespesas');
-        }
-    }
-    
-    static async removeCartao(req,res){
-
-        const id = req.body.id
-        const UserId = req.session.userid
-
-        try{
-            await Cartao.destroy({where:{id:id,UserId:UserId}})
-            req.session.save(()=>{
-                return res.redirect('/financas/viewCartaos')
-            })
-        }catch(error){
-            console.log(`aconteceu um erro` + error)
-        }
-        
-    }
-
-    static async updateReceitaSave(req, res) {
-        try {
-            const id = req.body.id;
-            const valor = parseFloat(req.body.value);
+            console.log('Iniciando updateCartaoSave com dados:', dados);
             
-            if (isNaN(valor) || valor < 0) {
-                req.flash('message', 'Valor inválido para a receita');
-                return res.redirect('/financas/viewReceitas');
-            }
-    
-            const receita = {
-                title: req.body.title,
-                value: valor,
-                date: req.body.date,
-                CategoriaId: req.body.CategoriaId
-            };
-    
-            const receitaAtual = await Receita.findOne({ where: { id } });
-            if (!receitaAtual) {
-                req.flash('message', 'Receita não encontrada');
-                return res.redirect('/financas/viewReceitas');
-            }
-    
-            const userId = receitaAtual.UserId;
-            const valorAntigo = parseFloat(receitaAtual.value) || 0;
-            const novoValor = receita.value;
-            const categoriaAntigaId = receitaAtual.CategoriaId;
-            const categoriaNovaId = receita.CategoriaId;
-    
-            const t = await sequelize.transaction();
-    
-            try {
-                await Receita.update(receita, { where: { id }, transaction: t });
-    
-                let financas = await FinancaPessoais.findOne({ 
-                    where: { UserId: userId },
-                    transaction: t 
+            // Buscar o cartão
+            const cartao = await Cartao.findOne({ where: { id, UserId } });
+            if (!cartao) {
+                // Ainda usamos req.flash, mas forçamos o salvamento da sessão
+                req.flash('error', 'Cartão não encontrado!');
+                return req.session.save(() => {
+                    res.redirect('/financas/viewCartaos');
                 });
-    
-                if (financas) {
-                    financas.totalReceitas = parseFloat(financas.totalReceitas) - valorAntigo + novoValor;
-                    financas.saldo = parseFloat(financas.saldo) - valorAntigo + novoValor;
-                    await financas.save({ transaction: t });
-                }
-    
-                if (categoriaAntigaId !== categoriaNovaId) {
-                    const receitasAntigas = await Receita.findAll({
-                        where: { CategoriaId: categoriaAntigaId, UserId: userId },
-                        transaction: t
+            }
+            
+            const hoje = new Date();
+            const diaAtual = hoje.getDate();
+            
+            // Validações específicas para cartão
+            if (dados.limite_total) {
+                // Verificar se o novo limite é menor que a fatura atual
+                const faturaAtual = await Fatura.findOne({
+                    where: { 
+                        CartaoId: id,
+                        status: ['Aberta', 'Fechada'] // Faturas não pagas
+                    },
+                    order: [['valor_total', 'DESC']] // Pegar a maior fatura
+                });
+                
+                if (faturaAtual && parseFloat(dados.limite_total) < parseFloat(faturaAtual.valor_total)) {
+                    req.flash('error', 'O limite não pode ser menor que o valor da fatura atual!');
+                    return req.session.save(() => {
+                        res.redirect('/financas/viewCartaos');
                     });
+                }
+            }
+            
+            // Validar fechamento e vencimento
+            if (dados.datavence && dados.dataFechamento) {
+                const vencimento = parseInt(dados.datavence);
+                const fechamento = parseInt(dados.dataFechamento);
+                
+                // Validação 1: Vencimento não pode ser menor que a data atual
+                if (vencimento < diaAtual) {
+                    req.flash('error', 'O vencimento não pode ser menor que a data atual!');
+                    return req.session.save(() => {
+                        res.redirect('/financas/viewCartaos');
+                    });
+                }
+                
+                // Validação 2: Vencimento não pode ser igual ao fechamento
+                if (vencimento === fechamento) {
+                    req.flash('error', 'O vencimento não pode ser igual ao fechamento!');
+                    return req.session.save(() => {
+                        res.redirect('/financas/viewCartaos');
+                    });
+                }
+                
+                // Validação 3: Fechamento deve ser no máximo 7 dias antes do vencimento
+                let diferenca;
+                
+                if (vencimento > fechamento) {
+                    // Se o vencimento é depois do fechamento no mesmo mês
+                    diferenca = vencimento - fechamento;
+                } else {
+                    // Se o vencimento é no mês seguinte ao fechamento
+                    diferenca = vencimento + (30 - fechamento);
+                }
+                
+                if (diferenca > 7) {
+                    req.flash('error', 'O fechamento deve ser no máximo 7 dias antes do vencimento!');
+                    return req.session.save(() => {
+                        res.redirect('/financas/viewCartaos');
+                    });
+                }
+            }
+            
+            // Atualizar o cartão
+            await Cartao.update(dados, { where: { id, UserId } });
+            
+            req.flash('message', 'Cartão atualizado com sucesso!');
+            return req.session.save(() => {
+                res.redirect('/financas/viewCartaos');
+            });
+        } catch (error) {
+            console.error('Erro ao atualizar cartão:', error);
+            req.flash('error', `Ocorreu um erro: ${error.message}`);
+            return req.session.save(() => {
+                res.redirect('/financas/viewCartaos');
+            });
+        }
+    }
+
+    static async removeItem(req, res) {
+        const { id, tipo } = req.body; // `tipo` pode ser 'receita', 'despesa' ou 'cartao'
+        const UserId = req.session.userid;
     
-                    const totalAntigo = receitasAntigas.reduce((acc, rec) => acc + parseFloat(rec.value), 0);
+        if (!UserId) {
+            return res.redirect('/login');
+        }
     
-                    if (totalAntigo > 0) {
-                        await CategoriaUsuario.update({
-                            totalRecebido: totalAntigo
-                        }, {
-                            where: { CategoriaId: categoriaAntigaId, UserId: userId },
-                            transaction: t
-                        });
-                    } else {
-                        await CategoriaUsuario.destroy({
-                            where: { CategoriaId: categoriaAntigaId, UserId: userId },
-                            transaction: t
-                        });
+        try {
+            let item, valor, categoriaId, dataItem;
+    
+            // Identificar o tipo de item e buscar no banco
+            if (tipo === 'receita') {
+                item = await Receita.findOne({ where: { id, UserId } });
+                if (!item) {
+                    req.flash('error', 'Receita não encontrada!');
+                    return res.redirect('/financas/viewReceitas');
+                }
+                valor = parseFloat(item.value) || 0;
+                categoriaId = item.CategoriaId;
+                dataItem = new Date(item.date);
+            } else if (tipo === 'despesa') {
+                item = await Despesas.findOne({ where: { id, UserId } });
+                if (!item) {
+                    req.flash('error', 'Despesa não encontrada!');
+                    return res.redirect('/financas/viewDespesas');
+                }
+                valor = parseFloat(item.valor) || 0;
+                categoriaId = item.CategoriaId;
+                dataItem = new Date(item.date);
+            } else if (tipo === 'cartao') {
+                item = await Cartao.findOne({ where: { id, UserId } });
+                if (!item) {
+                    req.flash('error', 'Cartão não encontrado!');
+                    return res.redirect('/financas/viewCartaos');
+                }
+            } else {
+                req.flash('error', 'Tipo inválido!');
+                return res.redirect('/financas/dashboard');
+            }
+    
+            // Atualizar saldo apenas se for receita ou despesa e a data já tiver chegado
+            if (tipo === 'receita' || tipo === 'despesa') {
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0); // Zera as horas para comparar apenas a data
+    
+                if (dataItem <= hoje) {
+                    const financas = await FinancaPessoais.findOne({ where: { UserId } });
+                    if (financas) {
+                        const saldoAtual = parseFloat(financas.saldo) || 0;
+                        const totalReceitas = parseFloat(financas.totalReceitas) || 0;
+                        const totalDespesas = parseFloat(financas.totalDespesas) || 0;
+    
+                        if (tipo === 'receita') {
+                            financas.saldo = saldoAtual - valor; // Subtrai o valor da receita do saldo
+                            financas.totalReceitas = totalReceitas - valor; // Atualiza o total de receitas
+                        } else if (tipo === 'despesa') {
+                            financas.saldo = saldoAtual + valor; // Adiciona o valor da despesa de volta ao saldo
+                            financas.totalDespesas = totalDespesas - valor; // Atualiza o total de despesas
+                        }
+                        await financas.save();
                     }
                 }
     
-                const receitasNovas = await Receita.findAll({
-                    where: { CategoriaId: categoriaNovaId, UserId: userId },
-                    transaction: t
+                // Atualizar ou remover a categoria do usuário
+                const categoriaUsuario = await CategoriaUsuario.findOne({
+                    where: { UserId, CategoriaId: categoriaId }
                 });
     
-                const totalNovo = receitasNovas.reduce((acc, rec) => acc + parseFloat(rec.value), 0);
+                if (categoriaUsuario) {
+                    if (tipo === 'receita') {
+                        categoriaUsuario.totalRecebido -= valor;
+                    } else if (tipo === 'despesa') {
+                        categoriaUsuario.totalDespesas -= valor;
+                    }
     
-                await CategoriaUsuario.upsert({
-                    UserId: userId,
-                    CategoriaId: categoriaNovaId,
-                    totalRecebido: totalNovo
-                }, { transaction: t });
-    
-                await t.commit();
-    
-                req.flash('message', 'Receita atualizada com sucesso');
-                req.session.save(() => {
-                    return res.redirect('/financas/viewReceitas');
-                });
-            } catch (err) {
-                await t.rollback();
-                throw err;
-            }
-        } catch (err) {
-            console.error('Erro ao atualizar receita:', err);
-            req.flash('message', 'Erro ao atualizar receita. Por favor, tente novamente.');
-            return res.redirect('/financas/viewReceitas');
-        }
-    }
-    
-   // Método para atualizar uma despesa existente
-    static async updateDespesaSave(req, res) {
-        try {
-            // Pega o ID da despesa que será atualizada
-            const id = req.body.id;
-
-            // Valida se o valor é um número válido e positivo
-            const valor = parseFloat(req.body.valor);
-            if (isNaN(valor) || valor < 0) {
-                req.flash('message', 'Valor inválido para a despesa');
-                return res.redirect('/financas/viewDespesas');
-            }
-
-            // Cria o objeto com os dados da despesa
-            const despesa = {
-                title: req.body.title,
-                valor: valor,
-                date: req.body.date,
-                CategoriaId: req.body.CategoriaId
-            };
-
-            // Busca a despesa atual no banco
-            const despesaAtual = await Despesas.findOne({ where: { id } });
-            if (!despesaAtual) {
-                req.flash('message', 'Despesa não encontrada');
-                return res.redirect('/financas/viewDespesas');
-            }
-
-            // Guarda as informações importantes
-            const userId = despesaAtual.UserId;
-            const valorAntigo = parseFloat(despesaAtual.valor) || 0;
-            const novoValor = despesa.valor;
-            const categoriaAntigaId = despesaAtual.CategoriaId;
-            const categoriaNovaId = despesa.CategoriaId;
-
-            // Inicia uma transação para garantir que todas as operações sejam feitas juntas
-            const t = await sequelize.transaction();
-
-            try {
-                // 1. Atualiza a despesa
-                await Despesas.update(despesa, { 
-                    where: { id },
-                    transaction: t
-                });
-
-                // 2. Atualiza as finanças do usuário
-                let financas = await FinancaPessoais.findOne({ 
-                    where: { UserId: userId },
-                    transaction: t
-                });
-
-                if (financas) {
-                    // Atualiza total de despesas primeiro removendo o valor antigo e adicionando o novo
-                    financas.totalDespesas = parseFloat(financas.totalDespesas) - parseFloat(valorAntigo) + parseFloat(novoValor);
-
-                    // Atualiza o saldo baseado na diferença
-                    const diferenca = parseFloat(novoValor) - parseFloat(valorAntigo);
-                    financas.saldo = parseFloat(financas.saldo) - diferenca;
-
-                    await financas.save({ transaction: t });
-                }
-
-               // Atualizar a categoria antiga (se mudou de categoria)
-            if (categoriaAntigaId !== categoriaNovaId) {
-                const despesasAntigas = await Despesas.findAll({
-                    where: { 
-                        CategoriaId: categoriaAntigaId,
-                        UserId: userId 
-                    },
-                    transaction: t
-                });
-
-                const totalAntigo = despesasAntigas.reduce((acc, desp) => acc + parseFloat(desp.valor), 0);
-
-                if (totalAntigo > 0) {
-                    await CategoriaUsuario.update({
-                        totalDespesas: totalAntigo
-                    }, {
-                        where: { 
-                            CategoriaId: categoriaAntigaId,
-                            UserId: userId
-                        },
-                        transaction: t
-                    });
-                } else {
-                    await CategoriaUsuario.destroy({ 
-                        where: { 
-                            CategoriaId: categoriaAntigaId,
-                            UserId: userId
-                        },
-                        transaction: t 
-                    });
+                    if ((categoriaUsuario.totalRecebido || 0) <= 0 && (categoriaUsuario.totalDespesas || 0) <= 0) {
+                        await CategoriaUsuario.destroy({ where: { UserId, CategoriaId: categoriaId } });
+                    } else {
+                        await categoriaUsuario.save();
+                    }
                 }
             }
+    
+            // Remover o item
+            if (tipo === 'cartao') {
+                // Remover faturas e despesas associadas ao cartão
+                const faturas = await Fatura.findAll({ where: { CartaoId: id } });
+                for (const fatura of faturas) {
+                    await DespesaCartao.destroy({ where: { FaturaId: fatura.id } });
+                }
+                await Fatura.destroy({ where: { CartaoId: id } });
 
-            // Atualizar a nova categoria
-            const despesasNovas = await Despesas.findAll({
-                where: { 
-                    CategoriaId: categoriaNovaId,
-                    UserId: userId
-                },
-                transaction: t
-            });
-
-            const totalNovo = despesasNovas.reduce((acc, desp) => acc + parseFloat(desp.valor), 0);
-
-            await CategoriaUsuario.upsert({
-                UserId: userId,
-                CategoriaId: categoriaNovaId,
-                totalDespesas: totalNovo
-            }, { 
-                transaction: t 
-            });
-
-                // Confirma todas as alterações
-                await t.commit();
-
-                // Redireciona com mensagem de sucesso
-                req.flash('message', 'Despesa atualizada com sucesso');
-                req.session.save(() => {
-                    return res.redirect('/financas/viewDespesas');
-                });
-
-            } catch (err) {
-                // Se der erro, desfaz todas as alterações
-                await t.rollback();
-                throw err;
+                // Remover o registro na tabela CategoriaUsuario
+                if (categoriaId) {
+                    await CategoriaUsuario.destroy({ where: { UserId, CategoriaId: categoriaId } });
+                }
             }
-
-        } catch (err) {
-            console.error('Erro ao atualizar despesa:', err);
-            req.flash('message', 'Erro ao atualizar despesa. Por favor, tente novamente.');
-            return res.redirect('/financas/viewDespesas');
-        }
-    }
+        
+            const deleted = await (tipo === 'receita'
+                ? Receita.destroy({ where: { id, UserId } })
+                : tipo === 'despesa'
+                ? Despesas.destroy({ where: { id, UserId } })
+                : Cartao.destroy({ where: { id, UserId } }));
     
-    static async updateCartaoSave(req, res) {
-        const { id, name, limite_total, dataFechamento, datavence } = req.body;
+            if (!deleted) {
+                req.flash('error', `Erro ao remover ${tipo}.`);
+                return res.redirect(`/financas/view${tipo.charAt(0).toUpperCase() + tipo.slice(1)}s`);
+            }
     
-        // Converter para objetos Date para comparação
-        const fechamento = new Date(dataFechamento);
-        const vencimento = new Date(datavence);
-    
-        // Validação das datas
-        if (vencimento <= fechamento) {
-            req.flash('message', 'A data de vencimento deve ser maior que a data de fechamento.');
-            return req.session.save(() => {
-                return res.redirect('/financas/viewCartaos'); // Garante que a mensagem de erro seja exibida
-            });
-        }
-    
-        const cartao = {
-            name,
-            limite_total,
-            dataFechamento,
-            datavence,
-            UserId: req.session.userid
-        };
-    
-        try {
-            await Cartao.update(cartao, { where: { id: id } });
-    
-            req.flash('message', 'Cartão atualizado com sucesso');
+            req.flash('message', `${tipo.charAt(0).toUpperCase() + tipo.slice(1)} removido(a) com sucesso!`);
             req.session.save(() => {
-                return res.redirect('/financas/viewCartaos');
+                return res.redirect(`/financas/view${tipo.charAt(0).toUpperCase() + tipo.slice(1)}s`);
             });
-        } catch (err) {
-            console.log(err);
+        } catch (error) {
+            console.error(`Erro ao remover ${tipo}:`, error);
+            req.flash('error', `Erro ao tentar remover ${tipo}.`);
+            return res.redirect(`/financas/view${tipo.charAt(0).toUpperCase() + tipo.slice(1)}s`);
         }
     }
-  
+
+    static async updateItem(req, res) {
+        const { id, tipo, ...dados } = req.body;
+        const UserId = req.session.userid;
     
+        if (!UserId) {
+            return res.redirect('/login');
+        }
+    
+        try {
+            console.log('Iniciando updateItem para tipo:', tipo, 'com dados:', dados);
+            
+            // Verificar se o tipo é válido (apenas receita ou despesa)
+            if (tipo !== 'receita' && tipo !== 'despesa') {
+                req.flash('error', 'Tipo inválido ou não suportado nesta função!');
+                return res.redirect('/financas/dashboard');
+            }
+            
+            let itemAntigo, categoriaIdAntiga, valorAntigo, dataAntiga, valorNovo;
+            const hoje = new Date();
+            const mesAtual = hoje.getMonth();
+            const anoAtual = hoje.getFullYear();
+            
+            console.log('Mês atual:', mesAtual, 'Ano atual:', anoAtual);
+            
+            // Buscar o item original para comparação posterior
+            if (tipo === 'receita') {
+                itemAntigo = await Receita.findOne({ where: { id, UserId } });
+                if (!itemAntigo) {
+                    req.flash('error', 'Receita não encontrada!');
+                    return res.redirect('/financas/viewReceitas');
+                }
+                valorAntigo = parseFloat(itemAntigo.value) || 0;
+                categoriaIdAntiga = itemAntigo.CategoriaId;
+                dataAntiga = new Date(itemAntigo.date);
+                valorNovo = parseFloat(dados.value) || valorAntigo;
+                
+                console.log('Receita antiga:', {
+                    id: itemAntigo.id,
+                    value: valorAntigo,
+                    date: dataAntiga,
+                    foiProcessada: itemAntigo.foiProcessada
+                });
+                console.log('Novo valor da receita:', valorNovo);
+                
+                // Verificar se a nova data é do mês atual ou futuro
+                const dataForm = dados.date ? new Date(dados.date) : dataAntiga;
+                const mesDataForm = dataForm.getMonth();
+                const anoDataForm = dataForm.getFullYear();
+                
+                const novaEhMesAtual = mesDataForm === mesAtual && anoDataForm === anoAtual;
+                const novaEhFutura = (anoDataForm > anoAtual) || 
+                                    (anoDataForm === anoAtual && mesDataForm > mesAtual);
+                
+                // IMPORTANTE: Definir a flag foiProcessada baseada na nova data
+                if (novaEhMesAtual) {
+                    dados.foiProcessada = true;
+                    console.log('Definindo foiProcessada = true (mês atual)');
+                } else if (novaEhFutura) {
+                    dados.foiProcessada = false;
+                    console.log('Definindo foiProcessada = false (mês futuro)');
+                }
+                
+            } else if (tipo === 'despesa') {
+                itemAntigo = await Despesas.findOne({ where: { id, UserId } });
+                if (!itemAntigo) {
+                    req.flash('error', 'Despesa não encontrada!');
+                    return res.redirect('/financas/viewDespesas');
+                }
+                valorAntigo = parseFloat(itemAntigo.valor) || 0;
+                categoriaIdAntiga = itemAntigo.CategoriaId;
+                dataAntiga = new Date(itemAntigo.date);
+                valorNovo = parseFloat(dados.valor) || valorAntigo;
+                
+                console.log('Despesa antiga:', {
+                    id: itemAntigo.id,
+                    valor: valorAntigo,
+                    date: dataAntiga,
+                    foiProcessada: itemAntigo.foiProcessada
+                });
+                console.log('Novo valor da despesa:', valorNovo);
+                
+                // Verificar se a nova data é do mês atual ou futuro
+                const dataForm = dados.date ? new Date(dados.date) : dataAntiga;
+                const mesDataForm = dataForm.getMonth();
+                const anoDataForm = dataForm.getFullYear();
+                
+                const novaEhMesAtual = mesDataForm === mesAtual && anoDataForm === anoAtual;
+                const novaEhFutura = (anoDataForm > anoAtual) || 
+                                    (anoDataForm === anoAtual && mesDataForm > mesAtual);
+                
+                // IMPORTANTE: Definir a flag foiProcessada baseada na nova data
+                if (novaEhMesAtual) {
+                    dados.foiProcessada = true;
+                    console.log('Definindo foiProcessada = true (mês atual)');
+                } else if (novaEhFutura) {
+                    dados.foiProcessada = false;
+                    console.log('Definindo foiProcessada = false (mês futuro)');
+                }
+            }
+    
+            // Verificar mudança de status de processamento
+            const itemEraProcessado = itemAntigo.foiProcessada;
+            const novoProcessado = dados.foiProcessada;
+            const statusProcessamentoMudou = itemEraProcessado !== novoProcessado;
+            
+            console.log('Status de processamento: de', itemEraProcessado, 'para', novoProcessado);
+            console.log('Status de processamento mudou?', statusProcessamentoMudou);
+            
+            // Obter finanças para atualização
+            const financas = await FinancaPessoais.findOne({ where: { UserId } });
+            
+            if (financas) {
+                // Garantir que todos os valores sejam tratados como números
+                let saldoAtual = parseFloat(financas.saldo) || 0;
+                let totalReceitas = parseFloat(financas.totalReceitas) || 0;
+                let totalDespesas = parseFloat(financas.totalDespesas) || 0;
+                
+                console.log('Finanças atuais antes da atualização:', {
+                    saldo: saldoAtual,
+                    totalReceitas: totalReceitas,
+                    totalDespesas: totalDespesas
+                });
+                
+                // 1. Se o item antigo foi processado, desfazer seu efeito
+                if (itemEraProcessado) {
+                    console.log('Desfazendo efeito do item antigo processado');
+                    
+                    if (tipo === 'receita') {
+                        saldoAtual -= valorAntigo;
+                        totalReceitas -= valorAntigo;
+                    } else {
+                        saldoAtual += valorAntigo;
+                        totalDespesas -= valorAntigo;
+                    }
+                    
+                    console.log('Finanças após desfazer efeito do item antigo:', {
+                        saldo: saldoAtual,
+                        totalReceitas: totalReceitas,
+                        totalDespesas: totalDespesas
+                    });
+                }
+                
+                // 2. Se o novo item deve ser processado, aplicar novo valor
+                if (novoProcessado) {
+                    console.log('Aplicando efeito do novo item processado');
+                    
+                    if (tipo === 'receita') {
+                        saldoAtual += valorNovo;
+                        totalReceitas += valorNovo;
+                    } else {
+                        saldoAtual -= valorNovo;
+                        totalDespesas += valorNovo;
+                    }
+                    
+                    console.log('Finanças após aplicar efeito do novo item:', {
+                        saldo: saldoAtual,
+                        totalReceitas: totalReceitas,
+                        totalDespesas: totalDespesas
+                    });
+                }
+                
+                // Atualizar o objeto financas com os novos valores calculados
+                financas.saldo = saldoAtual;
+                financas.totalReceitas = totalReceitas;
+                financas.totalDespesas = totalDespesas;
+                
+                await financas.save();
+                console.log('Finanças salvas com sucesso');
+            }
+            
+            // Atualizar categorias
+            const categoriaIdNova = dados.CategoriaId || categoriaIdAntiga;
+
+            // Se a categoria mudou, atualizar ambas
+            if (categoriaIdNova !== categoriaIdAntiga) {
+                // Atualizar categoria antiga
+                let catAntiga = await CategoriaUsuario.findOne({
+                    where: { UserId, CategoriaId: categoriaIdAntiga }
+                });
+
+                if (catAntiga) {
+                    if (tipo === 'receita') {
+                        let totalRecebidoAntigo = parseFloat(catAntiga.totalRecebido) || 0;
+                        totalRecebidoAntigo -= valorAntigo;
+                        catAntiga.totalRecebido = Math.max(0, totalRecebidoAntigo);
+                    } else {
+                        let totalDespesasAntigo = parseFloat(catAntiga.totalDespesas) || 0;
+                        totalDespesasAntigo -= valorAntigo;
+                        catAntiga.totalDespesas = Math.max(0, totalDespesasAntigo);
+                    }
+
+                    await catAntiga.save();
+                }
+
+                // Atualizar nova categoria ou criar se não existir
+                let [catNova, criada] = await CategoriaUsuario.findOrCreate({
+                    where: { UserId, CategoriaId: categoriaIdNova },
+                    defaults: {
+                        totalRecebido: 0,
+                        totalDespesas: 0
+                    }
+                });
+
+                if (tipo === 'receita') {
+                    let totalRecebidoNovo = parseFloat(catNova.totalRecebido) || 0;
+                    totalRecebidoNovo += valorNovo;
+                    catNova.totalRecebido = totalRecebidoNovo;
+                } else {
+                    let totalDespesasNovo = parseFloat(catNova.totalDespesas) || 0;
+                    totalDespesasNovo += valorNovo;
+                    catNova.totalDespesas = totalDespesasNovo;
+                }
+
+                await catNova.save();
+            } else if (valorAntigo !== valorNovo) {
+                // A categoria não mudou, mas o valor sim
+                let [cat, criada] = await CategoriaUsuario.findOrCreate({
+                    where: { UserId, CategoriaId: categoriaIdNova },
+                    defaults: {
+                        totalRecebido: 0,
+                        totalDespesas: 0
+                    }
+                });
+
+                if (tipo === 'receita') {
+                    let totalRecebido = parseFloat(cat.totalRecebido) || 0;
+                    if (itemEraProcessado) totalRecebido -= valorAntigo;
+                    if (novoProcessado) totalRecebido += valorNovo;
+                    cat.totalRecebido = Math.max(0, totalRecebido);
+                } else {
+                    let totalDespesas = parseFloat(cat.totalDespesas) || 0;
+                    if (itemEraProcessado) totalDespesas -= valorAntigo;
+                    if (novoProcessado) totalDespesas += valorNovo;
+                    cat.totalDespesas = Math.max(0, totalDespesas);
+                }
+
+                await cat.save();
+            }
+
+            
+            // Atualizar o item com os novos dados
+            if (tipo === 'receita') {
+                await Receita.update(dados, { where: { id, UserId } });
+                req.flash('message', 'Receita atualizada com sucesso!');
+                return res.redirect('/financas/viewReceitas');
+            } else {
+                await Despesas.update(dados, { where: { id, UserId } });
+                req.flash('message', 'Despesa atualizada com sucesso!');
+                return res.redirect('/financas/viewDespesas');
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar item:', error);
+            req.flash('error', `Ocorreu um erro: ${error.message}`);
+            
+            if (tipo === 'receita') {
+                return res.redirect('/financas/viewReceitas');
+            } else {
+                return res.redirect('/financas/viewDespesas');
+            }
+        }
+    }  
 }

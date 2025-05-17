@@ -1,75 +1,72 @@
+/* =======================
+   GERAL E NAVBAR
+   ======================= */
 
+/* Fonte padrão do site */
 body{
     font-family: Arial, Helvetica, sans-serif;
 }
 
-
-/* Fundo azul escuro na navbar */
+/* Navbar azul escuro */
 #navbar {
     background-color: #004085; /* Azul escuro principal */
-    border-bottom: 2px solid #003366; /* Tom mais escuro para separar */
-    
+    border-bottom: 2px solid #003366; /* Linha de separação */
 }
 
-/* Ajuste do logo */
+/* Tamanho do logo na navbar */
 #logo {
     width: 40px;
 }
 
-/* Melhorando a cor e o hover dos links */
+/* Links do menu principal */
 .navbar-nav .nav-link {
-    color: #ffffff !important; /* Deixa os links sempre brancos */
-    font-weight: bold;
-    transition: 0.3s;
-    padding: 10px 20px; /* Aumenta espaçamento ao redor do link */
-    margin: 0 10px; /* Adiciona espaçamento entre os links */
-}
-
-/* Efeito de hover moderno */
-.navbar-nav .nav-link:hover {
-    background-color: blue;
-    
-    border-radius: 5px;
-}
-
-/* Aumentando o espaçamento entre os itens do menu */
-.navbar-nav {
-    gap: 15px; /* Espaçamento horizontal entre os itens */
-}
-
-
-
-/* Estilo para navbar branca (quando logado) */
-.navbar-light.bg-white {
-    background-color: #ffffff !important;
-    border-bottom: 2px solid #cccccc; /* Borda mais visível */
-    
-}
-
-/* Links dentro da navbar branca */
-.navbar-light .navbar-nav .nav-link {
-    color: #004085 !important; /* azul escuro elegante */
+    color: #ffffff !important; /* Branco */
     font-weight: bold;
     transition: 0.3s;
     padding: 10px 20px;
     margin: 0 10px;
 }
 
-/* Hover na navbar branca (para links normais) */
+/* Efeito hover nos links do menu */
+.navbar-nav .nav-link:hover {
+    background-color: blue;
+    border-radius: 5px;
+}
+
+/* Espaçamento entre itens do menu */
+.navbar-nav {
+    gap: 15px;
+}
+
+/* Navbar branca (quando logado) */
+.navbar-light.bg-white {
+    background-color: #ffffff !important;
+    border-bottom: 2px solid #cccccc;
+}
+
+/* Links na navbar branca */
+.navbar-light .navbar-nav .nav-link {
+    color: #004085 !important;
+    font-weight: bold;
+    transition: 0.3s;
+    padding: 10px 20px;
+    margin: 0 10px;
+}
+
+/* Hover nos links da navbar branca */
 .navbar-light .navbar-nav .nav-link:hover {
-    background-color: blue; /* igual ao hover da versão escura */
+    background-color: blue;
     color: #fff !important;
     border-radius: 5px;
 }
 
-/* Hover nos itens do dropdown (versão branca) */
+/* Hover nos itens do dropdown (navbar branca) */
 .navbar-light .dropdown-item:hover {
     background-color: blue;
     color: #fff !important;
 }
 
-/* Estilo do dropdown (versão branca) */
-
+/* Itens do dropdown (navbar branca) */
 .navbar-light .dropdown-item {
     color: #004085;
     transition: 0.3s;
@@ -80,7 +77,7 @@ body{
     color: #002752;
 }
 
-/* Botão "Comece agora" (já estilizado) */
+/* Botão "Comece agora" no menu */
 .navbar-nav .btn {
     background-color: #ffffff;
     color: #004085 !important;
@@ -95,89 +92,98 @@ body{
     color: #ffffff !important;
 }
 
-
-/* Estilizando o dropdown para combinar com o tema */
+/* Dropdown do menu */
 .dropdown-menu {
-    background-color: #004085; /* Mesmo azul da navbar */
+    background-color: #004085;
     border: none;
     border-radius: 8px;
     padding: 10px 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Estilo dos itens do dropdown */
+/* Itens do dropdown */
 .dropdown-menu .dropdown-item {
-    color: #ffffff; /* Texto branco */
+    color: #ffffff;
     padding: 10px 20px;
     font-weight: bold;
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* Hover dos itens */
+/* Hover nos itens do dropdown */
 .dropdown-menu .dropdown-item:hover {
-    background-color: #003366; /* Azul mais escuro */
-    color: #ffc107  !important; /* Destaque em amarelo (opcional) */
+    background-color: #003366;
+    color: #ffc107  !important;
     border-radius: 5px;
 }
 
-
+/* =======================
+   BACKGROUND DAS PÁGINAS
+   ======================= */
 .body-logado {
-    background-color: #f8f9fa; /* Cinza claro elegante */
-    color: #212529; /* Texto padrão */
+    background-color: #f8f9fa;
+    color: #212529;
 }
 
 .body-deslogado {
     background-color: #ffffff;
 }
 
+/* =======================
+   HOME E SEÇÕES
+   ======================= */
 
-/* Estilo da home */
+/* Seção principal da home */
 .hero-section {
     background-color: #f8f9fa;
-     /* sobe o fundo pra cobrir atrás da navbar */
-    padding-top: 60px; /* espaço suficiente para não esconder o conteúdo */
+    padding-top: 60px;
     padding-bottom: 60px;
     position: relative;
     z-index: 0;
-  }
-  
-  .section-destaque {
+}
+
+/* Seção de destaque */
+.section-destaque {
     padding-top: 60px;
     padding-bottom: 80px;
-  }
-  
-  .section-destaque h2 {
-    font-size: 2.5rem; /* Aumenta o tamanho do título */
+}
+
+.section-destaque h2 {
+    font-size: 2.5rem;
     line-height: 1.2;
-  }
-  
-  .section-com-padding {
+}
+
+/* Seção com padding extra */
+.section-com-padding {
     padding-top: 5rem;
     padding-bottom: 3rem;
     background-color: #f8f9fa;
-  }
+}
 
-  .section-fullscreen {
+/* Seção que ocupa a tela toda */
+.section-fullscreen {
     min-height: 100vh;
-    display: flex; /* Usa flexbox para garantir o layout correto */
-    flex-direction: column; /* Organiza os elementos de cima para baixo */
-    justify-content: flex-start; /* Faz o conteúdo começar do topo */
-    overflow: hidden; /* Impede o conteúdo de escapar da seção */
-    padding-top: 60px; /* Ajuste se tiver um header fixo */
-    padding-bottom: 60px; /* Ajuste se tiver um footer fixo */
-   
-    
-  }
-/* Estilo do Tooltip */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+/* =======================
+   TOOLTIP CUSTOMIZADO
+   ======================= */
+
+/* Tooltip customizado */
 .tooltip-custom {
     position: relative;
     display: inline-block;
 }
 
 .tooltip-custom:hover::after {
-    content: attr(data-tooltip); /* Usa o atributo data-tooltip para exibir o texto */
+    content: attr(data-tooltip);
     position: absolute;
-    bottom: 125%; /* Ajusta a posição acima do botão */
+    bottom: 125%;
     left: 50%;
     transform: translateX(-50%);
     background-color: #333;
@@ -194,7 +200,7 @@ body{
 .tooltip-custom:hover::before {
     content: '';
     position: absolute;
-    bottom: 115%; /* Ajusta a posição da seta */
+    bottom: 115%;
     left: 50%;
     transform: translateX(-50%);
     border-width: 5px;
@@ -205,41 +211,48 @@ body{
     transition: opacity 0.2s ease-in-out;
 }
 
-  .carousel-wrapper {
-    height: auto;
-  }
+/* =======================
+   CAROUSEL E FAQ
+   ======================= */
 
-  .carousel-track {
+/* Wrapper do carousel */
+.carousel-wrapper {
+    height: auto;
+}
+
+/* Track do carousel animado */
+.carousel-track {
     display: flex;
     animation: scroll 30s linear infinite;
-  }
+}
 
-  .carousel-card {
+/* Card do carousel */
+.carousel-card {
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
+}
 
-  @keyframes scroll {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-  #faq {
+/* Animação do carousel */
+@keyframes scroll {
+    0% { transform: translateX(0);}
+    100% { transform: translateX(-50%);}
+}
+
+/* FAQ */
+#faq {
     background-color: #ffffff;
     padding: 2rem 0;
-  }
-  
-  #faq h2 {
+}
+
+#faq h2 {
     font-size: 2rem;
     color: #1e293b;
     margin-bottom: 2rem;
-  }
-  
-  .accordion-item {
+}
+
+/* Item do FAQ */
+.accordion-item {
     border: none;
     border-radius: 10px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
@@ -247,48 +260,50 @@ body{
     overflow: hidden;
     background-color: #ffffff;
     transition: box-shadow 0.3s ease;
-  }
-  
-  .accordion-item:hover {
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-  }
+}
 
-  
-  
-  .accordion-button {
+.accordion-item:hover {
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+.accordion-button {
     font-weight: 600;
     background-color: #ffffff;
     color: #0f172a;
     transition: background-color 0.3s ease;
-  }
-  
-  .accordion-button:not(.collapsed) {
+}
+
+.accordion-button:not(.collapsed) {
     background-color: #f0f9ff;
     color: #0284c7;
-  }
-  
-  .accordion-body {
+}
+
+.accordion-body {
     background-color: #ffffff;
     color: #334155;
     padding: 1rem 1.25rem;
     line-height: 1.6;
     font-size: 1rem;
-  }
-  
+}
 
-  /* Responsividade */
-  @media (max-width: 768px) {
+/* Responsividade do carousel */
+@media (max-width: 768px) {
     .carousel-card {
       width: 250px;
     }
-  }
+}
+
+/* =======================
+   CONTAINER PRINCIPAL E MENSAGENS
+   ======================= */
+
+/* Container principal */
 .container-main{
     min-height: 70vh;
     padding: 2em;
 }
 
-/*messages*/
-
+/* Mensagens de alerta */
 .message{
     padding: 1em;
     color: #004085;
@@ -300,8 +315,11 @@ body{
     max-width: 60%;
 }
 
-/* Estilo dos graficos */
+/* =======================
+   GRÁFICOS
+   ======================= */
 
+/* Container do valor total do gráfico */
 .grafico-total {
     position: absolute;
     top: 50%;
@@ -315,12 +333,12 @@ body{
     z-index: 10;
 }
 
-/* Ajustes individuais para manter os valores diferentes de left */
+/* Ajuste de posição dos totais */
 #despesasTotal, #receitasTotal, #cartoesTotal, #geralTotal {
     left: 50%;
 }
 
-
+/* Texto do gráfico */
 .grafico-label {
     font-size: 15px;
     color: #666;
@@ -330,21 +348,25 @@ body{
     font-size: 17px;
     font-weight: bold;
     color: #333;
-    white-space: nowrap; /* Impede que o texto quebre a linha */
+    white-space: nowrap;
 }
 
+/* =======================
+   DATE PICKER E PILLS
+   ======================= */
 
+/* Estilo dos "pills" de data */
 .date-pill {
     background-color: white;
     color: #333;
     border: 1px solid #e0e0e0;
-    border-radius: 25px;  /* Aumentado */
-    padding: 10px 20px;   /* Aumentado */
-    font-size: 1.1rem;    /* Aumentado */
-    font-weight: 500;     /* Adicionado para destaque */
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    min-width: 180px;     /* Garantir tamanho mínimo */
-    text-align: center;   /* Centralizar texto */
+    min-width: 180px;
+    text-align: center;
 }
 
 .date-pill:hover, .date-pill:focus {
@@ -353,7 +375,7 @@ body{
     color: #333;
 }
 
-/* Estilo para o popup do calendário */
+/* Popup do calendário */
 .date-picker-popup {
     border-radius: 12px;
     overflow: hidden;
@@ -390,18 +412,18 @@ body{
     padding: 8px 0;
     border-radius: 6px;
     font-size: 0.8rem;
-    background-color: #f0f0f0;  /* Cor única para todos os meses */
-    color: #333;                /* Cor única para todos os meses */
+    background-color: #f0f0f0;
+    color: #333;
     transition: all 0.2s ease;
 }
 
 .month-item:hover .month-label {
-    background-color: #e0e0e0;  /* Cor de hover unificada */
+    background-color: #e0e0e0;
     transform: scale(1.05);
 }
 
 .month-item.selected .month-label {
-    background-color: #4285f4;  /* Cor de seleção (azul) */
+    background-color: #4285f4;
     color: white;
     font-weight: bold;
 }
@@ -416,28 +438,32 @@ body{
     justify-content: center;
     border-radius: 50%;
 }
- 
-/* Estilizando o Footer */
+
+/* =======================
+   FOOTER E ÍCONES SOCIAIS
+   ======================= */
+
+/* Footer principal */
 footer {
     width: 100%;
-    background-color: #004085 !important; /* Mantendo o azul escuro da navbar */
+    background-color: #004085 !important;
     opacity: 1;
-    border-top: 2px solid #003366; /* Azul escuro para separação */
+    border-top: 2px solid #003366;
     height: 250px;
     padding: 30px;
-    color: #ffffff; /* Texto branco para melhor contraste */
+    color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-/* Ícones sociais */
+/* Ícones sociais no footer */
 footer i {
     font-size: 24px;
     margin: 0 15px;
     transition: color 0.3s;
-    color: #ffffff; /* Ícones brancos para contraste */
+    color: #ffffff;
 }
 
 /* Container dos ícones sociais */
@@ -453,6 +479,7 @@ footer i {
     text-align: center;
 }
 
+/* Botão de despesa no footer */
 .btn-despesa {
     border: none;
     color: black;
@@ -472,12 +499,12 @@ footer p {
     font-weight: bold;
 }
 
-/* Efeito hover nos ícones sociais */
+/* Hover nos ícones sociais */
 a:hover i {
-    color: #ffc107; /* Amarelo ouro para dar destaque */
+    color: #ffc107;
 }
 
-/* Melhorando a responsividade */
+/* Responsividade do footer */
 @media (max-width: 768px) {
     footer {
         height: auto;
@@ -493,188 +520,3 @@ a:hover i {
         margin: 5px;
     }
 }
-@media (max-width: 992px) {
-    .d-flex.justify-content-between {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .card.w-75 {
-        width: 100% !important; /* Faz o card ocupar toda a largura */
-    }
-
-    .w-25 {
-        width: 100% !important; /* Faz os cards menores ocuparem toda a largura */
-        margin-top: 20px;
-    }
-
-    .col-2, .col-3, .col-1 {
-        width: 100%;
-        text-align: center;
-    }
-
-    .row.align-items-center {
-        flex-wrap: wrap;
-    }
-
-    .rounded-circle {
-        width: 30px !important;
-        height: 30px !important;
-    }
-
-    .categoria-texto {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-
-    .d-flex.justify-content-center {
-        flex-direction: column;
-        align-items: center;
-        margin-left: 0 !important;
-    }
-
-    .dropdown {
-        margin-top: 10px;
-    }
-
-    .card {
-        margin-bottom: 15px;
-    }
-
-    .icon-responsivo {
-        font-size: 1rem;
-    }
-
-    .modal-dialog {
-        max-width: 90%;
-    }
-
-    .btn {
-        width: 100%;
-    }
-}
-@media (max-width: 992px) {
-    .list-group {
-        overflow-x: auto;
-        display: block;
-        white-space: nowrap;
-    }
-}
-@media (max-width: 992px) {
-    .d-flex.flex-column.gap-3.ms-3.w-25 {
-        width: 100% !important;
-        margin-left: 0 !important;
-    }
-}
-@media (max-width: 768px) {
-    .d-flex.align-items-center.justify-content-center {
-        margin-left: 0 !important;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .btn.btn-link.text-success.p-2 {
-        font-size: 18px !important;
-    }
-}
-@media (max-width: 576px) {
-    .modal-dialog {
-        max-width: 90% !important;
-    }
-}
-@media (max-width: 768px) {
-    .btn i {
-        font-size: 16px !important;
-    }
-
-    .rounded-circle {
-        width: 25px !important;
-        height: 25px !important;
-    }
-}
-
-
-@media (max-width: 768px) {
-    
-    /* Remover Cabeçalho no Mobile */
-    .row.fw-bold { 
-        display: none; 
-    }
-
-    /* Remover Data e Descrição no Corpo da Tabela */
-    .col-3:nth-child(3), /* Esconde a coluna de data */
-    .col-2:nth-child(1) { /* Esconde a coluna de descrição */
-        display: none;
-    }
-
-    /* Ajustar os Botões de Editar e Excluir */
-    .btn-acao {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 5px;
-    }
-
-    /* Deixar os botões lado a lado */
-    .acoes {
-        display: flex;
-        gap: 5px;
-    }
-
-    /* Ajuste do Botão dos Meses com Setas */
-    .d-flex.align-items-center.justify-content-center {
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-    }
-
-    /* Ajustar tamanho dos botões no mobile */
-    .btn-link, .dropdown button {
-        padding: 5px 10px;
-        font-size: 16px;
-    }
-}
-@media (max-width: 768px) {
-    /* Ajustar container dos botões */
-    .col-1.d-flex {
-        flex-wrap: nowrap; /* Garante que fiquem lado a lado */
-        justify-content: center; /* Centraliza os botões */
-        align-items: center;
-        gap: 3px; /* Menor espaçamento entre os botões */
-    }
-
-    /* Ajustar os botões */
-    .btn-warning,
-    .btn-danger {
-        width: 35px; /* Reduz a largura */
-        height: 35px; /* Reduz a altura */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0; /* Remove padding extra */
-        font-size: 14px; /* Ajusta tamanho do ícone */
-    }
-
-    /* Ajustar ícones dentro dos botões */
-    .btn-warning i,
-    .btn-danger i {
-        font-size: 14px; /* Mantém os ícones proporcionais */
-    }
-}
-
-@media (min-width: 768px) {
-    .hero-section {
-      padding-top: 100px;
-      padding-bottom: 149px;
-    }
-  }
-
-

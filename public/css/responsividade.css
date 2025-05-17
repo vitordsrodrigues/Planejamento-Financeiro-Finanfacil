@@ -1,0 +1,139 @@
+/* Media queries para os botões dos cards de objetivos */
+
+@media (max-width: 991px) {
+  /* Container principal de botões - reorganiza todo o layout */
+  .card .mt-auto.d-flex.justify-content-between {
+    flex-direction: row !important;
+    justify-content: flex-end !important; /* Todos os botões à direita */
+    gap: 5px !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+  }
+  
+  /* Remove qualquer divisão entre botões esquerda/direita */
+  .card .mt-auto.d-flex.justify-content-between > button,
+  .card .mt-auto.d-flex.justify-content-between > div {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Grupo de botões à direita - remover container */ 
+  .card .d-flex.gap-2 {
+    display: contents !important; /* Espalha os filhos no pai */
+  }
+  
+  /* Uniformiza TODOS os botões */
+  .card .mt-auto.d-flex button,
+  .card .mt-auto.d-flex form button,
+  .card .btn-sm, 
+  .card .btn-outline-success.btn-sm,
+  .card .btn-outline-warning.btn-sm,
+  .card .btn-outline-danger.btn-sm,
+  .card .btn.btn-sm.rounded-circle {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 2px !important;
+    flex: 0 0 auto !important;
+  }
+  
+  /* Remover texto do botão Adicionar */
+  .card .btn-outline-success.btn-sm span,
+  .card .btn-outline-success.btn-sm::after {
+    display: none !important;
+  }
+  
+  /* Garantir que o ícone seja visível */
+  .card .btn-outline-success.btn-sm i {
+    margin: 0 !important;
+    font-size: 1rem !important;
+  }
+  
+  /* Garante que os formulários não quebrem o layout */
+  .card .mt-auto.d-flex form {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+  }
+  
+  /* Corrige o botão de concluir para ter as mesmas dimensões */
+  .tooltip-custom {
+    margin: 0 2px !important;
+  }
+}
+
+/* Ajuste para telas ainda menores */
+@media (max-width: 375px) {
+  /* Reduz ainda mais os botões */
+  .card .mt-auto.d-flex button,
+  .card .mt-auto.d-flex form button,
+  .card .btn-sm, 
+  .card .btn-outline-success.btn-sm,
+  .card .btn-outline-warning.btn-sm,
+  .card .btn-outline-danger.btn-sm,
+  .card .btn.btn-sm.rounded-circle {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.8rem !important;
+    margin: 0 1px !important;
+  }
+  
+  /* Reduz ainda mais o gap */
+  .card .mt-auto.d-flex.justify-content-between {
+    gap: 2px !important;
+  }
+}
+
+/* Garantir que botão Adicionar apareça */
+@media (max-width: 991px) {
+  .card .mt-auto.d-flex.justify-content-between button.btn-outline-success.btn-sm {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+    order: 10 !important; /* Garante que fique à esquerda */
+  }
+}
+/* Media query específica para ocultar o texto do botão Adicionar */
+@media (max-width: 991px) {
+  /* Seleciona especificamente o botão Adicionar pelo seu ícone */
+  .card .btn-outline-success.btn-sm {
+    width: 36px !important;
+    height: 36px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-indent: -9999px !important; /* Empurra o texto para fora da área visível */
+    padding: 0 !important;
+    position: relative !important;
+  }
+  
+  /* Reseta o text-indent apenas para o ícone */
+  .card .btn-outline-success.btn-sm i.bi-piggy-bank-fill {
+    text-indent: 0 !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+  }
+  
+  /* Garantir que qualquer texto dentro do botão seja ocultado */
+  .card .btn-outline-success.btn-sm::after,
+  .card .btn-outline-success.btn-sm::before,
+  .card .btn-outline-success.btn-sm span {
+    display: none !important;
+  }
+  
+  /* Outra técnica para ocultar o texto */
+  .card .btn-outline-success.btn-sm {
+    font-size: 0 !important;
+  }
+  
+  /* Restaura o tamanho da fonte apenas para o ícone */
+  .card .btn-outline-success.btn-sm i {
+    font-size: 1rem !important;
+  }
+}

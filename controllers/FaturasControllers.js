@@ -126,7 +126,6 @@ class FaturaController {
     
             if (!cartao) {
                 req.flash('message', 'Cartão não encontrado.');
-                req.flash('error', true);
                 req.session.save(() => {
                     return res.redirect('/financas/viewCartaos');
                 });
@@ -137,7 +136,6 @@ class FaturaController {
             const valorDespesa = parseFloat(valor);
             if (valorDespesa > parseFloat(cartao.limite_disponivel)) {
                 req.flash('message', 'Despesa não pode ser adicionada. Limite do cartão insuficiente.');
-                req.flash('error', true);
                 req.session.save(() => {
                     return res.redirect('/financas/viewCartaos');
                 });
