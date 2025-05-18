@@ -137,3 +137,230 @@
     font-size: 1rem !important;
   }
 }
+/* Solução para botões no final do card, lado a lado */
+@media (max-width: 991px) {
+  /* Estrutura do card para garantir que os botões fiquem no final */
+  .card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+  }
+  
+  .card-body {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-grow: 1 !important;
+  }
+  
+  /* Grupo de botões no final do card */
+  .card-footer, 
+  .card-body > .d-flex:last-child,
+  .card-body > div:last-child .d-flex {
+    margin-top: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    flex-wrap: nowrap !important;
+    gap: 5px !important;
+    width: 100% !important;
+    padding-top: 15px !important;
+    border-top: 1px solid rgba(0,0,0,0.1) !important;
+  }
+  
+  /* Botões de ação uniformes */
+  .card-footer .btn-sm,
+  .card-body > .d-flex:last-child .btn-sm,
+  .card-body > div:last-child .d-flex .btn-sm {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 2px !important;
+  }
+}
+/* Solução para gráficos e informações extras na página dashboard */
+@media (max-width: 991px) {
+  /* Forçar altura fixa para todos os cards com gráficos */
+  .card.shadow.rounded-4.overflow-hidden .card-body {
+    height: 300px !important;
+    max-height: 300px !important;
+    overflow: hidden !important;
+  }
+  
+  /* Manter tamanho consistente para os canvas de gráficos */
+  canvas#graficoReceitas, 
+  canvas#graficoDespesas, 
+  canvas#graficoCartoes,
+  canvas#graficoGeral {
+    height: 240px !important;
+    max-height: 240px !important;
+    width: 100% !important;
+  }
+  
+  /* Ajustar container do gráfico geral e informações extras para manter altura igual */
+  .col-md-8 .card.shadow.rounded-4.overflow-hidden.h-100,
+  .col-md-4 .card.shadow.rounded-4.p-4.text-dark.bg-light.h-100 {
+    height: auto !important;
+    min-height: 350px !important;
+    max-height: 400px !important;
+  }
+  
+  /* Adicionar rolagem para lista de informações se necessário */
+  .col-md-4 .card .list-group {
+    max-height: 300px !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Altura uniforme para todos os cards na última linha */
+  .container-fluid.py-4 .row > div:nth-last-child(-n+2) .card {
+    height: auto !important;
+    min-height: 350px !important;
+    max-height: 400px !important;
+  }
+  
+  /* Ajuste específico para textos dentro dos totais */
+  .grafico-total {
+    font-size: 14px !important;
+    padding: 5px !important;
+  }
+  
+  /* Garantir que a seção de totais não quebre o layout */
+  .grafico-total .grafico-valor {
+    font-size: 16px !important;
+    word-break: break-word !important;
+  }
+}
+
+/* Ajustes para telas ainda menores */
+@media (max-width: 767px) {
+  /* Reduzir ainda mais as alturas para melhor visualização em mobile */
+  .card.shadow.rounded-4.overflow-hidden .card-body {
+    height: 250px !important;
+  }
+  
+  canvas#graficoReceitas, 
+  canvas#graficoDespesas, 
+  canvas#graficoCartoes,
+  canvas#graficoGeral {
+    height: 200px !important;
+  }
+  
+  /* Espaçamento entre os cards em telas pequenas */
+  .container-fluid.py-4 .row > div {
+    margin-bottom: 20px !important;
+  }
+  
+  /* Forçar última linha a ter altura automática e sem min-height em mobile */
+  .container-fluid.py-4 .row > div:nth-last-child(-n+2) .card {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+}
+
+/* Solução para alinhamento de ícones na página dashboard */
+@media (max-width: 1199px) {
+  /* Ajustes para os cards superiores com ícones e informações */
+  .card .d-flex.align-items-center {
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+  }
+  
+  /* Ajuste específico para o contêiner do ícone */
+  .card .p-3.rounded-circle.bg-light.me-3 {
+    min-width: 60px !important;
+    width: 60px !important;
+    height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 10px !important;
+    padding: 0 !important;
+  }
+  
+  /* Garantir que os ícones fiquem centralizados */
+  .card .p-3.rounded-circle.bg-light.me-3 i {
+    font-size: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+  
+  /* Ajuste ao contêiner de texto para garantir alinhamento */
+  .card .d-flex.align-items-center > div:last-child {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    min-height: 60px !important;
+  }
+  
+  /* Garantir que os valores fiquem alinhados e visíveis */
+  .card .d-flex.align-items-center h4 {
+    font-size: 1.1rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.4 !important;
+  }
+  
+  .card .d-flex.align-items-center h5 {
+    font-size: 0.9rem !important;
+    margin: 0 0 4px 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+  }
+}
+
+/* Ajustes adicionais para telas muito pequenas */
+@media (max-width: 767px) {
+  /* Tornar os cards mais compactos */
+  .col-md-6.col-lg-3.mb-3 .card {
+    padding: 10px !important;
+  }
+  
+  /* Reduzir tamanho dos ícones em telas pequenas */
+  .card .p-3.rounded-circle.bg-light.me-3 {
+    min-width: 50px !important;
+    width: 50px !important;
+    height: 50px !important;
+  }
+  
+  .card .p-3.rounded-circle.bg-light.me-3 i {
+    font-size: 20px !important;
+  }
+  
+  /* Ajustes de texto para telas menores */
+  .card .d-flex.align-items-center h4 {
+    font-size: 1rem !important;
+  }
+  
+  .card .d-flex.align-items-center h5 {
+    font-size: 0.8rem !important;
+  }
+  
+  /* Forçar alinhamento vertical em telas muito pequenas */
+  .card .d-flex.align-items-center > div:last-child {
+    min-height: 45px !important;
+  }
+}
+
+/* Garantir que os ícones em listas do card de informações extras também fiquem alinhados */
+@media (max-width: 991px) {
+  .list-group-item.d-flex.justify-content-between {
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    padding: 8px 12px !important;
+  }
+  
+  .list-group-item.d-flex.justify-content-between span {
+    line-height: 1.4 !important;
+  }
+  
+  .list-group-item.d-flex.justify-content-between span.fw-bold {
+    text-align: right !important;
+    min-width: 85px !important;
+  }
+}
+

@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const totalDespesas = despesas.reduce((total, d) => total + parseFloat(d.valor || 0), 0);
     const totalReceitas = receitas.reduce((total, r) => total + parseFloat(r.valor || 0), 0);
     const totalCartoes = cartoes.reduce((total, c) => total + parseFloat(c.valor || 0), 0);
+    geralTotalEl[1].textContent = formatarReais(totalDespesas + totalReceitas + totalCartoes);
 
     despesasTotalEl[1].textContent = formatarReais(totalDespesas);
     receitasTotalEl[1].textContent = formatarReais(totalReceitas);
