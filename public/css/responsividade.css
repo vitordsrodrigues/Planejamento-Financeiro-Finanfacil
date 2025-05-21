@@ -364,3 +364,144 @@
   }
 }
 
+/* Responsividade do footer */
+@media (max-width: 768px) {
+    footer {
+        height: auto;
+        padding: 20px;
+    }
+
+    #social-icons-container {
+        flex-wrap: wrap;
+    }
+
+    footer i {
+        font-size: 20px;
+        margin: 5px;
+    }
+}
+
+/* Solução ultra simplificada - apenas o texto "Nova Despesa" sem estilos */
+@media (max-width: 768px) {
+  /* Transformar o botão em texto puro */
+  .btn-outline-danger.btn-sm[onclick*="preencherDespesaModal"] {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #dc3545 !important; /* Cor vermelha padrão */
+    font-size: 0.8rem !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    font-weight: normal !important;
+    display: inline !important;
+    width: auto !important;
+    height: auto !important;
+    line-height: normal !important;
+    border-radius: 0 !important;
+  }
+  
+  /* Esconder o ícone */
+  .btn-outline-danger.btn-sm[onclick*="preencherDespesaModal"] .bi {
+    display: none !important;
+  }
+  
+  /* Remover efeitos hover/focus */
+  .btn-outline-danger.btn-sm[onclick*="preencherDespesaModal"]:hover,
+  .btn-outline-danger.btn-sm[onclick*="preencherDespesaModal"]:focus,
+  .btn-outline-danger.btn-sm[onclick*="preencherDespesaModal"]:active {
+    background: none !important;
+    border: none !important;
+    color: #a71d2a !important; /* Vermelho mais escuro no hover */
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+/* Solução específica para os problemas mencionados */
+@media (max-width: 768px) {
+  /* 1. Botão "Nova Despesa" como texto simples */
+  .btn-outline-danger.btn-sm[onclick*="preencherDespesaModal"] {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #dc3545 !important;
+    font-size: 0.8rem !important;
+    display: inline !important;
+    box-shadow: none !important;
+  }
+  
+  /* Esconder o ícone */
+  .btn-outline-danger.btn-sm[onclick*="preencherDespesaModal"] .bi {
+    display: none !important;
+  }
+  
+  /* 2. CORRIGIR ESPAÇAMENTO E ALINHAMENTO DA FATURA ATUAL */
+  .card-body .bg-info.bg-opacity-10 .d-flex .d-flex {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+  }
+  
+  /* Ajuste específico para o badge de status ficar corretamente alinhado */
+  .card-body .bg-info.bg-opacity-10 .d-flex .d-flex .badge {
+    display: inline-block !important;
+    position: static !important;
+    margin-left: 5px !important;
+    margin-top: 0 !important;
+    top: 0 !important;
+  }
+  
+  /* Ajuste específico para o valor da fatura */
+  .card-body .bg-info.bg-opacity-10 .d-flex .d-flex .fw-bold {
+    display: inline-block !important;
+    margin-right: 5px !important;
+    width: auto !important;
+    flex-shrink: 1 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  /* 3. REMOVER TODAS AS POSSÍVEIS LINHAS ACIMA DOS BOTÕES */
+  /* Atingir especificamente as linhas */
+  .d-flex.justify-content-between.mt-3, 
+  .card-footer, 
+  .card-body > .d-flex:last-child,
+  .card-body > div:last-child .d-flex,
+  [class*="border-top"],
+  [style*="border-top"],
+  hr, .dropdown-divider {
+    border: none !important;
+    border-top: none !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    margin-top: 15px !important;
+    padding-top: 0 !important;
+  }
+  
+  /* Remoção extremamente específica de qualquer separador */
+  .d-flex.justify-content-between.mt-3:before,
+  .d-flex.justify-content-between.mt-3:after,
+  .card-body > div:last-child .d-flex:before,
+  .card-body > div:last-child .d-flex:after,
+  .card-body > ul:after,
+  .card-body > ul + *:before {
+    display: none !important;
+    content: none !important;
+    border: none !important;
+  }
+  
+  /* Solução mais agressiva - remover QUALQUER borda na parte inferior do card */
+  .card-body *:not(.card-header):not(.progress):not(.progress-bar) {
+    border-top-width: 0 !important;
+  }
+  
+  /* 4. MANTER ESPAÇAMENTO ENTRE ITENS */
+  .card-body ul.list-unstyled li {
+    margin-bottom: 18px !important;
+  }
+}
+

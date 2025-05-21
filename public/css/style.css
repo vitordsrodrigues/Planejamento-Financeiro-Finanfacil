@@ -504,19 +504,3 @@ a:hover i {
     color: #ffc107;
 }
 
-/* Responsividade do footer */
-@media (max-width: 768px) {
-    footer {
-        height: auto;
-        padding: 20px;
-    }
-
-    #social-icons-container {
-        flex-wrap: wrap;
-    }
-
-    footer i {
-        font-size: 20px;
-        margin: 5px;
-    }
-}

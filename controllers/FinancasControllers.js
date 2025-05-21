@@ -317,24 +317,117 @@ module.exports = class FinancasControllers{
         }
     }
     
-    static async viewSaldo(req,res){
-        const userId = req.session.userid;
-    
-        if (!userId) {
-            return res.redirect('/login');
-        }
+  static async viewSaldo(req, res) {
+    const userId = req.session.userid;
 
-        try{
-            const financas = await FinancaPessoais.findOne({ where: { UserId: userId } });
-            const saldo = financas ? parseFloat(financas.saldo) || 0 : 0;
-            return res.render('financas/saldo',{saldo})
-        }catch(error){
-            console.error('Erro ao carregar o dashboard:', error);
-            return res.render('financas/saldo', {saldo: 0});
-        }
-    
-       
+    if (!userId) {
+        return res.redirect('/login');
     }
+
+    try {
+        // Obter o registro financeiro do usuário
+        const financa = await FinancaPessoais.findOne({ 
+            where: { UserId: userId }
+        });
+
+        console.log('Debug - Registro financeiro encontrado:', financa);
+        
+        // Valores padrão se não houver registros
+        let saldo = 0;
+        let totalReceitas = 0;
+        let totalDespesas = 0;
+        
+        // Se encontrou dados financeiros, extrair valores de forma segura
+        if (financa) {
+            // Usar Number() para garantir conversão de decimal para número
+            saldo = Number(financa.saldo || 0);
+            totalReceitas = Number(financa.totalReceitas || 0);
+            totalDespesas = Number(financa.totalDespesas || 0);
+        }
+        
+        // Calcular receitas futuras (não processadas)
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0); // Início do dia atual
+        
+        // Obter a soma das receitas futuras
+        const resultadoReceitas = await Receita.findAll({
+            attributes: [
+                [sequelize.fn('SUM', sequelize.col('value')), 'total']
+            ],
+            where: {
+                UserId: userId,
+                foiProcessada: false,
+                date: {
+                    [Op.gte]: hoje
+                }
+            },
+            raw: true
+        });
+        
+        console.log('Debug - Resultado receitas futuras:', resultadoReceitas);
+        
+        // Obter a soma das despesas futuras
+        const resultadoDespesas = await Despesas.findAll({
+            attributes: [
+                [sequelize.fn('SUM', sequelize.col('valor')), 'total']
+            ],
+            where: {
+                UserId: userId,
+                foiProcessada: false,
+                date: {
+                    [Op.gte]: hoje
+                }
+            },
+            raw: true
+        });
+        
+        console.log('Debug - Resultado despesas futuras:', resultadoDespesas);
+        
+        // Extrair os valores de forma segura
+        const receitasFuturas = Number(resultadoReceitas[0]?.total || 0);
+        const despesasFuturas = Number(resultadoDespesas[0]?.total || 0);
+        
+        console.log('Debug - Receitas futuras:', receitasFuturas);
+        console.log('Debug - Despesas futuras:', despesasFuturas);
+        
+        // Calcular saldo previsto e balanço
+        const saldoPrevisto = saldo + receitasFuturas - despesasFuturas;
+        const balanco = totalReceitas - totalDespesas;
+        
+        console.log('Debug - Valores finais:');
+        console.log('Saldo:', saldo);
+        console.log('Receitas Futuras:', receitasFuturas);
+        console.log('Despesas Futuras:', despesasFuturas);
+        console.log('Saldo Previsto:', saldoPrevisto);
+        console.log('Total Receitas:', totalReceitas);
+        console.log('Total Despesas:', totalDespesas);
+        console.log('Balanço:', balanco);
+        
+        // Formatar todos os valores para exibição com 2 casas decimais
+        const formatarMoeda = valor => {
+            return (Math.round(valor * 100) / 100).toFixed(2);
+        };
+        
+        // Renderizar a página com os dados formatados
+        return res.render('financas/saldo', {
+            saldo: formatarMoeda(saldo),
+            saldoPrevisto: formatarMoeda(saldoPrevisto),
+            totalReceitas: formatarMoeda(totalReceitas),
+            totalDespesas: formatarMoeda(totalDespesas),
+            balanco: formatarMoeda(balanco)
+        });
+    } catch (error) {
+        console.error('Erro ao carregar o saldo:', error);
+        // Renderizar página com valores zerados em caso de erro
+        return res.render('financas/saldo', {
+            saldo: "0.00",
+            saldoPrevisto: "0.00",
+            totalReceitas: "0.00",
+            totalDespesas: "0.00",
+            balanco: "0.00"
+        });
+    }
+}
 
     static async viewReceitas(req, res) {
         const userId = req.session.userid;
