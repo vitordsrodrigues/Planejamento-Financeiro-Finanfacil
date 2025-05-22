@@ -12,6 +12,9 @@ const sequelize = require('../db/conn') // Importa a instância do sequelize já
 const atualizarSaldo = require('../helpers/atualizarSaldo') // Importa a função de atualização de saldo
 const converterDataParaISO = require('../helpers/converter'); // Ajuste o caminho conforme necessário
 const processarPendentes = require('../helpers/processarPendentes');
+const calcularSaldoPorMes = require('../helpers/calcularSaldoPorMes');
+
+
 
 
 module.exports = class FinancasControllers{
@@ -53,9 +56,13 @@ module.exports = class FinancasControllers{
                 { valor: 11, nome: 'Novembro' },
                 { valor: 12, nome: 'Dezembro' }
             ];
-    
+
+            const mesSelecionado = parseInt(req.query.mes) || (new Date().getMonth() + 1); // pega mês da query ou o mês atual
+
             const anoAtualInt = new Date().getFullYear();
+
             const anosDisponiveis = [];
+
             for (let i = anoAtualInt - 5; i <= anoAtualInt + 5; i++) {
                 anosDisponiveis.push(i);
             }
@@ -222,80 +229,84 @@ module.exports = class FinancasControllers{
             // Garantir que o saldo seja um número válido
             const saldo = financas ? parseFloat(financas.saldo) || 0 : 0;
     
-            // Calcular o saldo inicial
-            const saldoInicial = saldo - totalReceitas - totalCartao + totalDespesas;
+           
     
 
-        // Adicionar lógica para links personalizados
-        let linksPersonalizados = [];
+            // Adicionar lógica para links personalizados
+            let linksPersonalizados = [];
 
-        // Condição: Fatura muito alta
-        if (totalCartao > totalReceitas) {
-            linksPersonalizados.push({
-                titulo: 'Cartão de Crédito: Vilão ou Aliado?',
-                descricao: 'Sua fatura está alta. Veja dicas para reduzir seus gastos no cartão.',
-                url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/cartao.html'
-            });
-        }
-
-        // Condição: Despesas muito altas
-        if (totalDespesas > totalReceitas) {
-            linksPersonalizados.push({
-                titulo: 'Controle suas despesas!',
-                descricao: 'Você está gastando muito. Veja como economizar.',
-                url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/orcamento.html'
-            });
-        }
-
-        // Links padrão (alternados)
-        const linksPadrao = [
-            {
-                titulo: 'Educação Financeira na Prática: O que Você Nunca Aprendeu na Escola',
-                descricao: 'Aprenda como economizar e melhorar sua saúde financeira.',
-                url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/educacional.html'
-            },
-            {
-                titulo: 'Por Onde Começar: Guia Rápido para Organizar suas Finanças Pessoais',
-                descricao: 'Comece sua jornada financeira com passos simples e práticos. Neste post, mostramos como mapear seus gastos, definir metas e evitar erros comuns.',
-                url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/guia_rapida.html'
+            // Condição: Fatura muito alta
+            if (totalCartao > totalReceitas) {
+                linksPersonalizados.push({
+                    titulo: 'Cartão de Crédito: Vilão ou Aliado?',
+                    descricao: 'Sua fatura está alta. Veja dicas para reduzir seus gastos no cartão.',
+                    url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/cartao.html'
+                });
             }
-        ];
 
-        // Alternar entre links personalizados
-        let linkExibido;
-        if (linksPersonalizados.length > 1) {
-            // Alternar entre os links personalizados
-            const ultimoLinkExibido = req.session.ultimoLinkExibido || 0;
-            linkExibido = linksPersonalizados[ultimoLinkExibido % linksPersonalizados.length];
-            req.session.ultimoLinkExibido = (ultimoLinkExibido + 1) % linksPersonalizados.length;
-        } else if (linksPersonalizados.length === 1) {
-            // Exibir o único link personalizado disponível
-            linkExibido = linksPersonalizados[0];
-        } else {
-            // Exibir um link padrão aleatório
-            linkExibido = linksPadrao[Math.floor(Math.random() * linksPadrao.length)];
-        }
+            // Condição: Despesas muito altas
+            if (totalDespesas > totalReceitas) {
+                linksPersonalizados.push({
+                    titulo: 'Controle suas despesas!',
+                    descricao: 'Você está gastando muito. Veja como economizar.',
+                    url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/orcamento.html'
+                });
+            }
 
-        // Passar o link selecionado para a view
-        return res.render('financas/dashboard', {
-            totalReceitas,
-            totalDespesas,
-            totalCartao,
-            saldoInicial,
-            saldo,
-            despesas: JSON.stringify(despesas),
-            receitas: JSON.stringify(receitas),
-            cartoes: JSON.stringify(cartoesCategorias),
-            graficoGeral: JSON.stringify(graficoGeral),
-            mesAtual,
-            anoAtual,
-            meses,
-            anosDisponiveis,
-            mesAtualNome: meses.find(m => m.valor === mesAtual).nome,
-            linkExibido, // Passar apenas o link selecionado para a view
-            messages: res.locals.messages
-        });
-    
+            // Links padrão (alternados)
+            const linksPadrao = [
+                {
+                    titulo: 'Educação Financeira na Prática: O que Você Nunca Aprendeu na Escola',
+                    descricao: 'Aprenda como economizar e melhorar sua saúde financeira.',
+                    url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/educacional.html'
+                },
+                {
+                    titulo: 'Por Onde Começar: Guia Rápido para Organizar suas Finanças Pessoais',
+                    descricao: 'Comece sua jornada financeira com passos simples e práticos. Neste post, mostramos como mapear seus gastos, definir metas e evitar erros comuns.',
+                    url: 'https://vitordsrodrigues.github.io/Blog_FinanFacil/guia_rapida.html'
+                }
+            ];
+
+            // Alternar entre links personalizados
+            let linkExibido;
+            if (linksPersonalizados.length > 1) {
+                // Alternar entre os links personalizados
+                const ultimoLinkExibido = req.session.ultimoLinkExibido || 0;
+                linkExibido = linksPersonalizados[ultimoLinkExibido % linksPersonalizados.length];
+                req.session.ultimoLinkExibido = (ultimoLinkExibido + 1) % linksPersonalizados.length;
+            } else if (linksPersonalizados.length === 1) {
+                // Exibir o único link personalizado disponível
+                linkExibido = linksPersonalizados[0];
+            } else {
+                // Exibir um link padrão aleatório
+                linkExibido = linksPadrao[Math.floor(Math.random() * linksPadrao.length)];
+            }
+            
+            const saldoPorMes = await calcularSaldoPorMes(userId, anoAtual, mesAtual);
+            const saldoInicial = saldoPorMes.saldoAnterior;
+            const saldoPrevisto = saldoPorMes.saldoPrevisto;
+
+            // Passar o link selecionado para a view
+            return res.render('financas/dashboard', {
+                totalReceitas: totalReceitas.toFixed(2),
+                totalDespesas: totalDespesas.toFixed(2),
+                totalCartao: totalCartao.toFixed(2),
+                saldo: saldo.toFixed(2),
+                despesas: JSON.stringify(despesas),
+                receitas: JSON.stringify(receitas),
+                cartoes: JSON.stringify(cartoesCategorias),
+                graficoGeral: JSON.stringify(graficoGeral),
+                mesAtual,
+                anoAtual,
+                meses,
+                anosDisponiveis,
+                mesAtualNome: meses.find(m => m.valor === mesAtual).nome,
+                linkExibido, // Passar apenas o link selecionado para a view
+                saldoInicial: saldoInicial,
+                saldoPrevisto,
+                mes: mesSelecionado,
+            });
+        
         } catch (error) {
             console.error('Erro ao carregar o dashboard:', error);
             return res.render('financas/dashboard', {
