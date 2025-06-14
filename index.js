@@ -192,10 +192,10 @@ const hbs = exphbs.create({
 });
 
 // Executa a função imediatamente para testar
-/*(async () => {
+(async () => {
     console.log('Testando atualização de status das faturas agora...');
     await atualizarStatusFaturas();
-})()*/
+})()
 
 cron.schedule('0 0 * * *', async () => {
     console.log('Executando atualização de status das faturas...');
