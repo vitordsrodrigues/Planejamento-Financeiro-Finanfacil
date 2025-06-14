@@ -41,6 +41,34 @@ window.addEventListener('load', function() {
         geral: graficoGeralData
     });
 
+    // Se não houver dados do gráfico geral, criar com base nos outros dados
+    if (!graficoGeralData || graficoGeralData.length === 0) {
+        const totalReceitas = receitasData.reduce((sum, item) => sum + (parseFloat(item.valor) || 0), 0);
+        const totalDespesas = despesasData.reduce((sum, item) => sum + (parseFloat(item.valor) || 0), 0);
+        const totalCartoes = cartoesData.reduce((sum, item) => sum + (parseFloat(item.valor) || 0), 0);
+        const totalGeral = totalReceitas + totalDespesas + totalCartoes;
+
+        const graficoGeralData = [
+            {
+                nome: 'Receitas',
+                valor: totalReceitas,
+                porcentagem: totalGeral > 0 ? ((totalReceitas / totalGeral) * 100).toFixed(2) : 0
+            },
+            {
+                nome: 'Despesas',
+                valor: totalDespesas,
+                porcentagem: totalGeral > 0 ? ((totalDespesas / totalGeral) * 100).toFixed(2) : 0
+            },
+            {
+                nome: 'Faturas de Cartões',
+                valor: totalCartoes,
+                porcentagem: totalGeral > 0 ? ((totalCartoes / totalGeral) * 100).toFixed(2) : 0
+            }
+        ].filter(item => parseFloat(item.valor) > 0);
+
+        console.log('Dados do gráfico geral recalculados:', graficoGeralData);
+    }
+
     // Função para formatar valores em reais
     function formatarReais(valor) {
         return `R$ ${parseFloat(valor).toFixed(2)}`;
