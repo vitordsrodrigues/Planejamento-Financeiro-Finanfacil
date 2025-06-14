@@ -6,15 +6,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const element = document.getElementById(id);
         if (!element) {
             console.error(`Elemento ${id} não encontrado`);
-            return null;
+            return [];
         }
         try {
             const data = JSON.parse(element.textContent);
             console.log(`Dados de ${id}:`, data);
-            return data;
+            return Array.isArray(data) ? data : [];
         } catch (error) {
             console.error(`Erro ao parsear dados de ${id}:`, error);
-            return null;
+            return [];
         }
     }
 
@@ -35,75 +35,86 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Renderizar gráfico de Receitas
-    if (receitasData && receitasData.length > 0) {
-        new Chart(document.getElementById('graficoReceitas'), {
+    // Função para renderizar gráfico de pizza
+    function renderPieChart(canvasId, data, title, colors) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        const total = data.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+        
+        // Atualizar o total no elemento correspondente
+        const totalElement = document.getElementById(canvasId.replace('grafico', '') + 'Total');
+        if (totalElement) {
+            totalElement.querySelector('.grafico-valor').textContent = 
+                `R$ ${total.toFixed(2)}`;
+        }
+
+        // Se não houver dados, mostrar mensagem
+        if (data.length === 0) {
+            canvas.parentElement.innerHTML = `
+                <div class="text-center p-4">
+                    <p class="text-muted">Nenhum dado disponível para este período</p>
+                </div>
+            `;
+            return;
+        }
+
+        new Chart(canvas, {
             type: 'pie',
             data: {
-                labels: receitasData.map(item => item.nome),
+                labels: data.map(item => item.nome),
                 datasets: [{
-                    data: receitasData.map(item => item.valor),
-                    backgroundColor: [
-                        '#28a745', '#20c997', '#17a2b8', '#0dcaf0', '#0d6efd'
-                    ]
+                    data: data.map(item => parseFloat(item.valor) || 0),
+                    backgroundColor: colors
                 }]
             },
             options: commonOptions
         });
-        document.getElementById('receitasTotal').querySelector('.grafico-valor').textContent = 
-            `R$ ${receitasData.reduce((acc, curr) => acc + curr.valor, 0).toFixed(2)}`;
     }
 
-    // Renderizar gráfico de Despesas
-    if (despesasData && despesasData.length > 0) {
-        new Chart(document.getElementById('graficoDespesas'), {
-            type: 'pie',
-            data: {
-                labels: despesasData.map(item => item.nome),
-                datasets: [{
-                    data: despesasData.map(item => item.valor),
-                    backgroundColor: [
-                        '#dc3545', '#fd7e14', '#ffc107', '#198754', '#0dcaf0'
-                    ]
-                }]
-            },
-            options: commonOptions
-        });
-        document.getElementById('despesasTotal').querySelector('.grafico-valor').textContent = 
-            `R$ ${despesasData.reduce((acc, curr) => acc + curr.valor, 0).toFixed(2)}`;
-    }
+    // Renderizar gráficos
+    renderPieChart('graficoReceitas', receitasData, 'Receitas', [
+        '#28a745', '#20c997', '#17a2b8', '#0dcaf0', '#0d6efd'
+    ]);
 
-    // Renderizar gráfico de Cartões
-    if (cartoesData && cartoesData.length > 0) {
-        new Chart(document.getElementById('graficoCartoes'), {
-            type: 'pie',
-            data: {
-                labels: cartoesData.map(item => item.nome),
-                datasets: [{
-                    data: cartoesData.map(item => item.valor),
-                    backgroundColor: [
-                        '#ffc107', '#fd7e14', '#dc3545', '#198754', '#0dcaf0'
-                    ]
-                }]
-            },
-            options: commonOptions
-        });
-        document.getElementById('cartoesTotal').querySelector('.grafico-valor').textContent = 
-            `R$ ${cartoesData.reduce((acc, curr) => acc + curr.valor, 0).toFixed(2)}`;
-    }
+    renderPieChart('graficoDespesas', despesasData, 'Despesas', [
+        '#dc3545', '#fd7e14', '#ffc107', '#198754', '#0dcaf0'
+    ]);
+
+    renderPieChart('graficoCartoes', cartoesData, 'Cartões', [
+        '#ffc107', '#fd7e14', '#dc3545', '#198754', '#0dcaf0'
+    ]);
 
     // Renderizar gráfico Geral
-    if (graficoGeralData && graficoGeralData.length > 0) {
-        new Chart(document.getElementById('graficoGeral'), {
+    const canvasGeral = document.getElementById('graficoGeral');
+    if (canvasGeral) {
+        const totalGeral = graficoGeralData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+        
+        // Atualizar o total
+        const totalElement = document.getElementById('geralTotal');
+        if (totalElement) {
+            totalElement.querySelector('.grafico-valor').textContent = 
+                `R$ ${totalGeral.toFixed(2)}`;
+        }
+
+        // Se não houver dados, mostrar mensagem
+        if (graficoGeralData.length === 0) {
+            canvasGeral.parentElement.innerHTML = `
+                <div class="text-center p-4">
+                    <p class="text-muted">Nenhum dado disponível para este período</p>
+                </div>
+            `;
+            return;
+        }
+
+        new Chart(canvasGeral, {
             type: 'bar',
             data: {
                 labels: graficoGeralData.map(item => item.nome),
                 datasets: [{
                     label: 'Valores',
-                    data: graficoGeralData.map(item => item.valor),
-                    backgroundColor: [
-                        '#28a745', '#dc3545', '#ffc107'
-                    ]
+                    data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
+                    backgroundColor: ['#28a745', '#dc3545', '#ffc107']
                 }]
             },
             options: {
@@ -115,7 +126,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-        document.getElementById('geralTotal').querySelector('.grafico-valor').textContent = 
-            `R$ ${graficoGeralData.reduce((acc, curr) => acc + curr.valor, 0).toFixed(2)}`;
     }
 }); 
