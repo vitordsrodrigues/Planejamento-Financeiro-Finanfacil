@@ -52,17 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const total = data.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-        
-        // Atualizar o total no elemento correspondente
-        const totalElement = document.getElementById(canvasId.replace('grafico', '') + 'Total');
-        if (totalElement) {
-            totalElement.querySelector('.grafico-valor').textContent = 
-                `R$ ${total.toFixed(2)}`;
-        }
-
         // Se não houver dados, mostrar mensagem
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
             console.log(`Sem dados para ${canvasId}, mostrando mensagem`);
             canvas.parentElement.innerHTML = `
                 <div class="text-center p-4">
@@ -70,6 +61,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             return;
+        }
+
+        const total = data.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+        
+        // Atualizar o total no elemento correspondente
+        const totalElement = document.getElementById(canvasId.replace('grafico', '') + 'Total');
+        if (totalElement) {
+            totalElement.querySelector('.grafico-valor').textContent = 
+                `R$ ${total.toFixed(2)}`;
         }
 
         try {
@@ -107,17 +107,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const canvasGeral = document.getElementById('graficoGeral');
     if (canvasGeral) {
         console.log('Tentando renderizar gráfico geral com dados:', graficoGeralData);
-        const totalGeral = graficoGeralData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-        
-        // Atualizar o total
-        const totalElement = document.getElementById('geralTotal');
-        if (totalElement) {
-            totalElement.querySelector('.grafico-valor').textContent = 
-                `R$ ${totalGeral.toFixed(2)}`;
-        }
 
         // Se não houver dados, mostrar mensagem
-        if (graficoGeralData.length === 0) {
+        if (!graficoGeralData || graficoGeralData.length === 0) {
             console.log('Sem dados para gráfico geral, mostrando mensagem');
             canvasGeral.parentElement.innerHTML = `
                 <div class="text-center p-4">
@@ -125,6 +117,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             return;
+        }
+
+        const totalGeral = graficoGeralData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+        
+        // Atualizar o total
+        const totalElement = document.getElementById('geralTotal');
+        if (totalElement) {
+            totalElement.querySelector('.grafico-valor').textContent = 
+                `R$ ${totalGeral.toFixed(2)}`;
         }
 
         try {
