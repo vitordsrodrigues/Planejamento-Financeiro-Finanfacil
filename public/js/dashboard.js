@@ -32,7 +32,7 @@ window.addEventListener('load', function() {
     const despesasData = getDataFromScript('despesas-data');
     const receitasData = getDataFromScript('receitas-data');
     const cartoesData = getDataFromScript('cartoes-data');
-    const graficoGeralData = getDataFromScript('graficoGeral-data');
+    let graficoGeralData = getDataFromScript('graficoGeral-data');
 
     console.log('Dados obtidos:', {
         despesas: despesasData,
@@ -48,7 +48,7 @@ window.addEventListener('load', function() {
         const totalCartoes = cartoesData.reduce((sum, item) => sum + (parseFloat(item.valor) || 0), 0);
         const totalGeral = totalReceitas + totalDespesas + totalCartoes;
 
-        const graficoGeralData = [
+        graficoGeralData = [
             {
                 nome: 'Receitas',
                 valor: totalReceitas,
