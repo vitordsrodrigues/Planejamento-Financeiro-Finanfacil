@@ -1,6 +1,7 @@
 const express = require('express')
 const exphbs = require('express-handlebars')
 const session = require('express-session')
+const FileStore = require('session-file-store')(session)
 const flash = require('express-flash')
 const Handlebars = require("handlebars")
 const cron = require('node-cron');
@@ -216,8 +217,13 @@ app.use(
         secret: 'nosso_secret',
         resave: false,
         saveUninitialized: false,
+        store: new FileStore({
+            logFn: function () { },
+            path: require('path').join(require('os').tmpdir(), 'sessions'),
+            ttl: 28800,
+        }),
         cookie: {
-            secure: process.env.NODE_ENV === 'production',
+            secure: false,
             maxAge: 1800000,
             httpOnly: true
         }
