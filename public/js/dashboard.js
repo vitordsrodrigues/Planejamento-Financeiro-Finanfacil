@@ -209,23 +209,28 @@ window.addEventListener('load', function() {
                 }
 
                 const chart = new Chart(canvasGeral, {
-                    type: 'bar',
+                    type: 'doughnut',
                     data: {
                         labels: graficoGeralData.map(item => item.nome),
                         datasets: [{
-                            label: 'Valores',
                             data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
                             backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
-                            borderWidth: 0,
-                            borderRadius: 5
+                            borderWidth: 0
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        cutout: '60%',
                         plugins: {
                             legend: {
-                                display: false
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    font: {
+                                        size: 12
+                                    }
+                                }
                             },
                             tooltip: {
                                 callbacks: {
@@ -234,25 +239,6 @@ window.addEventListener('load', function() {
                                         const percentage = graficoGeralData[context.dataIndex].porcentagem;
                                         return `R$ ${value.toFixed(2)} (${percentage}%)`;
                                     }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    display: true,
-                                    color: 'rgba(0, 0, 0, 0.1)'
-                                },
-                                ticks: {
-                                    callback: function(value) {
-                                        return 'R$ ' + value.toFixed(2);
-                                    }
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
                                 }
                             }
                         }
