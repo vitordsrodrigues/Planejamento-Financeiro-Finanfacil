@@ -241,6 +241,24 @@
  
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<!-- Dados para os gráficos -->
+<script id="despesas-data" type="application/json">
+    {{{despesas}}}
+</script>
+<script id="receitas-data" type="application/json">
+    {{{receitas}}}
+</script>
+<script id="cartoes-data" type="application/json">
+    {{{cartoes}}}
+</script>
+<script id="graficoGeral-data" type="application/json">
+    {{{jgraficoGeral}}}
+</script>
+
+<!-- Script do dashboard -->
+<script src="/js/dashboard.js"></script>
+
 <script>
     // Verificar se o Chart.js foi carregado
     window.addEventListener('load', function() {
@@ -251,9 +269,3 @@
         }
     });
 </script>
-<!-- Dados em elementos ocultos -->
-<script id="despesas-data" type="application/json">{{{json despesas}}}</script>
-<script id="receitas-data" type="application/json">{{{json receitas}}}</script>
-<script id="cartoes-data" type="application/json">{{{json cartoes}}}</script>
-<script id="graficoGeral-data" type="application/json">{{{json graficoGeral}}}</script>
-<script src="/js/dashboard.js"></script>

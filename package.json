@@ -9,6 +9,9 @@
     "dev": "nodemon ./index.js localhost 3000",
     "migrate": "node ./db/migrate.js"
   },
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

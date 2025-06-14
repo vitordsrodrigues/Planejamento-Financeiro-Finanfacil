@@ -1,7 +1,7 @@
 const Receita = require('../models/Receita');
 const Despesas = require('../models/Despesas');
 const atualizarSaldo = require('./atualizarSaldo');
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 
 const processarPendentes = async (userId) => {
     const hoje = new Date();
@@ -16,7 +16,7 @@ const processarPendentes = async (userId) => {
             where: {
                 foiProcessada: false,
                 [Op.and]: [
-                    { date: { [Op.lte]: new Date(anoAtual, mesAtual, 0) } }, // Até o último dia do mês atual
+                    literal(`EXTRACT(YEAR FROM "date") <= ${anoAtual} AND EXTRACT(MONTH FROM "date") <= ${mesAtual}`)
                 ],
                 UserId: userId
             }
@@ -34,7 +34,7 @@ const processarPendentes = async (userId) => {
             where: {
                 foiProcessada: false,
                 [Op.and]: [
-                    { date: { [Op.lte]: new Date(anoAtual, mesAtual, 0) } }, // Até o último dia do mês atual
+                    literal(`EXTRACT(YEAR FROM "date") <= ${anoAtual} AND EXTRACT(MONTH FROM "date") <= ${mesAtual}`)
                 ],
                 UserId: userId
             }
