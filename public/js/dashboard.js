@@ -197,9 +197,10 @@ window.addEventListener('load', function() {
     const canvasGeral = document.getElementById('graficoGeral');
     if (canvasGeral) {
         if (graficoGeralData && graficoGeralData.length > 0) {
-            console.log('Renderizando gráfico geral com dados:', graficoGeralData);
+            console.log('Dados do gráfico geral:', graficoGeralData);
             try {
                 const totalGeral = graficoGeralData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+                console.log('Total geral calculado:', totalGeral);
                 
                 // Atualizar o total
                 const totalElement = document.getElementById('geralTotal');
@@ -215,17 +216,38 @@ window.addEventListener('load', function() {
                             label: 'Valores',
                             data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
                             backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
-                            borderWidth: 0
+                            borderWidth: 0,
+                            borderRadius: 5
                         }]
                     },
                     options: {
-                        ...commonOptions,
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.raw;
+                                        const percentage = graficoGeralData[context.dataIndex].porcentagem;
+                                        return `R$ ${value.toFixed(2)} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 grid: {
                                     display: true,
                                     color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'R$ ' + value.toFixed(2);
+                                    }
                                 }
                             },
                             x: {
@@ -239,6 +261,7 @@ window.addEventListener('load', function() {
                 console.log('Gráfico geral renderizado:', chart);
             } catch (error) {
                 console.error('Erro ao renderizar gráfico geral:', error);
+                console.error('Stack trace:', error.stack);
             }
         } else {
             console.log('Sem dados para renderizar gráfico geral');
