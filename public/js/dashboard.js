@@ -45,9 +45,16 @@ window.addEventListener('load', function() {
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: '60%',
         plugins: {
             legend: {
-                position: 'bottom'
+                position: 'bottom',
+                labels: {
+                    padding: 20,
+                    font: {
+                        size: 12
+                    }
+                }
             }
         }
     };
@@ -62,12 +69,13 @@ window.addEventListener('load', function() {
         if (canvas) {
             try {
                 const chart = new Chart(canvas, {
-                    type: 'pie',
+                    type: 'doughnut',
                     data: {
                         labels: receitasData.map(item => item.nome),
                         datasets: [{
                             data: receitasData.map(item => parseFloat(item.valor) || 0),
-                            backgroundColor: ['#28a745', '#20c997', '#17a2b8', '#0dcaf0', '#0d6efd']
+                            backgroundColor: ['#28a745', '#20c997', '#17a2b8', '#0dcaf0', '#0d6efd'],
+                            borderWidth: 0
                         }]
                     },
                     options: commonOptions
@@ -104,12 +112,13 @@ window.addEventListener('load', function() {
         if (canvas) {
             try {
                 const chart = new Chart(canvas, {
-                    type: 'pie',
+                    type: 'doughnut',
                     data: {
                         labels: despesasData.map(item => item.nome),
                         datasets: [{
                             data: despesasData.map(item => parseFloat(item.valor) || 0),
-                            backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#198754', '#0dcaf0']
+                            backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#198754', '#0dcaf0'],
+                            borderWidth: 0
                         }]
                     },
                     options: commonOptions
@@ -146,12 +155,13 @@ window.addEventListener('load', function() {
         if (canvas) {
             try {
                 const chart = new Chart(canvas, {
-                    type: 'pie',
+                    type: 'doughnut',
                     data: {
                         labels: cartoesData.map(item => item.nome),
                         datasets: [{
                             data: cartoesData.map(item => parseFloat(item.valor) || 0),
-                            backgroundColor: ['#ffc107', '#fd7e14', '#dc3545', '#198754', '#0dcaf0']
+                            backgroundColor: ['#ffc107', '#fd7e14', '#dc3545', '#198754', '#0dcaf0'],
+                            borderWidth: 0
                         }]
                     },
                     options: commonOptions
@@ -204,14 +214,24 @@ window.addEventListener('load', function() {
                         datasets: [{
                             label: 'Valores',
                             data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
-                            backgroundColor: ['#28a745', '#dc3545', '#ffc107']
+                            backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
+                            borderWidth: 0
                         }]
                     },
                     options: {
                         ...commonOptions,
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                grid: {
+                                    display: true,
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
                             }
                         }
                     }
