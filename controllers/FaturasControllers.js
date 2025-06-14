@@ -4,6 +4,7 @@ const DespesaCartao = require('../models/DespesaCartao')
 const Categorias = require('../models/Categorias')
 const CategoriaUsuario = require('../models/CategoriaUsuario')
 const FinancaPessoais = require('../models/FinancaPessoais')
+const { Op, literal } = require('sequelize');
 
 
 class FaturaController {
@@ -277,6 +278,201 @@ class FaturaController {
             req.session.save(() => {
                 return res.redirect('/financas/viewCartaos');
             });
+        }
+    }
+
+    static async viewFaturas(req, res) {
+        const userId = req.session.userid;
+        if (!userId) {
+            return res.redirect('/login');
+        }
+
+        try {
+            const cartoes = await Cartao.findAll({
+                where: { UserId: userId },
+                raw: true
+            });
+
+            const cartaoIds = cartoes.map(c => c.id);
+            const hoje = new Date();
+            const mesAtual = hoje.getMonth() + 1;
+            const anoAtual = hoje.getFullYear();
+
+            const faturas = await Fatura.findAll({
+                where: {
+                    CartaoId: { [Op.in]: cartaoIds },
+                    [Op.or]: [
+                        {
+                            [Op.and]: [
+                                { mes: mesAtual },
+                                { ano: anoAtual }
+                            ]
+                        },
+                        {
+                            [Op.and]: [
+                                { mes: mesAtual === 1 ? 12 : mesAtual - 1 },
+                                { ano: mesAtual === 1 ? anoAtual - 1 : anoAtual }
+                            ]
+                        }
+                    ]
+                },
+                include: [
+                    {
+                        model: Cartao,
+                        attributes: ['nome', 'diaFechamento', 'diaVencimento']
+                    }
+                ],
+                order: [
+                    ['ano', 'DESC'],
+                    ['mes', 'DESC']
+                ]
+            });
+
+            res.render('financas/viewFaturas', {
+                faturas,
+                cartoes,
+                mesAtual,
+                anoAtual
+            });
+        } catch (error) {
+            console.error('Erro ao buscar faturas:', error);
+            req.flash('error', 'Erro ao carregar faturas');
+            res.redirect('/financas/dashboard');
+        }
+    }
+
+    static async createFatura(req, res) {
+        const userId = req.session.userid;
+        if (!userId) {
+            return res.redirect('/login');
+        }
+
+        try {
+            const { CartaoId, mes, ano } = req.body;
+
+            // Verificar se já existe uma fatura para este cartão/mês/ano
+            const faturaExistente = await Fatura.findOne({
+                where: {
+                    CartaoId,
+                    mes,
+                    ano
+                }
+            });
+
+            if (faturaExistente) {
+                req.flash('error', 'Já existe uma fatura para este cartão neste período');
+                return res.redirect('/financas/faturas');
+            }
+
+            // Criar nova fatura
+            await Fatura.create({
+                CartaoId,
+                mes,
+                ano,
+                status: 'Aberta'
+            });
+
+            req.flash('success', 'Fatura criada com sucesso');
+            res.redirect('/financas/faturas');
+        } catch (error) {
+            console.error('Erro ao criar fatura:', error);
+            req.flash('error', 'Erro ao criar fatura');
+            res.redirect('/financas/faturas');
+        }
+    }
+
+    static async updateFatura(req, res) {
+        const userId = req.session.userid;
+        if (!userId) {
+            return res.redirect('/login');
+        }
+
+        try {
+            const { id, status } = req.body;
+
+            const fatura = await Fatura.findByPk(id, {
+                include: [{ model: Cartao }]
+            });
+
+            if (!fatura) {
+                req.flash('error', 'Fatura não encontrada');
+                return res.redirect('/financas/faturas');
+            }
+
+            // Verificar se o usuário tem permissão para editar esta fatura
+            const cartao = await Cartao.findOne({
+                where: {
+                    id: fatura.CartaoId,
+                    UserId: userId
+                }
+            });
+
+            if (!cartao) {
+                req.flash('error', 'Você não tem permissão para editar esta fatura');
+                return res.redirect('/financas/faturas');
+            }
+
+            fatura.status = status;
+            await fatura.save();
+
+            req.flash('success', 'Fatura atualizada com sucesso');
+            res.redirect('/financas/faturas');
+        } catch (error) {
+            console.error('Erro ao atualizar fatura:', error);
+            req.flash('error', 'Erro ao atualizar fatura');
+            res.redirect('/financas/faturas');
+        }
+    }
+
+    static async deleteFatura(req, res) {
+        const userId = req.session.userid;
+        if (!userId) {
+            return res.redirect('/login');
+        }
+
+        try {
+            const { id } = req.params;
+
+            const fatura = await Fatura.findByPk(id, {
+                include: [{ model: Cartao }]
+            });
+
+            if (!fatura) {
+                req.flash('error', 'Fatura não encontrada');
+                return res.redirect('/financas/faturas');
+            }
+
+            // Verificar se o usuário tem permissão para excluir esta fatura
+            const cartao = await Cartao.findOne({
+                where: {
+                    id: fatura.CartaoId,
+                    UserId: userId
+                }
+            });
+
+            if (!cartao) {
+                req.flash('error', 'Você não tem permissão para excluir esta fatura');
+                return res.redirect('/financas/faturas');
+            }
+
+            // Verificar se existem despesas associadas
+            const despesas = await DespesaCartao.findAll({
+                where: { FaturaId: id }
+            });
+
+            if (despesas.length > 0) {
+                req.flash('error', 'Não é possível excluir uma fatura que possui despesas associadas');
+                return res.redirect('/financas/faturas');
+            }
+
+            await fatura.destroy();
+
+            req.flash('success', 'Fatura excluída com sucesso');
+            res.redirect('/financas/faturas');
+        } catch (error) {
+            console.error('Erro ao excluir fatura:', error);
+            req.flash('error', 'Erro ao excluir fatura');
+            res.redirect('/financas/faturas');
         }
     }
 }

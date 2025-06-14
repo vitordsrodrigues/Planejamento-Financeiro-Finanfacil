@@ -1,6 +1,6 @@
 const Fatura = require('../models/Fatura');
 const Cartao = require('../models/Cartao');
-const { Op } = require('sequelize');
+const { Op, literal } = require('sequelize');
 const moment = require('moment');
 
 async function atualizarStatusFaturas() {
@@ -38,47 +38,32 @@ async function atualizarStatusFaturas() {
         
         console.log(`Encontradas ${faturas.length} faturas abertas para verificação`);
 
-        for (let fatura of faturas) {
+        for (const fatura of faturas) {
             const cartao = fatura.Cartao;
             if (!cartao) {
-                console.log(`Fatura ${fatura.id} não tem cartão associado. Pulando.`);
+                console.log(`Cartão não encontrado para a fatura ${fatura.id}`);
                 continue;
             }
-            
-            console.log(`Verificando fatura ${fatura.id} do cartão ${cartao.name} (ID: ${cartao.id})`);
-            console.log(`Mês/Ano da fatura: ${fatura.mes}/${fatura.ano}, Dia de fechamento: ${cartao.dataFechamento}`);
-            
-            // Determinar se a fatura deve ser fechada baseado na data atual
-            let deveFechada = false;
-            
-            // Se estamos no mesmo mês/ano da fatura
-            if (fatura.mes === mesAtual && fatura.ano === anoAtual) {
-                // Fechar se o dia atual é igual ou maior que o dia de fechamento
-                deveFechada = diaAtual >= cartao.dataFechamento;
-                console.log(`Mesmo mês/ano - Hoje: ${diaAtual}, Fechamento: ${cartao.dataFechamento}, Deve fechar? ${deveFechada}`);
-            } 
-            // Se estamos no mês seguinte ao da fatura
-            else if (
-                (fatura.mes === 12 && mesAtual === 1 && fatura.ano === anoAtual - 1) || // Virada de ano
-                (fatura.mes === mesAtual - 1 && fatura.ano === anoAtual) // Mesmo ano
-            ) {
-                // Se estamos no mês seguinte, a fatura do mês anterior deve ser fechada
-                deveFechada = true;
-                console.log(`Mês seguinte - Fatura deve ser fechada automaticamente`);
-            }
-            
-            // Fechar fatura se necessário
-            if (deveFechada) {
-                const statusAnterior = fatura.status;
+
+            const diaFechamento = cartao.diaFechamento;
+            const diaVencimento = cartao.diaVencimento;
+
+            // Verifica se é hora de fechar a fatura
+            if (diaAtual >= diaFechamento && fatura.status === 'Aberta') {
+                console.log(`Fechando fatura ${fatura.id} do cartão ${cartao.nome}`);
                 fatura.status = 'Fechada';
                 await fatura.save();
-                console.log(`Fatura ${fatura.id} foi alterada: ${statusAnterior} -> Fechada!`);
-            } else {
-                console.log(`Fatura ${fatura.id} mantida como Aberta.`);
+            }
+
+            // Verifica se é hora de vencer a fatura
+            if (diaAtual >= diaVencimento && fatura.status === 'Fechada') {
+                console.log(`Vencendo fatura ${fatura.id} do cartão ${cartao.nome}`);
+                fatura.status = 'Vencida';
+                await fatura.save();
             }
         }
 
-        console.log('Atualização de status concluída!');
+        console.log('Verificação de status de faturas concluída com sucesso');
     } catch (error) {
         console.error('Erro ao atualizar status das faturas:', error);
     }

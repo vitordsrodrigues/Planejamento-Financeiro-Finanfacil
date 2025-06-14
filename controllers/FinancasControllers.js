@@ -7,7 +7,7 @@ const Fatura = require('../models/Fatura')
 const Receita = require('../models/Receita')
 const Categorias = require('../models/Categorias')
 const CategoriaUsuario = require('../models/CategoriaUsuario')
-const { Op } = require('sequelize'); // Certifique-se de importar o operador Op no topo do arquivo
+const { Op, literal } = require('sequelize'); // Certifique-se de importar o operador Op e literal no topo do arquivo
 const sequelize = require('../db/conn') // Importa a instância do sequelize já configurada
 const atualizarSaldo = require('../helpers/atualizarSaldo') // Importa a função de atualização de saldo
 const converterDataParaISO = require('../helpers/converter'); // Ajuste o caminho conforme necessário
@@ -72,8 +72,8 @@ module.exports = class FinancasControllers{
                 where: {
                     UserId: userId,
                     [Op.and]: [
-                        sequelize.literal(`EXTRACT(MONTH FROM "date") = ${mesAtual}`),
-                        sequelize.literal(`EXTRACT(YEAR FROM "date") = ${anoAtual}`)
+                        literal(`EXTRACT(YEAR FROM "date") = ${anoAtual}`),
+                        literal(`EXTRACT(MONTH FROM "date") = ${mesAtual}`)
                     ]
                 },
                 include: [
@@ -93,8 +93,8 @@ module.exports = class FinancasControllers{
                 where: {
                     UserId: userId,
                     [Op.and]: [
-                        sequelize.literal(`EXTRACT(MONTH FROM "date") = ${mesAtual}`),
-                        sequelize.literal(`EXTRACT(YEAR FROM "date") = ${anoAtual}`)
+                        literal(`EXTRACT(YEAR FROM "date") = ${anoAtual}`),
+                        literal(`EXTRACT(MONTH FROM "date") = ${mesAtual}`)
                     ]
                 },
                 include: [
@@ -368,9 +368,10 @@ module.exports = class FinancasControllers{
             where: {
                 UserId: userId,
                 foiProcessada: false,
-                date: {
-                    [Op.gte]: hoje
-                }
+                [Op.and]: [
+                    literal(`EXTRACT(YEAR FROM "date") >= ${hoje.getFullYear()}`),
+                    literal(`EXTRACT(MONTH FROM "date") >= ${hoje.getMonth() + 1}`)
+                ]
             },
             raw: true
         });
@@ -385,9 +386,10 @@ module.exports = class FinancasControllers{
             where: {
                 UserId: userId,
                 foiProcessada: false,
-                date: {
-                    [Op.gte]: hoje
-                }
+                [Op.and]: [
+                    literal(`EXTRACT(YEAR FROM "date") >= ${hoje.getFullYear()}`),
+                    literal(`EXTRACT(MONTH FROM "date") >= ${hoje.getMonth() + 1}`)
+                ]
             },
             raw: true
         });
