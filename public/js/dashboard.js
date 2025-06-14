@@ -106,9 +106,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verificar se os dados estão vazios antes de renderizar
     if (receitasData && receitasData.length > 0) {
         console.log('Renderizando gráfico de receitas com dados:', receitasData);
-        renderPieChart('graficoReceitas', receitasData, 'Receitas', [
-            '#28a745', '#20c997', '#17a2b8', '#0dcaf0', '#0d6efd'
-        ]);
+        const chart = new Chart(document.getElementById('graficoReceitas'), {
+            type: 'pie',
+            data: {
+                labels: receitasData.map(item => item.nome),
+                datasets: [{
+                    data: receitasData.map(item => parseFloat(item.valor) || 0),
+                    backgroundColor: ['#28a745', '#20c997', '#17a2b8', '#0dcaf0', '#0d6efd']
+                }]
+            },
+            options: commonOptions
+        });
+        console.log('Gráfico de receitas renderizado:', chart);
+
+        // Atualizar o total
+        const totalReceitas = receitasData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+        const totalElement = document.getElementById('receitasTotal');
+        if (totalElement) {
+            totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalReceitas.toFixed(2)}`;
+        }
     } else {
         console.log('Sem dados para renderizar gráfico de receitas');
         const canvas = document.getElementById('graficoReceitas');
@@ -123,9 +139,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (despesasData && despesasData.length > 0) {
         console.log('Renderizando gráfico de despesas com dados:', despesasData);
-        renderPieChart('graficoDespesas', despesasData, 'Despesas', [
-            '#dc3545', '#fd7e14', '#ffc107', '#198754', '#0dcaf0'
-        ]);
+        const chart = new Chart(document.getElementById('graficoDespesas'), {
+            type: 'pie',
+            data: {
+                labels: despesasData.map(item => item.nome),
+                datasets: [{
+                    data: despesasData.map(item => parseFloat(item.valor) || 0),
+                    backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#198754', '#0dcaf0']
+                }]
+            },
+            options: commonOptions
+        });
+        console.log('Gráfico de despesas renderizado:', chart);
+
+        // Atualizar o total
+        const totalDespesas = despesasData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+        const totalElement = document.getElementById('despesasTotal');
+        if (totalElement) {
+            totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalDespesas.toFixed(2)}`;
+        }
     } else {
         console.log('Sem dados para renderizar gráfico de despesas');
         const canvas = document.getElementById('graficoDespesas');
@@ -140,9 +172,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (cartoesData && cartoesData.length > 0) {
         console.log('Renderizando gráfico de cartões com dados:', cartoesData);
-        renderPieChart('graficoCartoes', cartoesData, 'Cartões', [
-            '#ffc107', '#fd7e14', '#dc3545', '#198754', '#0dcaf0'
-        ]);
+        const chart = new Chart(document.getElementById('graficoCartoes'), {
+            type: 'pie',
+            data: {
+                labels: cartoesData.map(item => item.nome),
+                datasets: [{
+                    data: cartoesData.map(item => parseFloat(item.valor) || 0),
+                    backgroundColor: ['#ffc107', '#fd7e14', '#dc3545', '#198754', '#0dcaf0']
+                }]
+            },
+            options: commonOptions
+        });
+        console.log('Gráfico de cartões renderizado:', chart);
+
+        // Atualizar o total
+        const totalCartoes = cartoesData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+        const totalElement = document.getElementById('cartoesTotal');
+        if (totalElement) {
+            totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalCartoes.toFixed(2)}`;
+        }
     } else {
         console.log('Sem dados para renderizar gráfico de cartões');
         const canvas = document.getElementById('graficoCartoes');
@@ -166,34 +214,29 @@ document.addEventListener('DOMContentLoaded', function() {
             // Atualizar o total
             const totalElement = document.getElementById('geralTotal');
             if (totalElement) {
-                totalElement.querySelector('.grafico-valor').textContent = 
-                    `R$ ${totalGeral.toFixed(2)}`;
+                totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalGeral.toFixed(2)}`;
             }
 
-            try {
-                const chart = new Chart(canvasGeral, {
-                    type: 'bar',
-                    data: {
-                        labels: graficoGeralData.map(item => item.nome),
-                        datasets: [{
-                            label: 'Valores',
-                            data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
-                            backgroundColor: ['#28a745', '#dc3545', '#ffc107']
-                        }]
-                    },
-                    options: {
-                        ...commonOptions,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
+            const chart = new Chart(canvasGeral, {
+                type: 'bar',
+                data: {
+                    labels: graficoGeralData.map(item => item.nome),
+                    datasets: [{
+                        label: 'Valores',
+                        data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
+                        backgroundColor: ['#28a745', '#dc3545', '#ffc107']
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true
                         }
                     }
-                });
-                console.log('Gráfico geral renderizado com sucesso:', chart);
-            } catch (error) {
-                console.error('Erro ao renderizar gráfico geral:', error);
-            }
+                }
+            });
+            console.log('Gráfico geral renderizado:', chart);
         } else {
             console.log('Sem dados para renderizar gráfico geral');
             canvasGeral.parentElement.innerHTML = `
