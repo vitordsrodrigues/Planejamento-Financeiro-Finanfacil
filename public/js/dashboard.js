@@ -10,8 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return [];
         }
         try {
+            console.log(`Conteúdo bruto do elemento ${id}:`, element.textContent);
             const data = JSON.parse(element.textContent);
-            console.log(`Dados de ${id}:`, data);
+            console.log(`Dados parseados de ${id}:`, data);
             return Array.isArray(data) ? data : [];
         } catch (error) {
             console.error(`Erro ao parsear dados de ${id}:`, error);
@@ -63,17 +64,26 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        console.log(`Dados para renderização do ${canvasId}:`, {
+            labels: data.map(item => item.nome),
+            values: data.map(item => parseFloat(item.valor) || 0)
+        });
+
         const total = data.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+        console.log(`Total calculado para ${canvasId}:`, total);
         
         // Atualizar o total no elemento correspondente
         const totalElement = document.getElementById(canvasId.replace('grafico', '') + 'Total');
         if (totalElement) {
             totalElement.querySelector('.grafico-valor').textContent = 
                 `R$ ${total.toFixed(2)}`;
+            console.log(`Total atualizado no elemento para ${canvasId}`);
+        } else {
+            console.error(`Elemento de total não encontrado para ${canvasId}`);
         }
 
         try {
-            new Chart(canvas, {
+            const chart = new Chart(canvas, {
                 type: 'pie',
                 data: {
                     labels: data.map(item => item.nome),
@@ -84,26 +94,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 options: commonOptions
             });
-            console.log(`Gráfico ${canvasId} renderizado com sucesso`);
+            console.log(`Gráfico ${canvasId} renderizado com sucesso:`, chart);
         } catch (error) {
             console.error(`Erro ao renderizar gráfico ${canvasId}:`, error);
         }
     }
 
     // Renderizar gráficos
+    console.log('Iniciando renderização dos gráficos...');
+    
+    console.log('Renderizando gráfico de receitas...');
     renderPieChart('graficoReceitas', receitasData, 'Receitas', [
         '#28a745', '#20c997', '#17a2b8', '#0dcaf0', '#0d6efd'
     ]);
 
+    console.log('Renderizando gráfico de despesas...');
     renderPieChart('graficoDespesas', despesasData, 'Despesas', [
         '#dc3545', '#fd7e14', '#ffc107', '#198754', '#0dcaf0'
     ]);
 
+    console.log('Renderizando gráfico de cartões...');
     renderPieChart('graficoCartoes', cartoesData, 'Cartões', [
         '#ffc107', '#fd7e14', '#dc3545', '#198754', '#0dcaf0'
     ]);
 
     // Renderizar gráfico Geral
+    console.log('Renderizando gráfico geral...');
     const canvasGeral = document.getElementById('graficoGeral');
     if (canvasGeral) {
         console.log('Tentando renderizar gráfico geral com dados:', graficoGeralData);
@@ -119,17 +135,26 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        console.log(`Dados para renderização do gráfico geral:`, {
+            labels: graficoGeralData.map(item => item.nome),
+            values: graficoGeralData.map(item => parseFloat(item.valor) || 0)
+        });
+
         const totalGeral = graficoGeralData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+        console.log(`Total calculado para gráfico geral:`, totalGeral);
         
         // Atualizar o total
         const totalElement = document.getElementById('geralTotal');
         if (totalElement) {
             totalElement.querySelector('.grafico-valor').textContent = 
                 `R$ ${totalGeral.toFixed(2)}`;
+            console.log(`Total atualizado no elemento para gráfico geral`);
+        } else {
+            console.error(`Elemento de total não encontrado para gráfico geral`);
         }
 
         try {
-            new Chart(canvasGeral, {
+            const chart = new Chart(canvasGeral, {
                 type: 'bar',
                 data: {
                     labels: graficoGeralData.map(item => item.nome),
@@ -148,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-            console.log('Gráfico geral renderizado com sucesso');
+            console.log('Gráfico geral renderizado com sucesso:', chart);
         } catch (error) {
             console.error('Erro ao renderizar gráfico geral:', error);
         }
