@@ -237,7 +237,14 @@ window.addEventListener('load', function() {
     if (canvasGeral) {
         if (graficoGeralData && graficoGeralData.length > 0) {
             console.log('Renderizando gráfico geral com dados:', graficoGeralData);
-            renderizarGraficos({ geral: graficoGeralData });
+            const totalGeral = graficoGeralData.reduce((sum, item) => sum + (parseFloat(item.valor) || 0), 0);
+            const graficoGeral = criarGrafico(canvasGeral.getContext('2d'), graficoGeralData, coresGeral);
+            
+            const totalEl = [
+                document.querySelector('#geralTotal .grafico-label'),
+                document.querySelector('#geralTotal .grafico-valor')
+            ];
+            configurarEventosHover('graficoGeral', graficoGeral, totalEl, totalGeral);
         } else {
             console.log('Sem dados para renderizar gráfico geral');
             canvasGeral.parentElement.innerHTML = `

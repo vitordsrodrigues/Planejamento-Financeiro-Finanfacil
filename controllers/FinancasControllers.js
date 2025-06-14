@@ -204,7 +204,7 @@ module.exports = class FinancasControllers{
     
             // Cálculo para o gráfico de porcentagem geral
             const totalGeral = totalReceitas + totalDespesas + totalCartao;
-    
+
             const graficoGeral = [
                 {
                     nome: 'Receitas',
@@ -221,8 +221,10 @@ module.exports = class FinancasControllers{
                     valor: totalCartao,
                     porcentagem: totalGeral > 0 ? ((totalCartao / totalGeral) * 100).toFixed(2) : 0
                 }
-            ];
-    
+            ] // Filtrar apenas itens com valor maior que zero
+
+            console.log('Dados do gráfico geral:', graficoGeral);
+
             // Buscar o saldo diretamente da tabela FinancaPessoais
             const financas = await FinancaPessoais.findOne({ where: { UserId: userId } });
     
@@ -301,7 +303,7 @@ module.exports = class FinancasControllers{
                 meses,
                 anosDisponiveis,
                 mesAtualNome: meses.find(m => m.valor === mesAtual).nome,
-                linkExibido, // Passar apenas o link selecionado para a view
+                linkExibido,
                 saldoInicial: saldoInicial,
                 saldoPrevisto,
                 mes: mesSelecionado,
