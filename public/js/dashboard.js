@@ -127,4 +127,38 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Eventos do dropdown e seleção de mês/ano
+    document.querySelectorAll('.month-item').forEach(item => {
+        item.addEventListener('click', function () {
+            document.querySelectorAll('.month-item').forEach(el => el.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+        dropdown.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+    });
+
+    window.incrementYear = function () {
+        const yearInput = document.getElementById('ano');
+        if (yearInput) {
+            let currentYear = parseInt(yearInput.value);
+            if (!isNaN(currentYear) && currentYear < 2100) {
+                yearInput.value = currentYear + 1;
+            }
+        }
+    };
+
+    window.decrementYear = function () {
+        const yearInput = document.getElementById('ano');
+        if (yearInput) {
+            let currentYear = parseInt(yearInput.value);
+            if (!isNaN(currentYear) && currentYear > 2000) {
+                yearInput.value = currentYear - 1;
+            }
+        }
+    };
 }); 
