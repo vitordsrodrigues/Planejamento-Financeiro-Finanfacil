@@ -1,5 +1,13 @@
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Iniciando renderização do dashboard...');
+// Aguardar o carregamento completo da página
+window.addEventListener('load', function() {
+    console.log('Página carregada, verificando Chart.js...');
+    
+    // Verificar se o Chart.js está disponível
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js não está disponível!');
+        return;
+    }
+    
     console.log('Chart.js disponível:', typeof Chart !== 'undefined');
 
     // Função para obter dados dos elementos script
@@ -13,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(`Conteúdo bruto do elemento ${id}:`, element.textContent);
             const data = JSON.parse(element.textContent);
             console.log(`Dados parseados de ${id}:`, data);
-            return Array.isArray(data) ? data : [];
+            return data;
         } catch (error) {
             console.error(`Erro ao parsear dados de ${id}:`, error);
             return [];
@@ -44,86 +52,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Função para renderizar gráfico de pizza
-    function renderPieChart(canvasId, data, title, colors) {
-        console.log(`Tentando renderizar gráfico ${canvasId} com dados:`, data);
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) {
-            console.error(`Canvas ${canvasId} não encontrado`);
-            return;
-        }
-
-        // Se não houver dados, mostrar mensagem
-        if (!data || data.length === 0) {
-            console.log(`Sem dados para ${canvasId}, mostrando mensagem`);
-            canvas.parentElement.innerHTML = `
-                <div class="text-center p-4">
-                    <p class="text-muted">Nenhum dado disponível para este período</p>
-                </div>
-            `;
-            return;
-        }
-
-        console.log(`Dados para renderização do ${canvasId}:`, {
-            labels: data.map(item => item.nome),
-            values: data.map(item => parseFloat(item.valor) || 0)
-        });
-
-        const total = data.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-        console.log(`Total calculado para ${canvasId}:`, total);
-        
-        // Atualizar o total no elemento correspondente
-        const totalElement = document.getElementById(canvasId.replace('grafico', '') + 'Total');
-        if (totalElement) {
-            totalElement.querySelector('.grafico-valor').textContent = 
-                `R$ ${total.toFixed(2)}`;
-            console.log(`Total atualizado no elemento para ${canvasId}`);
-        } else {
-            console.error(`Elemento de total não encontrado para ${canvasId}`);
-        }
-
-        try {
-            const chart = new Chart(canvas, {
-                type: 'pie',
-                data: {
-                    labels: data.map(item => item.nome),
-                    datasets: [{
-                        data: data.map(item => parseFloat(item.valor) || 0),
-                        backgroundColor: colors
-                    }]
-                },
-                options: commonOptions
-            });
-            console.log(`Gráfico ${canvasId} renderizado com sucesso:`, chart);
-        } catch (error) {
-            console.error(`Erro ao renderizar gráfico ${canvasId}:`, error);
-        }
-    }
-
     // Renderizar gráficos
     console.log('Iniciando renderização dos gráficos...');
     
     // Verificar se os dados estão vazios antes de renderizar
     if (receitasData && receitasData.length > 0) {
         console.log('Renderizando gráfico de receitas com dados:', receitasData);
-        const chart = new Chart(document.getElementById('graficoReceitas'), {
-            type: 'pie',
-            data: {
-                labels: receitasData.map(item => item.nome),
-                datasets: [{
-                    data: receitasData.map(item => parseFloat(item.valor) || 0),
-                    backgroundColor: ['#28a745', '#20c997', '#17a2b8', '#0dcaf0', '#0d6efd']
-                }]
-            },
-            options: commonOptions
-        });
-        console.log('Gráfico de receitas renderizado:', chart);
+        const canvas = document.getElementById('graficoReceitas');
+        if (canvas) {
+            try {
+                const chart = new Chart(canvas, {
+                    type: 'pie',
+                    data: {
+                        labels: receitasData.map(item => item.nome),
+                        datasets: [{
+                            data: receitasData.map(item => parseFloat(item.valor) || 0),
+                            backgroundColor: ['#28a745', '#20c997', '#17a2b8', '#0dcaf0', '#0d6efd']
+                        }]
+                    },
+                    options: commonOptions
+                });
+                console.log('Gráfico de receitas renderizado:', chart);
 
-        // Atualizar o total
-        const totalReceitas = receitasData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-        const totalElement = document.getElementById('receitasTotal');
-        if (totalElement) {
-            totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalReceitas.toFixed(2)}`;
+                // Atualizar o total
+                const totalReceitas = receitasData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+                const totalElement = document.getElementById('receitasTotal');
+                if (totalElement) {
+                    totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalReceitas.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Erro ao renderizar gráfico de receitas:', error);
+            }
+        } else {
+            console.error('Canvas do gráfico de receitas não encontrado');
         }
     } else {
         console.log('Sem dados para renderizar gráfico de receitas');
@@ -139,24 +100,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (despesasData && despesasData.length > 0) {
         console.log('Renderizando gráfico de despesas com dados:', despesasData);
-        const chart = new Chart(document.getElementById('graficoDespesas'), {
-            type: 'pie',
-            data: {
-                labels: despesasData.map(item => item.nome),
-                datasets: [{
-                    data: despesasData.map(item => parseFloat(item.valor) || 0),
-                    backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#198754', '#0dcaf0']
-                }]
-            },
-            options: commonOptions
-        });
-        console.log('Gráfico de despesas renderizado:', chart);
+        const canvas = document.getElementById('graficoDespesas');
+        if (canvas) {
+            try {
+                const chart = new Chart(canvas, {
+                    type: 'pie',
+                    data: {
+                        labels: despesasData.map(item => item.nome),
+                        datasets: [{
+                            data: despesasData.map(item => parseFloat(item.valor) || 0),
+                            backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#198754', '#0dcaf0']
+                        }]
+                    },
+                    options: commonOptions
+                });
+                console.log('Gráfico de despesas renderizado:', chart);
 
-        // Atualizar o total
-        const totalDespesas = despesasData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-        const totalElement = document.getElementById('despesasTotal');
-        if (totalElement) {
-            totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalDespesas.toFixed(2)}`;
+                // Atualizar o total
+                const totalDespesas = despesasData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+                const totalElement = document.getElementById('despesasTotal');
+                if (totalElement) {
+                    totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalDespesas.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Erro ao renderizar gráfico de despesas:', error);
+            }
+        } else {
+            console.error('Canvas do gráfico de despesas não encontrado');
         }
     } else {
         console.log('Sem dados para renderizar gráfico de despesas');
@@ -172,24 +142,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (cartoesData && cartoesData.length > 0) {
         console.log('Renderizando gráfico de cartões com dados:', cartoesData);
-        const chart = new Chart(document.getElementById('graficoCartoes'), {
-            type: 'pie',
-            data: {
-                labels: cartoesData.map(item => item.nome),
-                datasets: [{
-                    data: cartoesData.map(item => parseFloat(item.valor) || 0),
-                    backgroundColor: ['#ffc107', '#fd7e14', '#dc3545', '#198754', '#0dcaf0']
-                }]
-            },
-            options: commonOptions
-        });
-        console.log('Gráfico de cartões renderizado:', chart);
+        const canvas = document.getElementById('graficoCartoes');
+        if (canvas) {
+            try {
+                const chart = new Chart(canvas, {
+                    type: 'pie',
+                    data: {
+                        labels: cartoesData.map(item => item.nome),
+                        datasets: [{
+                            data: cartoesData.map(item => parseFloat(item.valor) || 0),
+                            backgroundColor: ['#ffc107', '#fd7e14', '#dc3545', '#198754', '#0dcaf0']
+                        }]
+                    },
+                    options: commonOptions
+                });
+                console.log('Gráfico de cartões renderizado:', chart);
 
-        // Atualizar o total
-        const totalCartoes = cartoesData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-        const totalElement = document.getElementById('cartoesTotal');
-        if (totalElement) {
-            totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalCartoes.toFixed(2)}`;
+                // Atualizar o total
+                const totalCartoes = cartoesData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+                const totalElement = document.getElementById('cartoesTotal');
+                if (totalElement) {
+                    totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalCartoes.toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Erro ao renderizar gráfico de cartões:', error);
+            }
+        } else {
+            console.error('Canvas do gráfico de cartões não encontrado');
         }
     } else {
         console.log('Sem dados para renderizar gráfico de cartões');
@@ -209,34 +188,38 @@ document.addEventListener('DOMContentLoaded', function() {
     if (canvasGeral) {
         if (graficoGeralData && graficoGeralData.length > 0) {
             console.log('Renderizando gráfico geral com dados:', graficoGeralData);
-            const totalGeral = graficoGeralData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
-            
-            // Atualizar o total
-            const totalElement = document.getElementById('geralTotal');
-            if (totalElement) {
-                totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalGeral.toFixed(2)}`;
-            }
+            try {
+                const totalGeral = graficoGeralData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
+                
+                // Atualizar o total
+                const totalElement = document.getElementById('geralTotal');
+                if (totalElement) {
+                    totalElement.querySelector('.grafico-valor').textContent = `R$ ${totalGeral.toFixed(2)}`;
+                }
 
-            const chart = new Chart(canvasGeral, {
-                type: 'bar',
-                data: {
-                    labels: graficoGeralData.map(item => item.nome),
-                    datasets: [{
-                        label: 'Valores',
-                        data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
-                        backgroundColor: ['#28a745', '#dc3545', '#ffc107']
-                    }]
-                },
-                options: {
-                    ...commonOptions,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                const chart = new Chart(canvasGeral, {
+                    type: 'bar',
+                    data: {
+                        labels: graficoGeralData.map(item => item.nome),
+                        datasets: [{
+                            label: 'Valores',
+                            data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
+                            backgroundColor: ['#28a745', '#dc3545', '#ffc107']
+                        }]
+                    },
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
-                }
-            });
-            console.log('Gráfico geral renderizado:', chart);
+                });
+                console.log('Gráfico geral renderizado:', chart);
+            } catch (error) {
+                console.error('Erro ao renderizar gráfico geral:', error);
+            }
         } else {
             console.log('Sem dados para renderizar gráfico geral');
             canvasGeral.parentElement.innerHTML = `
