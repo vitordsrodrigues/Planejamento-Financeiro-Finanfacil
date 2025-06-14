@@ -72,8 +72,8 @@ module.exports = class FinancasControllers{
                 where: {
                     UserId: userId,
                     [Op.and]: [
-                        sequelize.where(sequelize.fn('EXTRACT', 'MONTH', sequelize.col('date')), mesAtual),
-                        sequelize.where(sequelize.fn('EXTRACT', 'YEAR', sequelize.col('date')), anoAtual)
+                        sequelize.literal(`EXTRACT(MONTH FROM "date") = ${mesAtual}`),
+                        sequelize.literal(`EXTRACT(YEAR FROM "date") = ${anoAtual}`)
                     ]
                 },
                 include: [
@@ -93,8 +93,8 @@ module.exports = class FinancasControllers{
                 where: {
                     UserId: userId,
                     [Op.and]: [
-                        sequelize.where(sequelize.fn('EXTRACT', 'MONTH', sequelize.col('date')), mesAtual),
-                        sequelize.where(sequelize.fn('EXTRACT', 'YEAR', sequelize.col('date')), anoAtual)
+                        sequelize.literal(`EXTRACT(MONTH FROM "date") = ${mesAtual}`),
+                        sequelize.literal(`EXTRACT(YEAR FROM "date") = ${anoAtual}`)
                     ]
                 },
                 include: [
