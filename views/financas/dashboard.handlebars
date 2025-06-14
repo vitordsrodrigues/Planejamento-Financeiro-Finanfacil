@@ -239,7 +239,18 @@
     </div>
 </div>
  
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    // Verificar se o Chart.js foi carregado
+    window.addEventListener('load', function() {
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js não foi carregado corretamente');
+        } else {
+            console.log('Chart.js carregado com sucesso');
+        }
+    });
+</script>
 <script src="/js/dashboard.js"></script>
 
 <!-- Dados em elementos ocultos -->

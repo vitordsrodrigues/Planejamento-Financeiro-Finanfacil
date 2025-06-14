@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Iniciando renderização do dashboard...');
+    console.log('Chart.js disponível:', typeof Chart !== 'undefined');
 
     // Função para obter dados dos elementos script
     function getDataFromScript(id) {
@@ -24,6 +25,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartoesData = getDataFromScript('cartoes-data');
     const graficoGeralData = getDataFromScript('graficoGeral-data');
 
+    console.log('Dados obtidos:', {
+        despesas: despesasData,
+        receitas: receitasData,
+        cartoes: cartoesData,
+        geral: graficoGeralData
+    });
+
     // Configuração comum para os gráficos
     const commonOptions = {
         responsive: true,
@@ -37,8 +45,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Função para renderizar gráfico de pizza
     function renderPieChart(canvasId, data, title, colors) {
+        console.log(`Tentando renderizar gráfico ${canvasId} com dados:`, data);
         const canvas = document.getElementById(canvasId);
-        if (!canvas) return;
+        if (!canvas) {
+            console.error(`Canvas ${canvasId} não encontrado`);
+            return;
+        }
 
         const total = data.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
         
@@ -51,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Se não houver dados, mostrar mensagem
         if (data.length === 0) {
+            console.log(`Sem dados para ${canvasId}, mostrando mensagem`);
             canvas.parentElement.innerHTML = `
                 <div class="text-center p-4">
                     <p class="text-muted">Nenhum dado disponível para este período</p>
@@ -59,17 +72,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        new Chart(canvas, {
-            type: 'pie',
-            data: {
-                labels: data.map(item => item.nome),
-                datasets: [{
-                    data: data.map(item => parseFloat(item.valor) || 0),
-                    backgroundColor: colors
-                }]
-            },
-            options: commonOptions
-        });
+        try {
+            new Chart(canvas, {
+                type: 'pie',
+                data: {
+                    labels: data.map(item => item.nome),
+                    datasets: [{
+                        data: data.map(item => parseFloat(item.valor) || 0),
+                        backgroundColor: colors
+                    }]
+                },
+                options: commonOptions
+            });
+            console.log(`Gráfico ${canvasId} renderizado com sucesso`);
+        } catch (error) {
+            console.error(`Erro ao renderizar gráfico ${canvasId}:`, error);
+        }
     }
 
     // Renderizar gráficos
@@ -88,6 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Renderizar gráfico Geral
     const canvasGeral = document.getElementById('graficoGeral');
     if (canvasGeral) {
+        console.log('Tentando renderizar gráfico geral com dados:', graficoGeralData);
         const totalGeral = graficoGeralData.reduce((acc, curr) => acc + (parseFloat(curr.valor) || 0), 0);
         
         // Atualizar o total
@@ -99,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Se não houver dados, mostrar mensagem
         if (graficoGeralData.length === 0) {
+            console.log('Sem dados para gráfico geral, mostrando mensagem');
             canvasGeral.parentElement.innerHTML = `
                 <div class="text-center p-4">
                     <p class="text-muted">Nenhum dado disponível para este período</p>
@@ -107,25 +127,32 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        new Chart(canvasGeral, {
-            type: 'bar',
-            data: {
-                labels: graficoGeralData.map(item => item.nome),
-                datasets: [{
-                    label: 'Valores',
-                    data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
-                    backgroundColor: ['#28a745', '#dc3545', '#ffc107']
-                }]
-            },
-            options: {
-                ...commonOptions,
-                scales: {
-                    y: {
-                        beginAtZero: true
+        try {
+            new Chart(canvasGeral, {
+                type: 'bar',
+                data: {
+                    labels: graficoGeralData.map(item => item.nome),
+                    datasets: [{
+                        label: 'Valores',
+                        data: graficoGeralData.map(item => parseFloat(item.valor) || 0),
+                        backgroundColor: ['#28a745', '#dc3545', '#ffc107']
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
-            }
-        });
+            });
+            console.log('Gráfico geral renderizado com sucesso');
+        } catch (error) {
+            console.error('Erro ao renderizar gráfico geral:', error);
+        }
+    } else {
+        console.error('Canvas do gráfico geral não encontrado');
     }
 
     // Eventos do dropdown e seleção de mês/ano
