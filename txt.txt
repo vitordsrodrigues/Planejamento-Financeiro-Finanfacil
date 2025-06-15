@@ -1,1 +1,0 @@
-postgresql://financas_owner:npg_Vej4hNsgR6Qd@ep-white-cell-a85bnok0-pooler.eastus2.azure.neon.tech/financas?sslmode=require

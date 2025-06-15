@@ -819,5 +819,26 @@
     margin-right: 0.3rem;
   }
 }
+@media (max-width: 768px) {
+  .hero-section .btn-lg,
+  .hero-section .btn {
+    display: block;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    font-size: 1.15rem !important;
+    padding: 16px 0 !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+    white-space: normal !important;
+    margin: 24px 0 0 0 !important;
+    box-sizing: border-box;
+  }
+  /* Remove padding lateral da coluna só no mobile */
+  .hero-section .col-md-6 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
 
 
