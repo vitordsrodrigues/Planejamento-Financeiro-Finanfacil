@@ -113,10 +113,19 @@ async function calcularSaldoPorMes(userId, ano, mes) {
     const totalCartaoMesAtual = despesasCartaoMesAtual.reduce((acc, dc) => acc + parseFloat(dc.valor || 0), 0);
 
     const saldoMesAtual = totalReceitasMesAtual - totalDespesasMesAtual - totalCartaoMesAtual;
-
+    const saldoPrevisto = saldoAnterior + totalReceitasMesAtual - totalDespesasMesAtual - totalCartaoMesAtual;
+    
+    console.log({
+        saldoAnterior,
+        totalReceitasMesAtual,
+        totalDespesasMesAtual,
+        totalCartaoMesAtual,
+        saldoPrevisto
+    });
     return {
         saldoAnterior,
         saldoMesAtual,
+        saldoPrevisto,
         totalReceitasAnteriores,
         totalDespesasAnteriores,
         totalCartaoAnterior,
