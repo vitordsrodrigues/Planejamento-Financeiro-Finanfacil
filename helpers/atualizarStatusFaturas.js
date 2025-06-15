@@ -1,4 +1,4 @@
-const Fatura = require('../models/Fatura');Add commentMore actions
+const Fatura = require('../models/Fatura');
 const Cartao = require('../models/Cartao');
 const { Op } = require('sequelize');
 const moment = require('moment');
