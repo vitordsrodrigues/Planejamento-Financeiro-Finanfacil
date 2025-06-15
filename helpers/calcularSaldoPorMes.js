@@ -1,20 +1,20 @@
-const Despesas = require('../models/Despesas');Add commentMore actions
+const Despesas = require('../models/Despesas');
 const Cartao = require('../models/Cartao');
 const DespesaCartao = require('../models/DespesaCartao');
 const Fatura = require('../models/Fatura');
 const Receita = require('../models/Receita');
-const { Op, fn, col, where: sequelizeWhere } = require('sequelize');
+const { Op, fn, col, where: sequelizeWhere, literal } = require('sequelize');
 
 async function calcularSaldoPorMes(userId, ano, mes) {
     const receitasAnteriores = await Receita.findAll({
         where: {
             UserId: userId,
             [Op.or]: [
-                { [Op.and]: [sequelizeWhere(fn('YEAR', col('date')), '<', ano)] },
+                { [Op.and]: [literal(`EXTRACT(YEAR FROM "date") < ${ano}`)] },
                 {
                     [Op.and]: [
-                        sequelizeWhere(fn('YEAR', col('date')), ano),
-                        sequelizeWhere(fn('MONTH', col('date')), '<', mes)
+                        literal(`EXTRACT(YEAR FROM "date") = ${ano}`),
+                        literal(`EXTRACT(MONTH FROM "date") < ${mes}`)
                     ]
                 }
             ]
@@ -27,11 +27,11 @@ async function calcularSaldoPorMes(userId, ano, mes) {
         where: {
             UserId: userId,
             [Op.or]: [
-                { [Op.and]: [sequelizeWhere(fn('YEAR', col('date')), '<', ano)] },
+                { [Op.and]: [literal(`EXTRACT(YEAR FROM "date") < ${ano}`)] },
                 {
                     [Op.and]: [
-                        sequelizeWhere(fn('YEAR', col('date')), ano),
-                        sequelizeWhere(fn('MONTH', col('date')), '<', mes)
+                        literal(`EXTRACT(YEAR FROM "date") = ${ano}`),
+                        literal(`EXTRACT(MONTH FROM "date") < ${mes}`)
                     ]
                 }
             ]
@@ -74,8 +74,8 @@ async function calcularSaldoPorMes(userId, ano, mes) {
         where: {
             UserId: userId,
             [Op.and]: [
-                sequelizeWhere(fn('YEAR', col('date')), ano),
-                sequelizeWhere(fn('MONTH', col('date')), mes)
+                literal(`EXTRACT(YEAR FROM "date") = ${ano}`),
+                literal(`EXTRACT(MONTH FROM "date") = ${mes}`)
             ]
         },
         raw: true
@@ -86,8 +86,8 @@ async function calcularSaldoPorMes(userId, ano, mes) {
         where: {
             UserId: userId,
             [Op.and]: [
-                sequelizeWhere(fn('YEAR', col('date')), ano),
-                sequelizeWhere(fn('MONTH', col('date')), mes)
+                literal(`EXTRACT(YEAR FROM "date") = ${ano}`),
+                literal(`EXTRACT(MONTH FROM "date") = ${mes}`)
             ]
         },
         raw: true
@@ -112,15 +112,17 @@ async function calcularSaldoPorMes(userId, ano, mes) {
     });
     const totalCartaoMesAtual = despesasCartaoMesAtual.reduce((acc, dc) => acc + parseFloat(dc.valor || 0), 0);
 
-    const saldoPrevisto = saldoAnterior + totalReceitasMesAtual - totalDespesasMesAtual - totalCartaoMesAtual;
+    const saldoMesAtual = totalReceitasMesAtual - totalDespesasMesAtual - totalCartaoMesAtual;
 
     return {
-        mes,
-        saldoAnterior: saldoAnterior.toFixed(2),
-        totalReceitas: totalReceitasMesAtual.toFixed(2),
-        totalDespesas: totalDespesasMesAtual.toFixed(2),
-        totalCartao: totalCartaoMesAtual.toFixed(2),
-        saldoPrevisto: saldoPrevisto.toFixed(2)
+        saldoAnterior,
+        saldoMesAtual,
+        totalReceitasAnteriores,
+        totalDespesasAnteriores,
+        totalCartaoAnterior,
+        totalReceitasMesAtual,
+        totalDespesasMesAtual,
+        totalCartaoMesAtual
     };
 }
 
