@@ -287,6 +287,7 @@ module.exports = class FinancasControllers{
             const saldoPorMes = await calcularSaldoPorMes(userId, anoAtual, mesAtual);
             const saldoInicial = saldoPorMes.saldoAnterior;
             const saldoPrevisto = saldoPorMes.saldoPrevisto;
+            console.log('saldoPrevisto enviado para view:', saldoPrevisto);
 
             // Passar o link selecionado para a view
             return res.render('financas/dashboard', {
