@@ -9,7 +9,7 @@ const { Op, literal } = require('sequelize');
 
 class FaturaController {
   
-     static async pagarFatura(req, res) {Add commentMore actions
+     static async pagarFatura(req, res) {
         try {
             const faturaId = req.params.id;
     
