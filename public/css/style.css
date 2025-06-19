@@ -507,3 +507,30 @@ a:hover i {
     color: #ffc107;
 }
 
+/* =======================
+   BOTÃO "COMECE AGORA" - RESPONSIVIDADE
+   ======================= */
+
+/* Botão na navbar - estado padrão */
+.navbar-nav .btn-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+    border: 1px solid #ffc107 !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    min-width: 120px !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+.navbar-nav .btn-warning:hover {
+    background-color: #e0a800 !important;
+    border-color: #e0a800 !important;
+    color: #000 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+

@@ -13,7 +13,7 @@ module.exports = class AuthControllers{
 
         if(!user){
             req.flash('message', 'usuario não encontrado')
-            res.render('auth/login')
+            res.render('auth/login',{layout:'auth',title:'Login'})
             return
         }
 
@@ -21,7 +21,7 @@ module.exports = class AuthControllers{
 
         if(!passwordMatch){
             req.flash('message', 'Senha incorreta!')
-            res.render('auth/login')
+            res.render('auth/login',{layout:'auth',title:'Login'})
             return
         }
          req.session.userid = user.id
@@ -40,7 +40,7 @@ module.exports = class AuthControllers{
 
         if(password != confirmpassword){
             req.flash('message','as senhas não conferem, tente novamente!')
-            res.render('auth/register')
+            res.render('auth/register',{layout:'auth',title:'register'})
 
             return
         }
@@ -50,7 +50,7 @@ module.exports = class AuthControllers{
         const checkifUserExist = await User.findOne({where:{email:email}})
         if(checkifUserExist){
             req.flash('message','o email ja esta em uso')
-            res.render('auth/register')
+            res.render('auth/register',{layout:'auth',title:'register'})
 
             return
         }
@@ -74,6 +74,8 @@ module.exports = class AuthControllers{
             })
         }catch(err){
             console.log(err)
+            req.flash('message', 'Erro ao criar conta. Tente novamente.')
+            res.render('auth/register',{layout:'auth',title:'register'})
         }
 
 

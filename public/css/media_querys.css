@@ -1,4 +1,3 @@
-
 /* =======================
    RESPONSIVIDADE GERAL E AJUSTES DE LAYOUT
    ======================= */
@@ -500,167 +499,6 @@
     margin-right: 3px !important; /* Reduz o espaço à direita em todos os tamanhos */
 }
 
-/* Telas pequenas (smartphones) - até 767px */
-@media (max-width: 767px) {
-    /* Ajuste no layout principal da página de receitas */
-    .d-flex.justify-content-between {
-        flex-direction: column;
-    }
-    
-    /* Card principal de receitas - ocupa largura total */
-    .card.shadow-lg.rounded-4.w-75 {
-        width: 100% !important;
-        margin-bottom: 20px;
-    }
-    
-    /* ABORDAGEM RADICALMENTE DIFERENTE PARA TELAS PEQUENAS */
-    
-    /* Oculta o cabeçalho da tabela em telas pequenas */
-    .row.fw-bold.text-dark.pb-3.border-bottom {
-        display: none;
-    }
-    
-    /* Transforma cada linha em um bloco independente com 3 linhas */
-    .row.align-items-center.border-bottom.py-2 {
-        display: block !important;
-        padding: 10px 15px !important;
-        margin-bottom: 10px !important;
-        border-bottom: 1px solid #dee2e6 !important;
-        background-color: #fafafa;
-        border-radius: 8px;
-    }
-    
-    /* Ajusta todas as colunas para ocupar 100% da largura */
-    .row.align-items-center.border-bottom.py-2 .col-2,
-    .row.align-items-center.border-bottom.py-2 .col-3,
-    .row.align-items-center.border-bottom.py-2 .col-1 {
-        width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        text-align: left !important;
-    }
-    
-    /* Oculta a descrição e a data */
-    .row.align-items-center.border-bottom.py-2 .col-2,
-    .row.align-items-center.border-bottom.py-2 .col-3:nth-child(3) {
-        display: none !important;
-    }
-    
-    /* Linha 1: Categoria com ícone */
-    .row.align-items-center.border-bottom.py-2 .col-3:nth-child(2) {
-        margin-bottom: 5px !important;
-    }
-    
-    /* Ajuste específico para o container da categoria */
-    .col-3.text-center.d-flex.align-items-center {
-        justify-content: flex-start !important;
-    }
-    
-    /* Ajuste para o ícone da categoria */
-    .col-3.text-center.d-flex.align-items-center .rounded-circle {
-        width: 30px !important;
-        height: 30px !important;
-        min-width: 30px !important;
-        padding: 2px !important;
-        margin-right: 8px !important;
-    }
-    
-    /* Ajuste para o nome da categoria */
-    .col-3.text-center.d-flex.align-items-center .ms-2 {
-        font-size: 0.95rem !important;
-        margin-left: 5px !important;
-    }
-    
-    /* Linha 2: Valor */
-    .row.align-items-center.border-bottom.py-2 .col-3:nth-child(4) {
-        font-size: 1.2rem !important;
-        margin: 5px 0 !important;
-    }
-    
-    /* Linha 3: Botões de ação */
-    .row.align-items-center.border-bottom.py-2 .col-1 {
-        margin-top: 8px !important;
-    }
-    
-    /* Container de botões */
-    .col-1.d-flex.flex-nowrap.justify-content-center.align-items-center.gap-1 {
-        justify-content: flex-start !important;
-        gap: 10px !important;
-    }
-    
-    /* Botões de ação */
-    .col-1.d-flex.flex-nowrap.justify-content-center.align-items-center.gap-1 .btn {
-        padding: 6px 12px !important;
-        font-size: 1rem !important;
-    }
-    
-    /* Balões de informações - reorganizados em coluna com largura total */
-    .d-flex.flex-column.gap-3.ms-3.w-25 {
-        width: 100% !important;
-        margin-left: 0 !important;
-    }
-    
-    /* Navegação de mês - correção do deslocamento negativo */
-    .d-flex.justify-content-center.mb-3 .d-flex.align-items-center.justify-content-center {
-        margin-left: 0 !important;
-    }
-}
-
-/* Ajuste específico para o problema de alinhamento dos ícones com o texto */
-@media (min-width: 768px) and (max-width: 1200px) {
-    /* Correção do alinhamento entre ícones e texto nas categorias */
-    .col-3.text-center.d-flex.align-items-center {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    /* Espaçamento entre o ícone e o texto reduzido */
-    .col-3.text-center.d-flex.align-items-center .d-flex.flex-column {
-        margin-right: 0px !important;
-    }
-    
-    /* Aproxima o nome da categoria do ícone */
-    .col-3.text-center.d-flex.align-items-center .ms-2 {
-        margin-left: 2px !important; /* Reduz ainda mais o espaço */
-    }
-}
-
-/* Ajustes globais para todas as resoluções */
-
-/* Ajuste específico para alinhamento dos ícones nos balões em todas as resoluções */
-.card .d-flex.align-items-center {
-    display: flex !important;
-    align-items: center !important;
-}
-
-.card .rounded-circle.bg-white.p-2.me-3 {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin-right: 8px !important; /* Reduz o espaço à direita do ícone em todos os tamanhos */
-}
-
-/* Ajuste para separação dos botões de ação em todas as resoluções */
-.col-1.d-flex.flex-nowrap.justify-content-center.align-items-center.gap-1 {
-    gap: 5px !important;
-}
-
-/* Ajuste para aproximar nome da categoria do ícone em todas as resoluções */
-.col-3.text-center.d-flex.align-items-center .ms-2 {
-    margin-left: 2px !important; /* Reduz ainda mais o espaço em todos os tamanhos */
-}
-
-/* Ajuste para o container do ícone da categoria */
-.col-3.text-center.d-flex.align-items-center .d-flex.flex-column {
-    margin-right: 0 !important;
-}
-
-/* Ajuste para o ícone da categoria em todas as resoluções */
-.col-3.text-center.d-flex.align-items-center .rounded-circle {
-    margin-right: 3px !important; /* Reduz o espaço à direita em todos os tamanhos */
-}
-
 /* Centraliza verticalmente ícone e texto nos balões de totais */
 @media (max-width: 768px) {
     .card .d-flex.align-items-center {
@@ -838,6 +676,102 @@
   .hero-section .col-md-6 {
     padding-left: 0 !important;
     padding-right: 0 !important;
+  }
+}
+
+/* =======================
+   RESPONSIVIDADE - HERO SECTION MELHORADA
+   ======================= */
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding-left: 5vw !important;
+    padding-right: 5vw !important;
+  }
+  .hero-section .display-5 {
+    font-size: 2.1rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 1.2rem !important;
+    word-break: break-word;
+    text-align: left !important;
+  }
+  .hero-section .lead {
+    font-size: 1.08rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 1.5rem !important;
+    text-align: left !important;
+    word-break: break-word;
+  }
+  .hero-section .small {
+    font-size: 0.93rem !important;
+    line-height: 1.4 !important;
+    text-align: left !important;
+    word-break: break-word;
+  }
+  .hero-section .btn-lg,
+  .hero-section .btn {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    font-size: 1.08rem !important;
+    padding: 14px 0 !important;
+    border-radius: 8px !important;
+    text-align: center !important;
+    white-space: normal !important;
+    margin: 18px 0 0 0 !important;
+    box-sizing: border-box;
+    line-height: 1.3 !important;
+  }
+  .hero-section .col-md-6 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section {
+    padding-left: 4vw !important;
+    padding-right: 4vw !important;
+  }
+  .hero-section .display-5 {
+    font-size: 1.8rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 1rem !important;
+    text-align: left !important;
+  }
+  .hero-section .lead {
+    font-size: 0.98rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 1.2rem !important;
+    text-align: left !important;
+  }
+  .hero-section .small {
+    font-size: 0.85rem !important;
+    line-height: 1.4 !important;
+    text-align: left !important;
+  }
+  .hero-section .btn-lg,
+  .hero-section .btn {
+    font-size: 0.98rem !important;
+    padding: 12px 0 !important;
+    margin: 14px 0 0 0 !important;
+  }
+  #organize {
+    font-size: 1.8rem !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero-section {
+    padding-left: 2vw !important;
+    padding-right: 2vw !important;
+  }
+  .hero-section .btn-lg,
+  .hero-section .btn {
+    font-size: 0.93rem !important;
+    padding: 10px 0 !important;
+    margin: 10px 0 0 0 !important;
   }
 }
 

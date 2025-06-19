@@ -2,6 +2,13 @@
   <div class="row gx-5">
     <div class="col-md-6">
       <h2>Realize o seu cadastro</h2>
+      
+      {{#if messages.message}}
+          <div class="message">
+              {{messages.message}}
+          </div>
+      {{/if}}
+      
       <form action="/register" method="POST">
         <div class="form-floating mb-3">
           <input type="text" class="form-control" id="name" name="name" placeholder="Digite o seu nome" required>

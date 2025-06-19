@@ -35,6 +35,9 @@ const FaturaController = require('./controllers/FaturasControllers')
 const ObjetivosController = require('./controllers/ObjetivosController')
 
 const hbs = exphbs.create({
+    defaultLayout: 'main',
+    layoutsDir: require('path').join(__dirname, 'views', 'layouts'),
+    partialsDir: require('path').join(__dirname, 'views', 'partials'),
     helpers: {
         // Helpers existentes
         formatDate: function (date) {
