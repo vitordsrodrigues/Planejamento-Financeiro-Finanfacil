@@ -7,7 +7,7 @@ Um sistema simples de planejamento financeiro pessoal para ajudar no controle de
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Funcionalidades](#funcionalidades)
 - [Tecnologias](#-tecnologias)
-- [Instalação](#instalação)
+- [Instalação](#-instalação)
 - [Como usar](#como-usar)
 - [Autor](#autor)
 
@@ -56,7 +56,7 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 - **Bootstrap** + **CSS** (estilização)
 - **MVC Pattern**
 
-## Instalação
+## ⚙️ Instalação
 
 ### Pré-requisitos
 - Node.js instalado  
