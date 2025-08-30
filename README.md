@@ -31,8 +31,64 @@ Saldo previsto: o sistema calcula automaticamente o saldo disponível ao longo d
 
 Esse projeto foi desenvolvido como parte do meu Trabalho de Conclusão de Curso Técnico em Informática, com o objetivo de unir tecnologia e educação financeira para causar um impacto real na vida das pessoas.
 
-### Funcionalidades
+## Funcionalidades
 
-- [x] Cadastro de receitas e despesas
+1. Cadastro de receitas,despesas e cartões de crédito
+2. Controle de saldo mensal
+3. Gráficos interativos de receitas, despesas e cartões
+4. Categorização de receitas,despesas e despesas do cartão
+5. Alertas inteligentes sobre gastos que levam para um site de dicas financeiras
+6. Area para traçar objetivos e metas podendo organizar entre objetivos concluidos e ativos
+7. Estimativa de tempo para o objetivo ser alcançado
+8. Despesas divididas entre despesas e despesas do cartão
+9. Visualização de saldo,receitas,despesas e cartões mensalmente
+10. Edição e Exclusão de receitas,despesas,cartões e objetivos
+11. Login e Cadastro
+
+## 🚀 Tecnologias
+
+As principais ferramentas utilizadas no desenvolvimento foram:
+- **Node.js**
+- **Express.js**
+- **Sequelize** (com banco de dados MySQL)
+- **Handlebars** (templating engine)
+- **Bootstrap** + **CSS** (estilização)
+- **MVC Pattern**
+
+## ⚙️ Instalação
+
+### Pré-requisitos
+- Node.js instalado  
+- MySQL configurado  
+
+### Passo a passo
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/vitordsrodrigues/Planejamento-Financeiro-Finanfacil.git
+2. Acesse a pasta do projeto:
+   cd Planejamento-Financeiro-Finanfacil
+3.Instale as dependências:
+  npm install
+4.Configure o banco de dados no arquivo conn.js:
+   crie seu banco de dados e coloque seu usuario e senha para conectar
+5.Inicie a aplicação:
+  npm start
+6.navegador
+  abra no localhost:3000
+
+## como usar
+
+*Crie sua conta ou faça login.
+*Cadastre suas receitas, despesas e cartões.
+*Acompanhe o saldo atualizado automaticamente.
+*Visualize os gráficos de receitas, despesas e cartões para entender melhor sua vida financeira.
+
+## Autor
+
+[Linkedin](www.linkedin.com/in/vitor-mario-rodrigues)
+
+   
+   
+
 
 
