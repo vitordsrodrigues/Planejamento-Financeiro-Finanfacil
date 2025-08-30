@@ -3,12 +3,13 @@
 Um sistema simples de planejamento financeiro pessoal para ajudar no controle de receitas, despesas e cartões.
 
 ## 📑 Índice
-- [Sobre o Projeto](#-sobre-o-projeto)
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias](#-tecnologias)
-- [Instalação](#-instalação)
-- [Como usar](#-como-usar)
-- [Autor](#-Autor)
+
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias](#tecnologias)
+- [Instalação](#instalação)
+- [Como usar](#como-usar)
+- [Autor](#autor)
 
 
 ## Sobre o Projeto
@@ -89,6 +90,7 @@ feito por Vitor Rodrigues
 
    
    
+
 
 
 
