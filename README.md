@@ -6,8 +6,8 @@ Um sistema simples de planejamento financeiro pessoal para ajudar no controle de
 
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Funcionalidades](#funcionalidades)
-- [Tecnologias](#tecnologias)
-- [Instalação](#instalação)
+- [Tecnologias](#-tecnologias)
+- [Instalação](#-instalação)
 - [Como usar](#como-usar)
 - [Autor](#autor)
 
@@ -90,6 +90,7 @@ feito por Vitor Rodrigues
 
    
    
+
 
 
 
