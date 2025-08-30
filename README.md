@@ -101,7 +101,7 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 9. navegador:
   ```bash
   abra no localhost:3000
-````
+```
 ## como usar
 * Crie sua conta ou faça login.
 * Cadastre suas receitas, despesas e cartões.
@@ -111,3 +111,4 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 ## Autor
 feito por Vitor Rodrigues,link para o
 [Linkedin](https://www.linkedin.com/in/vitor-mario-rodrigues)
+
