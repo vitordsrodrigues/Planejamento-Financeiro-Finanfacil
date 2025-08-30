@@ -81,26 +81,6 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 9. navegador:
   ```bash
   abra no localhost:3000
-
-### Passo a passo
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/vitordsrodrigues/Planejamento-Financeiro-Finanfacil.git
-2. Acesse a pasta do projeto:
-   ```bash
-   cd Planejamento-Financeiro-Finanfacil
-4. Instale as dependências:
-   ```bash
-   npm install
-6. Configure o banco de dados no arquivo conn.js:
-   ```bash
-   crie seu banco de dados e coloque seu usuario e senha para conectar
-8. Inicie a aplicação:
-   ```bash
-   npm start
-9. navegador:
-  ```bash
-  abra no localhost:3000
 ```
 ## como usar
 * Crie sua conta ou faça login.
@@ -111,4 +91,5 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 ## Autor
 feito por Vitor Rodrigues,link para o
 [Linkedin](https://www.linkedin.com/in/vitor-mario-rodrigues)
+
 
