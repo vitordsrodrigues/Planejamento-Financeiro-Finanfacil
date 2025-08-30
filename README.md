@@ -79,10 +79,10 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 
 ## como usar
 
-*Crie sua conta ou faça login.
-*Cadastre suas receitas, despesas e cartões.
-*Acompanhe o saldo atualizado automaticamente.
-*Visualize os gráficos de receitas, despesas e cartões para entender melhor sua vida financeira.
+* Crie sua conta ou faça login.
+* Cadastre suas receitas, despesas e cartões.
+* Acompanhe o saldo atualizado automaticamente.
+* Visualize os gráficos de receitas, despesas e cartões para entender melhor sua vida financeira.
 
 ## Autor
 feito por Vitor Rodrigues,link para o
@@ -90,6 +90,7 @@ feito por Vitor Rodrigues,link para o
 
    
    
+
 
 
 
