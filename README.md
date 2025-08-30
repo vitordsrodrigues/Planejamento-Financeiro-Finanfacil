@@ -85,10 +85,11 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 
 ## Autor
 
-[Linkedin](www.linkedin.com/in/vitor-mario-rodrigues)
+[Linkedin](https://www.linkedin.com/in/vitor-mario-rodrigues)
 
    
    
+
 
 
 
