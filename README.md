@@ -33,5 +33,6 @@ Esse projeto foi desenvolvido como parte do meu Trabalho de Conclusão de Curso 
 
 ### Funcionalidades
 
-1.Cadastro de receitas e despesas
+- [x] Cadastro de receitas e despesas
+
 
