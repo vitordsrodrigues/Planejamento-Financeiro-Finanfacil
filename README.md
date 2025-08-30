@@ -68,13 +68,13 @@ As principais ferramentas utilizadas no desenvolvimento foram:
    git clone https://github.com/vitordsrodrigues/Planejamento-Financeiro-Finanfacil.git
 2. Acesse a pasta do projeto:
    cd Planejamento-Financeiro-Finanfacil
-3.Instale as dependências:
+3. Instale as dependências:
   npm install
-4.Configure o banco de dados no arquivo conn.js:
+4. Configure o banco de dados no arquivo conn.js:
    crie seu banco de dados e coloque seu usuario e senha para conectar
-5.Inicie a aplicação:
+5. Inicie a aplicação:
   npm start
-6.navegador
+6. navegador
   abra no localhost:3000
 
 ## como usar
@@ -90,6 +90,7 @@ feito por Vitor Rodrigues,link para o
 
    
    
+
 
 
 
