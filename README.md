@@ -3,13 +3,13 @@
 Um sistema simples de planejamento financeiro pessoal para ajudar no controle de receitas, despesas e cartões.
 
 ## 📑 Índice
-- [Sobre o projeto](#-sobre-o-projeto)
+- [Sobre o Projeto](#-sobre-o-projeto)
 - [Funcionalidades](#-funcionalidades)
 - [Tecnologias](#-tecnologias)
 - [Instalação](#-instalação)
 - [Como usar](#-como-usar)
-- [Contribuição](#-contribuição)
-- [Licença](#-licença)
+- [Autor](#-Autor)
+
 
 ## Sobre o Projeto
 
@@ -84,11 +84,12 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 *Visualize os gráficos de receitas, despesas e cartões para entender melhor sua vida financeira.
 
 ## Autor
-
+feito por Vitor Rodrigues
 [Linkedin](https://www.linkedin.com/in/vitor-mario-rodrigues)
 
    
    
+
 
 
 
