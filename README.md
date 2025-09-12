@@ -56,7 +56,7 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 - **Bootstrap** + **CSS** (estilização)
 - **MVC Pattern**
 
-  ### 📦 Dependências (conforme `package.json`)
+### 📦 Dependências (conforme `package.json`)
 - `bcryptjs` — ^2.4.3  
 - `connect-flash` — ^0.1.1  
 - `cookie-parser` — ^1.4.7  
@@ -108,6 +108,7 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 ## Autor
 feito por Vitor Rodrigues,link para o
 [Linkedin](https://www.linkedin.com/in/vitor-mario-rodrigues)
+
 
 
 
