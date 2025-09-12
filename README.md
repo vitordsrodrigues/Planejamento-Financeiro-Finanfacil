@@ -56,6 +56,23 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 - **Bootstrap** + **CSS** (estilização)
 - **MVC Pattern**
 
+  ### 📦 Dependências (conforme `package.json`)
+- `bcryptjs` — ^2.4.3  
+- `connect-flash` — ^0.1.1  
+- `cookie-parser` — ^1.4.7  
+- `cookie-session` — ^2.1.0  
+- `express` — ^4.21.2  
+- `express-flash` — ^0.0.2  
+- `express-handlebars` — ^8.0.1  
+- `express-session` — ^1.18.1  
+- `mysql2` — ^3.12.0  
+- `node-cron` — ^3.0.3  
+- `nodemon` — ^3.1.9 (dev)  
+- `pg` — ^8.16.0  
+- `pg-hstore` — ^2.3.4  
+- `sequelize` — ^6.37.5  
+- `session-file-store` — ^1.5.0
+
 ## Instalação
 
 ### Pré-requisitos
@@ -91,5 +108,6 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 ## Autor
 feito por Vitor Rodrigues,link para o
 [Linkedin](https://www.linkedin.com/in/vitor-mario-rodrigues)
+
 
 
