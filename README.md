@@ -86,13 +86,13 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 2. Acesse a pasta do projeto:
    ```bash
    cd Planejamento-Financeiro-Finanfacil
-4. Instale as dependências:
+3. Instale as dependências:
    ```bash
    npm install
-6. Configure o banco de dados no arquivo conn.js:
+4. Configure o banco de dados no arquivo conn.js:
    ```bash
    crie seu banco de dados e coloque seu usuario e senha para conectar
-8. Inicie a aplicação:
+5. Inicie a aplicação:
    ```bash
    npm start
 9. navegador:
@@ -108,6 +108,7 @@ As principais ferramentas utilizadas no desenvolvimento foram:
 ## Autor
 feito por Vitor Rodrigues,link para o
 [Linkedin](https://www.linkedin.com/in/vitor-mario-rodrigues)
+
 
 
 
